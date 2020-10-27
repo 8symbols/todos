@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'todos_list/ui/TodosListScreen.dart';
+import 'package:todos/presentation/todos_list/TodosListScreen.dart';
 
 const initialRoute = TodosListScreen.routeName;
 

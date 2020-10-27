@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' as m;
 import 'package:meta/meta.dart';
-import 'package:todos/repositories/todos_repository/models/theme.dart';
+import 'package:todos/data/repositories/todos_repository/models/theme.dart';
 import 'package:uuid/uuid.dart';
 
 class Branch {
