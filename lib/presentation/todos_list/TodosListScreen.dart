@@ -1,49 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/data/repositories/todos_repository/models/todo.dart';
+import 'package:todos/data/repositories/todos_repository/repositories/i_todos_repository.dart';
+import 'package:todos/presentation/todos_list/bloc/todos_list_bloc.dart';
 
 class TodosListScreen extends StatelessWidget {
   static const routeName = '/todos_list';
 
+  final ITodosRepository _todosRepository;
+  final String branchId;
+
+  TodosListScreen(this._todosRepository, {this.branchId});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Задачи'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _TodosList(),
+    return BlocProvider<TodosListBloc>(
+      create: (context) => TodosListBloc(_todosRepository, branchId: branchId),
+      child: Builder(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: const Text('Задачи'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: BlocBuilder<TodosListBloc, TodosListState>(
+                builder: (context, state) => state is TodosListLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _TodosList()),
+          ),
+        ),
       ),
     );
   }
 }
 
-class MockTodo {
-  bool wasCompleted;
-  String title;
-}
-
-final mockTodos = [
-  for (var i = 0; i < 12; ++i)
-    MockTodo()
-      ..wasCompleted = i % 2 == 0
-      ..title = i.toString(),
-];
-
 class _TodosList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: mockTodos.map((e) => _Todo(e)).toList(),
+    return BlocBuilder<TodosListBloc, TodosListState>(
+      builder: (context, state) => SingleChildScrollView(
+        child: Column(
+          children: state is TodosListUsing
+              ? state.todos.map((e) => _Todo(e)).toList()
+              : Container(),
+        ),
       ),
     );
   }
 }
 
 class _Todo extends StatelessWidget {
-  final MockTodo mockTodo;
+  final Todo todo;
 
-  _Todo(this.mockTodo);
+  _Todo(this.todo);
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +62,8 @@ class _Todo extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           children: [
-            Checkbox(value: mockTodo.wasCompleted, onChanged: (v) {}),
-            Expanded(child: Text(mockTodo.title)),
+            Checkbox(value: todo.wasCompleted, onChanged: (v) {}),
+            Expanded(child: Text(todo.title)),
             IconButton(icon: const Icon(Icons.delete), onPressed: () {}),
           ],
         ),
