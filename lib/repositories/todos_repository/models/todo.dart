@@ -1,41 +1,46 @@
+import 'package:flutter/material.dart' as m;
 import 'package:meta/meta.dart';
-import 'models.dart';
-import 'task.dart';
+import 'package:todos/repositories/todos_repository/models/todo_priority.dart';
+import 'package:todos/repositories/todos_repository/models/theme.dart';
+import 'package:uuid/uuid.dart';
 
 class Todo {
-  bool isFavorite;
+  final String id;
 
-  bool wasCompleted;
+  final bool isFavorite;
 
-  String title;
+  final bool wasCompleted;
 
-  String notes;
+  final String title;
 
-  DateTime deadlineTime;
+  final String notes;
 
-  DateTime notificationTime;
+  final DateTime deadlineTime;
 
-  DateTime creationTime;
+  final DateTime notificationTime;
 
-  List<String> imagesPaths;
+  final DateTime creationTime;
 
-  List<Task> tasks;
+  final TodoPriority priority;
 
-  Priority priority;
-
-  Theme theme;
+  final Theme theme;
 
   Todo({
-    @required this.isFavorite,
-    @required this.wasCompleted,
+    String id,
+    bool isFavorite,
+    bool wasCompleted,
+    DateTime creationTime,
+    TodoPriority priority,
+    Theme theme,
+    this.notes,
+    this.deadlineTime,
+    this.notificationTime,
     @required this.title,
-    @required this.notes,
-    @required this.deadlineTime,
-    @required this.notificationTime,
-    @required this.creationTime,
-    @required this.imagesPaths,
-    @required this.tasks,
-    @required this.priority,
-    @required this.theme,
-  });
+  })  : id = id ?? Uuid().v4(),
+        isFavorite = isFavorite ?? false,
+        wasCompleted = wasCompleted ?? false,
+        creationTime = creationTime ?? DateTime.now(),
+        priority = priority ?? TodoPriority.medium,
+        theme = theme ?? ColorTheme(m.Colors.amber),
+        assert(title != null);
 }

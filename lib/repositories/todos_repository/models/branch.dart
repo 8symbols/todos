@@ -1,13 +1,20 @@
+import 'package:flutter/material.dart' as m;
 import 'package:meta/meta.dart';
-
-import 'models.dart';
+import 'package:todos/repositories/todos_repository/models/theme.dart';
+import 'package:uuid/uuid.dart';
 
 class Branch {
-  String title;
+  final String id;
 
-  ColorTheme theme;
+  final String title;
 
-  List<Todo> todos;
+  final ColorTheme theme;
 
-  Branch({@required this.title, @required this.theme, @required this.todos});
+  Branch({
+    String id,
+    Theme theme,
+    @required this.title,
+  })  : id = id ?? Uuid().v4(),
+        theme = theme ?? ColorTheme(m.Colors.amber),
+        assert(title != null);
 }
