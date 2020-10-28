@@ -16,7 +16,9 @@ class TodoDeleted extends TodosListEvent {
 }
 
 class TodoEdited extends TodosListEvent {
-  final String todo;
+  final String todoId;
 
-  TodoEdited(this.todo);
+  final Todo todo;
+
+  TodoEdited(this.todoId, this.todo);
 }

@@ -63,7 +63,15 @@ class _Todo extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           children: [
-            Checkbox(value: todo.wasCompleted, onChanged: (v) {}),
+            Checkbox(
+              value: todo.wasCompleted,
+              onChanged: (newValue) {
+                final editedTodo = todo.copyWith(wasCompleted: newValue);
+                context
+                    .bloc<TodosListBloc>()
+                    .add(TodoEdited(todo.id, editedTodo));
+              },
+            ),
             Expanded(child: Text(todo.title)),
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),

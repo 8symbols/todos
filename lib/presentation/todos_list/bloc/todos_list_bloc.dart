@@ -27,6 +27,8 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       yield* _mapTodosListLoadedEventToState(event);
     } else if (event is TodoDeleted) {
       yield* _mapTodoDeletedEventToState(event);
+    } else if (event is TodoEdited) {
+      yield* _mapTodoEditedEventToState(event);
     }
   }
 
@@ -42,6 +44,17 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       final currentTodos = (state as TodosListUsing).todos;
       yield TodosListUsing(
           currentTodos.where((e) => e.id != event.todoId).toList());
+    }
+  }
+
+  Stream<TodosListState> _mapTodoEditedEventToState(TodoEdited event) async* {
+    if (state is TodosListUsing) {
+      final currentTodos = (state as TodosListUsing).todos;
+      final newTodos = currentTodos
+          .map((e) =>
+              e.id == event.todoId ? event.todo.copyWith(id: event.todoId) : e)
+          .toList();
+      yield TodosListUsing(newTodos);
     }
   }
 }
