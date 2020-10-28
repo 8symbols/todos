@@ -38,13 +38,14 @@ class _TodosList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TodosListBloc, TodosListState>(
-      builder: (context, state) => SingleChildScrollView(
-        child: Column(
-          children: state is TodosListUsing
-              ? state.todos.map((e) => _Todo(e)).toList()
-              : Container(),
-        ),
-      ),
+      builder: (context, state) {
+        final todos = (state as TodosListUsing).todos;
+        return todos.isEmpty
+            ? const Center(child: Text('Нет элементов'))
+            : SingleChildScrollView(
+                child: Column(children: todos.map((e) => _Todo(e)).toList()),
+              );
+      },
     );
   }
 }
