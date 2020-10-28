@@ -15,4 +15,12 @@ class Step {
   })  : id = id ?? Uuid().v4(),
         wasCompleted = wasCompleted ?? false,
         assert(body != null);
+
+  Step copyWith({String id, bool wasCompleted, String body}) {
+    return Step(
+      id: id ?? this.id,
+      wasCompleted: wasCompleted ?? this.wasCompleted,
+      body: body ?? this.body,
+    );
+  }
 }

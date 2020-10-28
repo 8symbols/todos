@@ -43,4 +43,30 @@ class Todo {
         priority = priority ?? TodoPriority.medium,
         theme = theme ?? ColorTheme(m.Colors.amber),
         assert(title != null);
+
+  Todo copyWith({
+    String id,
+    bool isFavorite,
+    bool wasCompleted,
+    DateTime creationTime,
+    TodoPriority priority,
+    Theme theme,
+    String notes,
+    DateTime deadlineTime,
+    DateTime notificationTime,
+    String title,
+  }) {
+    return Todo(
+      id: id ?? this.id,
+      isFavorite: isFavorite ?? this.isFavorite,
+      wasCompleted: wasCompleted ?? this.wasCompleted,
+      creationTime: creationTime ?? this.creationTime,
+      priority: priority ?? this.priority,
+      theme: theme ?? this.theme,
+      notes: notes ?? this.notes,
+      deadlineTime: deadlineTime ?? this.deadlineTime,
+      notificationTime: notificationTime ?? this.notificationTime,
+      title: title ?? this.title,
+    );
+  }
 }

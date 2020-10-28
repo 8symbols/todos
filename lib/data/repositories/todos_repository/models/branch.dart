@@ -17,4 +17,12 @@ class Branch {
   })  : id = id ?? Uuid().v4(),
         theme = theme ?? ColorTheme(m.Colors.amber),
         assert(title != null);
+
+  Branch copyWith({String id, Theme theme, String title}) {
+    return Branch(
+      id: id ?? this.id,
+      theme: theme ?? this.theme,
+      title: title ?? this.title,
+    );
+  }
 }
