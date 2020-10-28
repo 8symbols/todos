@@ -24,13 +24,14 @@ class TodosListScreen extends StatelessWidget {
         floatingActionButton: BlocBuilder<TodosListBloc, TodosListState>(
           buildWhen: (previous, current) =>
               previous.runtimeType != current.runtimeType,
-          builder: (context, state) =>
-              state is TodosListUsing ? _TodosListFab() : SizedBox.shrink(),
+          builder: (context, state) => state is TodosListUsingState
+              ? _TodosListFab()
+              : SizedBox.shrink(),
         ),
         body: BlocBuilder<TodosListBloc, TodosListState>(
           buildWhen: (previous, current) =>
               previous.runtimeType != current.runtimeType,
-          builder: (context, state) => state is TodosListLoading
+          builder: (context, state) => state is TodosListLoadingState
               ? const Center(child: CircularProgressIndicator())
               : _TodosList(),
         ),
@@ -44,11 +45,11 @@ class _TodosListFab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TodosListBloc, TodosListState>(
       buildWhen: (previous, current) =>
-          (previous as TodosListUsing).shouldShowFAB !=
-          (current as TodosListUsing).shouldShowFAB,
+          (previous as TodosListUsingState).shouldShowFAB !=
+          (current as TodosListUsingState).shouldShowFAB,
       builder: (context, state) {
         const kFabSize = 56.0;
-        final shouldShow = (state as TodosListUsing).shouldShowFAB;
+        final shouldShow = (state as TodosListUsingState).shouldShowFAB;
         final endSize = shouldShow ? kFabSize : 0.0;
 
         return TweenAnimationBuilder(
@@ -64,7 +65,7 @@ class _TodosListFab extends StatelessWidget {
                   onPressed: () {
                     context
                         .bloc<TodosListBloc>()
-                        .add(TodoAdded(Todo(title: 'todo')));
+                        .add(TodoAddedEvent(Todo(title: 'todo')));
                   },
                 ),
               ),
@@ -81,10 +82,10 @@ class _TodosList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TodosListBloc, TodosListState>(
       buildWhen: (previous, current) =>
-          (previous as TodosListUsing).todos !=
-          (current as TodosListUsing).todos,
+          (previous as TodosListUsingState).todos !=
+          (current as TodosListUsingState).todos,
       builder: (context, state) {
-        final todos = (state as TodosListUsing).todos;
+        final todos = (state as TodosListUsingState).todos;
         return todos.isEmpty
             ? const Center(child: Text('Нет элементов'))
             : _TodosListNotEmpty(todos.map((e) => _Todo(e)).toList());
@@ -109,9 +110,9 @@ class __TodosListNotEmptyState extends State<_TodosListNotEmpty> {
     // TODO: Доработать логику необходимости отображения.
     final direction = _controller.position.userScrollDirection;
     if (direction == ScrollDirection.reverse) {
-      context.bloc<TodosListBloc>().add(ShouldShowFabChanged(false));
+      context.bloc<TodosListBloc>().add(ShouldShowFabChangedEvent(false));
     } else if (direction == ScrollDirection.forward) {
-      context.bloc<TodosListBloc>().add(ShouldShowFabChanged(true));
+      context.bloc<TodosListBloc>().add(ShouldShowFabChangedEvent(true));
     }
   }
 
@@ -158,14 +159,14 @@ class _Todo extends StatelessWidget {
                 final editedTodo = todo.copyWith(wasCompleted: newValue);
                 context
                     .bloc<TodosListBloc>()
-                    .add(TodoEdited(todo.id, editedTodo));
+                    .add(TodoEditedEvent(todo.id, editedTodo));
               },
             ),
             Expanded(child: Text(todo.title)),
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: () {
-                context.bloc<TodosListBloc>().add(TodoDeleted(todo.id));
+                context.bloc<TodosListBloc>().add(TodoDeletedEvent(todo.id));
               },
             ),
           ],

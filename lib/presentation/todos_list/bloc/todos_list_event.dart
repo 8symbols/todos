@@ -3,34 +3,34 @@ part of 'todos_list_bloc.dart';
 @immutable
 abstract class TodosListEvent {}
 
-class TodosListLoaded extends TodosListEvent {
+class TodosListLoadedEvent extends TodosListEvent {
   final List<Todo> todos;
 
-  TodosListLoaded(this.todos);
+  TodosListLoadedEvent(this.todos);
 }
 
-class TodoDeleted extends TodosListEvent {
+class TodoDeletedEvent extends TodosListEvent {
   final String todoId;
 
-  TodoDeleted(this.todoId);
+  TodoDeletedEvent(this.todoId);
 }
 
-class TodoEdited extends TodosListEvent {
+class TodoEditedEvent extends TodosListEvent {
   final String todoId;
 
   final Todo todo;
 
-  TodoEdited(this.todoId, this.todo);
+  TodoEditedEvent(this.todoId, this.todo);
 }
 
-class TodoAdded extends TodosListEvent {
+class TodoAddedEvent extends TodosListEvent {
   final Todo todo;
 
-  TodoAdded(this.todo);
+  TodoAddedEvent(this.todo);
 }
 
-class ShouldShowFabChanged extends TodosListEvent {
+class ShouldShowFabChangedEvent extends TodosListEvent {
   final bool shouldShowFab;
 
-  ShouldShowFabChanged(this.shouldShowFab);
+  ShouldShowFabChangedEvent(this.shouldShowFab);
 }

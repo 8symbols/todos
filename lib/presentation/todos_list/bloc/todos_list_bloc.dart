@@ -16,47 +16,51 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
 
   TodosListBloc(ITodosRepository todosRepository, {this.branchId})
       : _todosInteractor = TodosInteractor(todosRepository),
-        super(TodosListLoading()) {
-    _todosInteractor.getTodos().then((todos) => add(TodosListLoaded(todos)));
+        super(TodosListLoadingState()) {
+    _todosInteractor
+        .getTodos()
+        .then((todos) => add(TodosListLoadedEvent(todos)));
   }
 
   @override
   Stream<TodosListState> mapEventToState(
     TodosListEvent event,
   ) async* {
-    if (event is TodosListLoaded) {
+    if (event is TodosListLoadedEvent) {
       yield* _mapTodosListLoadedEventToState(event);
-    } else if (event is TodoDeleted) {
+    } else if (event is TodoDeletedEvent) {
       yield* _mapTodoDeletedEventToState(event);
-    } else if (event is TodoEdited) {
+    } else if (event is TodoEditedEvent) {
       yield* _mapTodoEditedEventToState(event);
-    } else if (event is TodoAdded) {
+    } else if (event is TodoAddedEvent) {
       yield* _mapTodoAddedEventToState(event);
-    } else if (event is ShouldShowFabChanged) {
+    } else if (event is ShouldShowFabChangedEvent) {
       yield* _mapShouldShowFabChangedEventToState(event);
     }
   }
 
   Stream<TodosListState> _mapTodosListLoadedEventToState(
-    TodosListLoaded event,
+    TodosListLoadedEvent event,
   ) async* {
-    yield TodosListUsing(event.todos);
+    yield TodosListUsingState(event.todos);
   }
 
-  Stream<TodosListState> _mapTodoDeletedEventToState(TodoDeleted event) async* {
-    if (state is TodosListUsing) {
+  Stream<TodosListState> _mapTodoDeletedEventToState(
+      TodoDeletedEvent event) async* {
+    if (state is TodosListUsingState) {
       await _todosInteractor.deleteTodo(event.todoId);
-      final currentState = state as TodosListUsing;
+      final currentState = state as TodosListUsingState;
       final currentTodos = currentState.todos;
       final newTodos = currentTodos.where((e) => e.id != event.todoId).toList();
       yield currentState.copyWith(todos: newTodos);
     }
   }
 
-  Stream<TodosListState> _mapTodoEditedEventToState(TodoEdited event) async* {
-    if (state is TodosListUsing) {
+  Stream<TodosListState> _mapTodoEditedEventToState(
+      TodoEditedEvent event) async* {
+    if (state is TodosListUsingState) {
       await _todosInteractor.editTodo(event.todoId, event.todo);
-      final currentState = state as TodosListUsing;
+      final currentState = state as TodosListUsingState;
       final currentTodos = currentState.todos;
       final newTodos = currentTodos
           .map((e) =>
@@ -66,8 +70,9 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
     }
   }
 
-  Stream<TodosListState> _mapTodoAddedEventToState(TodoAdded event) async* {
-    if (state is TodosListUsing) {
+  Stream<TodosListState> _mapTodoAddedEventToState(
+      TodoAddedEvent event) async* {
+    if (state is TodosListUsingState) {
       // TODO: Убрать заглушку branchId после реализации веток.
       var branchId = this.branchId;
       if (branchId == null) {
@@ -77,7 +82,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
         branchId = (await _todosInteractor.getBranches())[0].id;
       }
       await _todosInteractor.addTodo(branchId, event.todo);
-      final currentState = state as TodosListUsing;
+      final currentState = state as TodosListUsingState;
       final currentTodos = currentState.todos;
       final newTodos = List<Todo>.from(currentTodos)..add(event.todo);
       yield currentState.copyWith(todos: newTodos);
@@ -85,10 +90,10 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
   }
 
   Stream<TodosListState> _mapShouldShowFabChangedEventToState(
-    ShouldShowFabChanged event,
+    ShouldShowFabChangedEvent event,
   ) async* {
-    if (state is TodosListUsing) {
-      final currentState = state as TodosListUsing;
+    if (state is TodosListUsingState) {
+      final currentState = state as TodosListUsingState;
       yield currentState.copyWith(shouldShowFAB: event.shouldShowFab);
     }
   }
