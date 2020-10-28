@@ -9,10 +9,10 @@ class TodosListLoaded extends TodosListEvent {
   TodosListLoaded(this.todos);
 }
 
-class TodoRemoved extends TodosListEvent {
+class TodoDeleted extends TodosListEvent {
   final String todoId;
 
-  TodoRemoved(this.todoId);
+  TodoDeleted(this.todoId);
 }
 
 class TodoEdited extends TodosListEvent {

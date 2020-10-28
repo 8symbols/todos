@@ -65,7 +65,12 @@ class _Todo extends StatelessWidget {
           children: [
             Checkbox(value: todo.wasCompleted, onChanged: (v) {}),
             Expanded(child: Text(todo.title)),
-            IconButton(icon: const Icon(Icons.delete), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              onPressed: () {
+                context.bloc<TodosListBloc>().add(TodoDeleted(todo.id));
+              },
+            ),
           ],
         ),
       ),
