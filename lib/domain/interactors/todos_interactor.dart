@@ -1,3 +1,4 @@
+import 'package:todos/data/repositories/todos_repository/models/branch.dart';
 import 'package:todos/data/repositories/todos_repository/models/todo.dart';
 import 'package:todos/data/repositories/todos_repository/repositories/i_todos_repository.dart';
 
@@ -24,5 +25,13 @@ class TodosInteractor {
 
   Future<List<Todo>> getTodos({String branchId}) {
     return _repository.getTodos(branchId: branchId);
+  }
+
+  Future<void> addBranch(Branch branch) {
+    return _repository.addBranch(branch);
+  }
+
+  Future<List<Branch>> getBranches() {
+    return _repository.getBranches();
   }
 }

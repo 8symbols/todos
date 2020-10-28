@@ -22,3 +22,15 @@ class TodoEdited extends TodosListEvent {
 
   TodoEdited(this.todoId, this.todo);
 }
+
+class TodoAdded extends TodosListEvent {
+  final Todo todo;
+
+  TodoAdded(this.todo);
+}
+
+class ShouldShowFabChanged extends TodosListEvent {
+  final bool shouldShowFab;
+
+  ShouldShowFabChanged(this.shouldShowFab);
+}
