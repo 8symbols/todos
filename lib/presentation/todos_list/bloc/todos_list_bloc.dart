@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:todos/data/repositories/todos_repository/models/branch.dart';
-import 'package:todos/data/repositories/todos_repository/models/todo.dart';
-import 'package:todos/data/repositories/todos_repository/repositories/i_todos_repository.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
+import 'package:todos/domain/models/branch.dart';
+import 'package:todos/domain/models/todo.dart';
+import 'package:todos/domain/repositories/i_todos_repository.dart';
 
 part 'todos_list_event.dart';
 part 'todos_list_state.dart';

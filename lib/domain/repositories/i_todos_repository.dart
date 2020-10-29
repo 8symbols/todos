@@ -1,7 +1,7 @@
-import 'package:todos/data/repositories/todos_repository/models/branch.dart';
-import 'package:todos/data/repositories/todos_repository/models/image.dart';
-import 'package:todos/data/repositories/todos_repository/models/todo_step.dart';
-import 'package:todos/data/repositories/todos_repository/models/todo.dart';
+import 'package:todos/domain/models/branch.dart';
+import 'package:todos/domain/models/image.dart';
+import 'package:todos/domain/models/todo.dart';
+import 'package:todos/domain/models/todo_step.dart';
 
 abstract class ITodosRepository {
   Future<void> addBranch(Branch branch);

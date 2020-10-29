@@ -1,6 +1,6 @@
-import 'package:todos/data/repositories/todos_repository/models/branch.dart';
-import 'package:todos/data/repositories/todos_repository/models/todo.dart';
-import 'package:todos/data/repositories/todos_repository/repositories/i_todos_repository.dart';
+import 'package:todos/domain/models/branch.dart';
+import 'package:todos/domain/models/todo.dart';
+import 'package:todos/domain/repositories/i_todos_repository.dart';
 
 class TodosInteractor {
   final ITodosRepository _repository;

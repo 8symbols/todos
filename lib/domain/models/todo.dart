@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
-import 'package:todos/data/repositories/todos_repository/models/todo_priority.dart';
-import 'package:todos/data/repositories/todos_repository/models/todo_theme.dart';
+import 'package:todos/domain/models/todo_priority.dart';
+import 'package:todos/domain/models/todo_theme.dart';
 import 'package:uuid/uuid.dart';
 
 class Todo {

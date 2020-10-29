@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todos/data/repositories/todos_repository/models/todo.dart';
-import 'package:todos/data/repositories/todos_repository/repositories/i_todos_repository.dart';
+import 'package:todos/domain/models/todo.dart';
+import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/todos_list/bloc/todos_list_bloc.dart';
 
 class TodosListScreen extends StatelessWidget {
