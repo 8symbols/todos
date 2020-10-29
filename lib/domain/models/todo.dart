@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:todos/domain/models/todo_priority.dart';
 import 'package:todos/domain/models/todo_theme.dart';
 import 'package:uuid/uuid.dart';
@@ -24,23 +23,23 @@ class Todo {
 
   final TodoTheme theme;
 
-  Todo({
+  Todo(
+    this.title, {
     String id,
-    bool isFavorite,
-    bool wasCompleted,
+    this.isFavorite = false,
+    this.wasCompleted = false,
     DateTime creationTime,
-    TodoPriority priority,
+    this.priority = TodoPriority.medium,
     this.theme,
     this.notes,
     this.deadlineTime,
     this.notificationTime,
-    @required this.title,
   })  : id = id ?? Uuid().v4(),
-        isFavorite = isFavorite ?? false,
-        wasCompleted = wasCompleted ?? false,
         creationTime = creationTime ?? DateTime.now(),
-        priority = priority ?? TodoPriority.medium,
-        assert(title != null);
+        assert(title != null),
+        assert(isFavorite != null),
+        assert(wasCompleted != null),
+        assert(priority != null);
 
   Todo copyWith({
     String id,
@@ -55,6 +54,7 @@ class Todo {
     String title,
   }) {
     return Todo(
+      title ?? this.title,
       id: id ?? this.id,
       isFavorite: isFavorite ?? this.isFavorite,
       wasCompleted: wasCompleted ?? this.wasCompleted,
@@ -64,7 +64,6 @@ class Todo {
       notes: notes ?? this.notes,
       deadlineTime: deadlineTime ?? this.deadlineTime,
       notificationTime: notificationTime ?? this.notificationTime,
-      title: title ?? this.title,
     );
   }
 }

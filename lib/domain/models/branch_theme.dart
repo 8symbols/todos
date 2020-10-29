@@ -5,5 +5,7 @@ class BranchTheme {
 
   final Color secondaryColor;
 
-  BranchTheme(this.primaryColor, this.secondaryColor);
+  const BranchTheme(this.primaryColor, this.secondaryColor)
+      : assert(primaryColor != null),
+        assert(secondaryColor != null);
 }

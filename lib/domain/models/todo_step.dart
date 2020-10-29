@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
 class TodoStep {
@@ -6,21 +5,21 @@ class TodoStep {
 
   final bool wasCompleted;
 
-  final String body;
+  final String title;
 
-  TodoStep({
+  TodoStep(
+    this.title, {
     String id,
-    bool wasCompleted,
-    @required this.body,
+    this.wasCompleted = false,
   })  : id = id ?? Uuid().v4(),
-        wasCompleted = wasCompleted ?? false,
-        assert(body != null);
+        assert(title != null),
+        assert(wasCompleted != null);
 
-  TodoStep copyWith({String id, bool wasCompleted, String body}) {
+  TodoStep copyWith({String id, bool wasCompleted, String title}) {
     return TodoStep(
+      title ?? this.title,
       id: id ?? this.id,
       wasCompleted: wasCompleted ?? this.wasCompleted,
-      body: body ?? this.body,
     );
   }
 }

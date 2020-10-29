@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:uuid/uuid.dart';
 
@@ -10,19 +9,19 @@ class Branch {
 
   final BranchTheme theme;
 
-  Branch({
+  Branch(
+    this.title, {
     String id,
-    BranchTheme theme,
-    @required this.title,
+    this.theme = const BranchTheme(Color(0xFF6202EE), Color(0xFFB5C9FD)),
   })  : id = id ?? Uuid().v4(),
-        theme = theme ?? BranchTheme(Color(0xFF6202EE), Color(0xFFB5C9FD)),
-        assert(title != null);
+        assert(title != null),
+        assert(theme != null);
 
   Branch copyWith({String id, BranchTheme theme, String title}) {
     return Branch(
+      title ?? this.title,
       id: id ?? this.id,
       theme: theme ?? this.theme,
-      title: title ?? this.title,
     );
   }
 }

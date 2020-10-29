@@ -77,7 +77,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       var branchId = this.branchId;
       if (branchId == null) {
         if ((await _todosInteractor.getBranches()).isEmpty) {
-          await _todosInteractor.addBranch(Branch(title: 'branch'));
+          await _todosInteractor.addBranch(Branch('branch'));
         }
         branchId = (await _todosInteractor.getBranches())[0].id;
       }

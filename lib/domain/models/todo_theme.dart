@@ -1,5 +1,5 @@
 class TodoTheme {
   final String imagePath;
 
-  TodoTheme(this.imagePath);
+  TodoTheme(this.imagePath) : assert(imagePath != null);
 }

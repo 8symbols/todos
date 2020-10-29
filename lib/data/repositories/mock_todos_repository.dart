@@ -22,21 +22,21 @@ class MockTodosRepository implements ITodosRepository {
   void prepopulateRepository() {
     for (var i = 0; i < 3; ++i) {
       final id = Uuid().v4();
-      final branch = Branch(id: id, title: id);
+      final branch = Branch(id, id: id);
       addBranch(branch);
     }
 
     final branchesIds = _branches.keys.toList();
     for (var i = 0; i < 20; ++i) {
       final id = Uuid().v4();
-      final todo = Todo(id: id, title: id);
+      final todo = Todo(id, id: id);
       addTodo(branchesIds[i % branchesIds.length], todo);
     }
 
     final todosIds = _todos.keys.toList();
     for (var i = 0; i < 50; ++i) {
       final id = Uuid().v4();
-      final step = TodoStep(id: id, body: id);
+      final step = TodoStep(id, id: id);
       addStep(todosIds[i % todosIds.length], step);
     }
   }

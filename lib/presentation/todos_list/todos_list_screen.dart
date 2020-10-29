@@ -65,7 +65,7 @@ class _TodosListFab extends StatelessWidget {
                   onPressed: () {
                     context
                         .bloc<TodosListBloc>()
-                        .add(TodoAddedEvent(Todo(title: 'todo')));
+                        .add(TodoAddedEvent(Todo('todo')));
                   },
                 ),
               ),
