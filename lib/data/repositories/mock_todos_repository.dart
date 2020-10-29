@@ -1,5 +1,5 @@
 import 'package:todos/domain/models/branch.dart';
-import 'package:todos/domain/models/image.dart';
+import 'package:todos/domain/models/todo_image.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -9,7 +9,7 @@ class MockTodosRepository implements ITodosRepository {
   final _branches = <String, Branch>{};
   final _todos = <String, Todo>{};
   final _steps = <String, TodoStep>{};
-  final _images = <String, Image>{};
+  final _images = <String, TodoImage>{};
 
   final _branchesTodos = <String, Set<String>>{};
   final _todosSteps = <String, Set<String>>{};
@@ -48,7 +48,7 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> addImage(String todoId, Image image) async {
+  Future<void> addImage(String todoId, TodoImage image) async {
     _images[image.id] = image;
     _todosImages[todoId].add(image.id);
   }
@@ -117,7 +117,7 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> editImage(String imageId, Image image) async {
+  Future<void> editImage(String imageId, TodoImage image) async {
     _images[imageId] = image;
   }
 
@@ -142,12 +142,12 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<Image> getImage(String imageId) async {
+  Future<TodoImage> getImage(String imageId) async {
     return _images[imageId];
   }
 
   @override
-  Future<List<Image>> getImages({String todoId}) async {
+  Future<List<TodoImage>> getImages({String todoId}) async {
     if (todoId == null) {
       return _images.values.toList();
     }
