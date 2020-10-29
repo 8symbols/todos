@@ -1,14 +1,14 @@
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
-class Step {
+class TodoStep {
   final String id;
 
   final bool wasCompleted;
 
   final String body;
 
-  Step({
+  TodoStep({
     String id,
     bool wasCompleted,
     @required this.body,
@@ -16,8 +16,8 @@ class Step {
         wasCompleted = wasCompleted ?? false,
         assert(body != null);
 
-  Step copyWith({String id, bool wasCompleted, String body}) {
-    return Step(
+  TodoStep copyWith({String id, bool wasCompleted, String body}) {
+    return TodoStep(
       id: id ?? this.id,
       wasCompleted: wasCompleted ?? this.wasCompleted,
       body: body ?? this.body,

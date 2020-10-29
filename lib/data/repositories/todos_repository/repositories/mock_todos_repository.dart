@@ -1,6 +1,6 @@
 import 'package:todos/data/repositories/todos_repository/models/branch.dart';
 import 'package:todos/data/repositories/todos_repository/models/image.dart';
-import 'package:todos/data/repositories/todos_repository/models/step.dart';
+import 'package:todos/data/repositories/todos_repository/models/todo_step.dart';
 import 'package:todos/data/repositories/todos_repository/models/todo.dart';
 import 'package:todos/data/repositories/todos_repository/repositories/i_todos_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -8,7 +8,7 @@ import 'package:uuid/uuid.dart';
 class MockTodosRepository implements ITodosRepository {
   final _branches = <String, Branch>{};
   final _todos = <String, Todo>{};
-  final _steps = <String, Step>{};
+  final _steps = <String, TodoStep>{};
   final _images = <String, Image>{};
 
   final _branchesTodos = <String, Set<String>>{};
@@ -36,7 +36,7 @@ class MockTodosRepository implements ITodosRepository {
     final todosIds = _todos.keys.toList();
     for (var i = 0; i < 50; ++i) {
       final id = Uuid().v4();
-      final step = Step(id: id, body: id);
+      final step = TodoStep(id: id, body: id);
       addStep(todosIds[i % todosIds.length], step);
     }
   }
@@ -54,7 +54,7 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> addStep(String todoId, Step step) async {
+  Future<void> addStep(String todoId, TodoStep step) async {
     _steps[step.id] = step;
     _todosSteps[todoId].add(step.id);
   }
@@ -122,7 +122,7 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> editStep(String stepId, Step step) async {
+  Future<void> editStep(String stepId, TodoStep step) async {
     _steps[stepId] = step;
   }
 
@@ -155,12 +155,12 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<Step> getStep(String stepId) async {
+  Future<TodoStep> getStep(String stepId) async {
     return _steps[stepId];
   }
 
   @override
-  Future<List<Step>> getSteps({String todoId}) async {
+  Future<List<TodoStep>> getSteps({String todoId}) async {
     if (todoId == null) {
       return _steps.values.toList();
     }

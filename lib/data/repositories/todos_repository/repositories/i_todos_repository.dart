@@ -1,6 +1,6 @@
 import 'package:todos/data/repositories/todos_repository/models/branch.dart';
 import 'package:todos/data/repositories/todos_repository/models/image.dart';
-import 'package:todos/data/repositories/todos_repository/models/step.dart';
+import 'package:todos/data/repositories/todos_repository/models/todo_step.dart';
 import 'package:todos/data/repositories/todos_repository/models/todo.dart';
 
 abstract class ITodosRepository {
@@ -24,15 +24,15 @@ abstract class ITodosRepository {
 
   Future<List<Todo>> getTodos({String branchId});
 
-  Future<void> addStep(String todoId, Step step);
+  Future<void> addStep(String todoId, TodoStep step);
 
-  Future<void> editStep(String stepId, Step step);
+  Future<void> editStep(String stepId, TodoStep step);
 
   Future<void> deleteStep(String stepId);
 
-  Future<Step> getStep(String stepId);
+  Future<TodoStep> getStep(String stepId);
 
-  Future<List<Step>> getSteps({String todoId});
+  Future<List<TodoStep>> getSteps({String todoId});
 
   Future<void> addImage(String todoId, Image image);
 
