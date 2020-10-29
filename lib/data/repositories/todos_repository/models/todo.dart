@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart' as m;
 import 'package:meta/meta.dart';
-import 'package:todos/data/repositories/todos_repository/models/theme.dart';
 import 'package:todos/data/repositories/todos_repository/models/todo_priority.dart';
+import 'package:todos/data/repositories/todos_repository/models/todo_theme.dart';
 import 'package:uuid/uuid.dart';
 
 class Todo {
@@ -23,7 +22,7 @@ class Todo {
 
   final TodoPriority priority;
 
-  final Theme theme;
+  final TodoTheme theme;
 
   Todo({
     String id,
@@ -31,7 +30,7 @@ class Todo {
     bool wasCompleted,
     DateTime creationTime,
     TodoPriority priority,
-    Theme theme,
+    this.theme,
     this.notes,
     this.deadlineTime,
     this.notificationTime,
@@ -41,7 +40,6 @@ class Todo {
         wasCompleted = wasCompleted ?? false,
         creationTime = creationTime ?? DateTime.now(),
         priority = priority ?? TodoPriority.medium,
-        theme = theme ?? ColorTheme(m.Colors.amber),
         assert(title != null);
 
   Todo copyWith({
@@ -50,7 +48,7 @@ class Todo {
     bool wasCompleted,
     DateTime creationTime,
     TodoPriority priority,
-    Theme theme,
+    TodoTheme theme,
     String notes,
     DateTime deadlineTime,
     DateTime notificationTime,

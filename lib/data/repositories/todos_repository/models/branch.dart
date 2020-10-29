@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart' as m;
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'package:todos/data/repositories/todos_repository/models/theme.dart';
+import 'package:todos/data/repositories/todos_repository/models/branch_theme.dart';
 import 'package:uuid/uuid.dart';
 
 class Branch {
@@ -8,17 +8,17 @@ class Branch {
 
   final String title;
 
-  final ColorTheme theme;
+  final BranchTheme theme;
 
   Branch({
     String id,
-    Theme theme,
+    BranchTheme theme,
     @required this.title,
   })  : id = id ?? Uuid().v4(),
-        theme = theme ?? ColorTheme(m.Colors.amber),
+        theme = theme ?? BranchTheme(Color(0xFF6202EE), Color(0xFFB5C9FD)),
         assert(title != null);
 
-  Branch copyWith({String id, Theme theme, String title}) {
+  Branch copyWith({String id, BranchTheme theme, String title}) {
     return Branch(
       id: id ?? this.id,
       theme: theme ?? this.theme,
