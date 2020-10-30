@@ -76,6 +76,7 @@ class _Todo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      key: ValueKey(todo.id),
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
