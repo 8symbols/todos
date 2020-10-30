@@ -11,7 +11,7 @@ class TodoListScreen extends StatelessWidget {
   final ITodosRepository _todosRepository;
   final String branchId;
 
-  bool get areTodosFromSameBranch => branchId == null;
+  bool get areTodosFromSameBranch => branchId != null;
 
   TodoListScreen(this._todosRepository, {this.branchId});
 
