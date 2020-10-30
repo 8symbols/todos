@@ -35,11 +35,9 @@ class TodosListScreen extends StatelessWidget {
                   : SizedBox.shrink(),
         ),
         body: BlocBuilder<TodosListBloc, TodosListState>(
-          buildWhen: (previous, current) =>
-              previous.runtimeType != current.runtimeType,
           builder: (context, state) => state is TodosListLoadingState
               ? const Center(child: CircularProgressIndicator())
-              : _TodosList(),
+              : _TodosList(state.todos),
         ),
       ),
     );
@@ -51,23 +49,22 @@ class TodosListScreen extends StatelessWidget {
 }
 
 class _TodosList extends StatelessWidget {
+  final List<Todo> todos;
+
+  _TodosList(this.todos);
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TodosListBloc, TodosListState>(
-      builder: (context, state) {
-        const kEmptySpaceForFabHeight = 88.0;
+    const kEmptySpaceForFabHeight = 88.0;
 
-        final todos = (state as TodosListUsingState).todos;
-        return todos.isEmpty
-            ? const Center(child: Text('Нет элементов'))
-            : ListView(
-                children: [
-                  ...todos.map((e) => _Todo(e)).toList(),
-                  const SizedBox(height: kEmptySpaceForFabHeight),
-                ],
-              );
-      },
-    );
+    return todos.isEmpty
+        ? const Center(child: Text('Нет элементов'))
+        : ListView(
+            children: [
+              ...todos.map((e) => _Todo(e)).toList(),
+              const SizedBox(height: kEmptySpaceForFabHeight),
+            ],
+          );
   }
 }
 

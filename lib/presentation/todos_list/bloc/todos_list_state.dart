@@ -1,12 +1,16 @@
 part of 'todos_list_bloc.dart';
 
 @immutable
-abstract class TodosListState {}
-
-class TodosListLoadingState extends TodosListState {}
-
-class TodosListUsingState extends TodosListState {
+abstract class TodosListState {
   final List<Todo> todos;
 
-  TodosListUsingState(this.todos);
+  TodosListState(this.todos);
+}
+
+class TodosListLoadingState extends TodosListState {
+  TodosListLoadingState() : super(null);
+}
+
+class TodosListUsingState extends TodosListState {
+  TodosListUsingState(List<Todo> todos) : super(todos);
 }

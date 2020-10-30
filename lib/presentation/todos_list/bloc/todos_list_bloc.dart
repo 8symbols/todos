@@ -18,7 +18,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       : _todosInteractor = TodosInteractor(todosRepository),
         super(TodosListLoadingState()) {
     _todosInteractor
-        .getTodos()
+        .getTodos(branchId: branchId)
         .then((todos) => add(TodosListLoadedEvent(todos)));
   }
 
@@ -47,10 +47,8 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       TodoDeletedEvent event) async* {
     if (state is TodosListUsingState) {
       await _todosInteractor.deleteTodo(event.todoId);
-      final currentState = state as TodosListUsingState;
-      final currentTodos = currentState.todos;
-      final newTodos = currentTodos.where((e) => e.id != event.todoId).toList();
-      yield TodosListUsingState(newTodos);
+      final todos = await _todosInteractor.getTodos(branchId: branchId);
+      yield TodosListUsingState(todos);
     }
   }
 
@@ -58,13 +56,8 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       TodoEditedEvent event) async* {
     if (state is TodosListUsingState) {
       await _todosInteractor.editTodo(event.todoId, event.todo);
-      final currentState = state as TodosListUsingState;
-      final currentTodos = currentState.todos;
-      final newTodos = currentTodos
-          .map((e) =>
-              e.id == event.todoId ? event.todo.copyWith(id: event.todoId) : e)
-          .toList();
-      yield TodosListUsingState(newTodos);
+      final todos = await _todosInteractor.getTodos(branchId: branchId);
+      yield TodosListUsingState(todos);
     }
   }
 
@@ -72,18 +65,16 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       TodoAddedEvent event) async* {
     if (state is TodosListUsingState) {
       // TODO: Убрать заглушку branchId после реализации веток.
-      var branchId = this.branchId;
-      if (branchId == null) {
+      var mockBranchId = branchId;
+      if (mockBranchId == null) {
         if ((await _todosInteractor.getBranches()).isEmpty) {
           await _todosInteractor.addBranch(Branch('branch'));
         }
-        branchId = (await _todosInteractor.getBranches())[0].id;
+        mockBranchId = (await _todosInteractor.getBranches())[0].id;
       }
-      await _todosInteractor.addTodo(branchId, event.todo);
-      final currentState = state as TodosListUsingState;
-      final currentTodos = currentState.todos;
-      final newTodos = List<Todo>.from(currentTodos)..add(event.todo);
-      yield TodosListUsingState(newTodos);
+      await _todosInteractor.addTodo(mockBranchId, event.todo);
+      final todos = await _todosInteractor.getTodos(branchId: branchId);
+      yield TodosListUsingState(todos);
     }
   }
 }
