@@ -34,8 +34,6 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       yield* _mapTodoEditedEventToState(event);
     } else if (event is TodoAddedEvent) {
       yield* _mapTodoAddedEventToState(event);
-    } else if (event is ShouldShowFabChangedEvent) {
-      yield* _mapShouldShowFabChangedEventToState(event);
     }
   }
 
@@ -52,7 +50,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       final currentState = state as TodosListUsingState;
       final currentTodos = currentState.todos;
       final newTodos = currentTodos.where((e) => e.id != event.todoId).toList();
-      yield currentState.copyWith(todos: newTodos);
+      yield TodosListUsingState(newTodos);
     }
   }
 
@@ -66,7 +64,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
           .map((e) =>
               e.id == event.todoId ? event.todo.copyWith(id: event.todoId) : e)
           .toList();
-      yield currentState.copyWith(todos: newTodos);
+      yield TodosListUsingState(newTodos);
     }
   }
 
@@ -85,16 +83,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
       final currentState = state as TodosListUsingState;
       final currentTodos = currentState.todos;
       final newTodos = List<Todo>.from(currentTodos)..add(event.todo);
-      yield currentState.copyWith(todos: newTodos);
-    }
-  }
-
-  Stream<TodosListState> _mapShouldShowFabChangedEventToState(
-    ShouldShowFabChangedEvent event,
-  ) async* {
-    if (state is TodosListUsingState) {
-      final currentState = state as TodosListUsingState;
-      yield currentState.copyWith(shouldShowFAB: event.shouldShowFab);
+      yield TodosListUsingState(newTodos);
     }
   }
 }

@@ -11,6 +11,8 @@ class TodosListScreen extends StatelessWidget {
   final ITodosRepository _todosRepository;
   final String branchId;
 
+  bool get areTodosFromSameBranch => branchId == null;
+
   TodosListScreen(this._todosRepository, {this.branchId});
 
   @override
@@ -24,9 +26,13 @@ class TodosListScreen extends StatelessWidget {
         floatingActionButton: BlocBuilder<TodosListBloc, TodosListState>(
           buildWhen: (previous, current) =>
               previous.runtimeType != current.runtimeType,
-          builder: (context, state) => state is TodosListUsingState
-              ? _TodosListFab()
-              : SizedBox.shrink(),
+          builder: (context, state) =>
+              areTodosFromSameBranch && state is TodosListUsingState
+                  ? FloatingActionButton(
+                      child: const Icon(Icons.add),
+                      onPressed: () => _addTodo(context),
+                    )
+                  : SizedBox.shrink(),
         ),
         body: BlocBuilder<TodosListBloc, TodosListState>(
           buildWhen: (previous, current) =>
@@ -38,42 +44,9 @@ class TodosListScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-class _TodosListFab extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TodosListBloc, TodosListState>(
-      buildWhen: (previous, current) =>
-          (previous as TodosListUsingState).shouldShowFAB !=
-          (current as TodosListUsingState).shouldShowFAB,
-      builder: (context, state) {
-        const kFabSize = 56.0;
-        final shouldShow = (state as TodosListUsingState).shouldShowFAB;
-        final endSize = shouldShow ? kFabSize : 0.0;
-
-        return TweenAnimationBuilder(
-          tween: Tween<double>(begin: kFabSize, end: endSize),
-          duration: const Duration(milliseconds: 250),
-          builder: (BuildContext context, double size, Widget child) {
-            return Container(
-              width: size,
-              height: size,
-              child: FittedBox(
-                child: FloatingActionButton(
-                  child: Icon(Icons.add),
-                  onPressed: () {
-                    context
-                        .bloc<TodosListBloc>()
-                        .add(TodoAddedEvent(Todo('todo')));
-                  },
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+  void _addTodo(BuildContext context) {
+    context.bloc<TodosListBloc>().add(TodoAddedEvent(Todo('todo')));
   }
 }
 
@@ -81,61 +54,19 @@ class _TodosList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TodosListBloc, TodosListState>(
-      buildWhen: (previous, current) =>
-          (previous as TodosListUsingState).todos !=
-          (current as TodosListUsingState).todos,
       builder: (context, state) {
+        const kEmptySpaceForFabHeight = 88.0;
+
         final todos = (state as TodosListUsingState).todos;
         return todos.isEmpty
             ? const Center(child: Text('Нет элементов'))
-            : _TodosListNotEmpty(todos.map((e) => _Todo(e)).toList());
+            : ListView(
+                children: [
+                  ...todos.map((e) => _Todo(e)).toList(),
+                  const SizedBox(height: kEmptySpaceForFabHeight),
+                ],
+              );
       },
-    );
-  }
-}
-
-class _TodosListNotEmpty extends StatefulWidget {
-  final List<_Todo> todos;
-
-  _TodosListNotEmpty(this.todos);
-
-  @override
-  __TodosListNotEmptyState createState() => __TodosListNotEmptyState();
-}
-
-class __TodosListNotEmptyState extends State<_TodosListNotEmpty> {
-  ScrollController _controller;
-
-  void _scrollListener() {
-    // TODO: Доработать логику необходимости отображения.
-    final direction = _controller.position.userScrollDirection;
-    if (direction == ScrollDirection.reverse) {
-      context.bloc<TodosListBloc>().add(ShouldShowFabChangedEvent(false));
-    } else if (direction == ScrollDirection.forward) {
-      context.bloc<TodosListBloc>().add(ShouldShowFabChangedEvent(true));
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = ScrollController();
-    _controller.addListener(_scrollListener);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: _controller,
-      child: Column(
-        children: widget.todos,
-      ),
     );
   }
 }

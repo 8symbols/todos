@@ -28,9 +28,3 @@ class TodoAddedEvent extends TodosListEvent {
 
   TodoAddedEvent(this.todo);
 }
-
-class ShouldShowFabChangedEvent extends TodosListEvent {
-  final bool shouldShowFab;
-
-  ShouldShowFabChangedEvent(this.shouldShowFab);
-}
