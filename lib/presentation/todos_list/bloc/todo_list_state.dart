@@ -1,23 +1,23 @@
-part of 'todos_list_bloc.dart';
+part of 'todo_list_bloc.dart';
 
 @immutable
-abstract class TodosListState {
+abstract class TodoListState {
   /// Список задач.
   ///
   /// Может быть равен null.
   final List<Todo> todos;
 
-  TodosListState(this.todos);
+  TodoListState(this.todos);
 }
 
 /// Состояние загрузки списка задач.
-class TodosListLoadingState extends TodosListState {
+class TodosListLoadingState extends TodoListState {
   /// Создает состояние и устанавливает null в [todos].
   TodosListLoadingState() : super(null);
 }
 
 /// Состояние работы со списком задач.
-class TodosListUsingState extends TodosListState {
+class TodosListUsingState extends TodoListState {
   /// Создает состояние со списком задач [todos].
   TodosListUsingState(List<Todo> todos) : super(todos);
 }

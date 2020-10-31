@@ -7,11 +7,11 @@ import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 
-part 'todos_list_event.dart';
-part 'todos_list_state.dart';
+part 'todo_list_event.dart';
+part 'todo_list_state.dart';
 
 /// BLoC, управляющий состоянием списка задач.
-class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
+class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   /// Интерактор для взаимодействия с задачами.
   final TodosInteractor _todosInteractor;
 
@@ -21,7 +21,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
   final String branchId;
 
   /// Создает BLoC и загружает список задач.
-  TodosListBloc(ITodosRepository todosRepository, {this.branchId})
+  TodoListBloc(ITodosRepository todosRepository, {this.branchId})
       : _todosInteractor = TodosInteractor(todosRepository),
         super(TodosListLoadingState()) {
     _todosInteractor
@@ -30,8 +30,8 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
   }
 
   @override
-  Stream<TodosListState> mapEventToState(
-    TodosListEvent event,
+  Stream<TodoListState> mapEventToState(
+    TodoListEvent event,
   ) async* {
     if (event is TodosListLoadedEvent) {
       yield* _mapTodosListLoadedEventToState(event);
@@ -44,13 +44,13 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
     }
   }
 
-  Stream<TodosListState> _mapTodosListLoadedEventToState(
+  Stream<TodoListState> _mapTodosListLoadedEventToState(
     TodosListLoadedEvent event,
   ) async* {
     yield TodosListUsingState(event.todos);
   }
 
-  Stream<TodosListState> _mapTodoDeletedEventToState(
+  Stream<TodoListState> _mapTodoDeletedEventToState(
       TodoDeletedEvent event) async* {
     if (state is TodosListUsingState) {
       await _todosInteractor.deleteTodo(event.todoId);
@@ -59,7 +59,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
     }
   }
 
-  Stream<TodosListState> _mapTodoEditedEventToState(
+  Stream<TodoListState> _mapTodoEditedEventToState(
       TodoEditedEvent event) async* {
     if (state is TodosListUsingState) {
       await _todosInteractor.editTodo(event.todo);
@@ -68,8 +68,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
     }
   }
 
-  Stream<TodosListState> _mapTodoAddedEventToState(
-      TodoAddedEvent event) async* {
+  Stream<TodoListState> _mapTodoAddedEventToState(TodoAddedEvent event) async* {
     if (state is TodosListUsingState) {
       // TODO: Убрать заглушку branchId после реализации веток.
       var mockBranchId = branchId;

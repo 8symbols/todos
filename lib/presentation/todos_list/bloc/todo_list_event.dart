@@ -1,10 +1,10 @@
-part of 'todos_list_bloc.dart';
+part of 'todo_list_bloc.dart';
 
 @immutable
-abstract class TodosListEvent {}
+abstract class TodoListEvent {}
 
 /// Событие окончания загрузки списка задач.
-class TodosListLoadedEvent extends TodosListEvent {
+class TodosListLoadedEvent extends TodoListEvent {
   /// Загруженный список задач.
   final List<Todo> todos;
 
@@ -12,7 +12,7 @@ class TodosListLoadedEvent extends TodosListEvent {
 }
 
 /// Событие удаления задачи.
-class TodoDeletedEvent extends TodosListEvent {
+class TodoDeletedEvent extends TodoListEvent {
   /// Идентификатор удаленной задачи.
   final String todoId;
 
@@ -20,7 +20,7 @@ class TodoDeletedEvent extends TodosListEvent {
 }
 
 /// Событие изменения задачи.
-class TodoEditedEvent extends TodosListEvent {
+class TodoEditedEvent extends TodoListEvent {
   /// Измененная задача.
   final Todo todo;
 
@@ -28,7 +28,7 @@ class TodoEditedEvent extends TodosListEvent {
 }
 
 /// Событие добавления задачи.
-class TodoAddedEvent extends TodosListEvent {
+class TodoAddedEvent extends TodoListEvent {
   /// Добавленная задача.
   final Todo todo;
 

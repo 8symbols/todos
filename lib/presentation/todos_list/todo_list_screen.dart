@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
-import 'package:todos/presentation/todos_list/bloc/todos_list_bloc.dart';
+import 'package:todos/presentation/todos_list/bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/todo_list.dart';
 
 /// Экран списка задач.
@@ -25,13 +25,13 @@ class TodoListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TodosListBloc>(
-      create: (context) => TodosListBloc(_todosRepository, branchId: branchId),
+    return BlocProvider<TodoListBloc>(
+      create: (context) => TodoListBloc(_todosRepository, branchId: branchId),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Задачи'),
         ),
-        floatingActionButton: BlocBuilder<TodosListBloc, TodosListState>(
+        floatingActionButton: BlocBuilder<TodoListBloc, TodoListState>(
           buildWhen: (previous, current) =>
               previous.runtimeType != current.runtimeType,
           builder: (context, state) =>
@@ -42,7 +42,7 @@ class TodoListScreen extends StatelessWidget {
                     )
                   : SizedBox.shrink(),
         ),
-        body: BlocBuilder<TodosListBloc, TodosListState>(
+        body: BlocBuilder<TodoListBloc, TodoListState>(
           builder: (context, state) => state is TodosListLoadingState
               ? const Center(child: CircularProgressIndicator())
               : TodoList(state.todos),
@@ -52,6 +52,6 @@ class TodoListScreen extends StatelessWidget {
   }
 
   void _addTodo(BuildContext context) {
-    context.bloc<TodosListBloc>().add(TodoAddedEvent(Todo('todo')));
+    context.bloc<TodoListBloc>().add(TodoAddedEvent(Todo('todo')));
   }
 }

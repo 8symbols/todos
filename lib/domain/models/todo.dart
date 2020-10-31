@@ -19,7 +19,7 @@ class Todo {
   /// Комментарии к задаче.
   ///
   /// Может быть равным null.
-  final String notes;
+  final String note;
 
   /// Дедлайн задачи.
   ///
@@ -55,7 +55,7 @@ class Todo {
     this.wasCompleted = false,
     this.priority = TodoPriority.medium,
     this.themeImagePath,
-    this.notes,
+    this.note,
     this.deadlineTime,
     this.notificationTime,
   })  : id = id ?? Uuid().v4(),
@@ -85,7 +85,7 @@ class Todo {
       creationTime: creationTime ?? this.creationTime,
       priority: priority ?? this.priority,
       themeImagePath: themeImagePath ?? this.themeImagePath,
-      notes: notes ?? this.notes,
+      note: notes ?? this.note,
       deadlineTime: deadlineTime ?? this.deadlineTime,
       notificationTime: notificationTime ?? this.notificationTime,
     );
