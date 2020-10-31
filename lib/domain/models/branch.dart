@@ -2,13 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:uuid/uuid.dart';
 
+/// Модель ветки задач.
 class Branch {
+  /// Уникальный идентификатор ветки.
   final String id;
 
+  /// Название ветки.
   final String title;
 
+  /// Тема ветки.
   final BranchTheme theme;
 
+  /// Создает ветку.
+  ///
+  /// Если не указан [id], то генерируется новый идентификатор.
+  /// Если не указана тема [theme], то используется стандартная.
   Branch(
     this.title, {
     String id,

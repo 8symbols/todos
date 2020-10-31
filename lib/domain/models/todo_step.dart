@@ -1,12 +1,19 @@
 import 'package:uuid/uuid.dart';
 
+/// Модель пункта задачи.
 class TodoStep {
+  /// Уникальный идентификатор пункта.
   final String id;
 
+  /// Флаг, сигнализирующий о том, является ли пункт выполненным.
   final bool wasCompleted;
 
+  /// Содержание пункта.
   final String title;
 
+  /// Создает пункт.
+  ///
+  /// Если не указан [id], то генерируется новый идентификатор.
   TodoStep(
     this.title, {
     String id,

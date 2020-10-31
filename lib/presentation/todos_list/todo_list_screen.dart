@@ -5,12 +5,20 @@ import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/todos_list/bloc/todos_list_bloc.dart';
 import 'package:todos/presentation/todos_list/todo_list.dart';
 
+/// Экран списка задач.
 class TodoListScreen extends StatelessWidget {
   static const routeName = '/todos_list';
 
+  /// Репозиторий для работы с задачами.
   final ITodosRepository _todosRepository;
+
+  /// Идентификатор ветки задач.
+  ///
+  /// Может быть равен null.
   final String branchId;
 
+  /// Флаг, сигнализирующий о том, все ли задачи из списка принадлежат
+  /// одной ветке.
   bool get areTodosFromSameBranch => branchId != null;
 
   TodoListScreen(this._todosRepository, {this.branchId});

@@ -4,6 +4,9 @@ import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:uuid/uuid.dart';
 
+/// Хранилище задач в оперативной памяти.
+///
+/// Используется для тестирования остальных частей приложения.
 class MockTodosRepository implements ITodosRepository {
   final _branches = <String, Branch>{};
   final _todos = <String, Todo>{};
@@ -13,10 +16,12 @@ class MockTodosRepository implements ITodosRepository {
   final _branchesTodos = <String, Set<String>>{};
   final _todosSteps = <String, Set<String>>{};
 
+  /// Создает хранилище с тестовыми данными.
   MockTodosRepository() {
     prepopulateRepository();
   }
 
+  /// Создает и добавляет в хранилище ветки, задачи и пункты.
   void prepopulateRepository() {
     for (var i = 0; i < 3; ++i) {
       final id = Uuid().v4();
@@ -46,7 +51,7 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> addImage(String todoId, String imagePath) async {
+  Future<void> addImagePath(String todoId, String imagePath) async {
     _todosImages[todoId].add(imagePath);
   }
 
@@ -75,7 +80,7 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> deleteImage(String todoId, String imagePath) async {
+  Future<void> deleteImagePath(String todoId, String imagePath) async {
     _todosImages[todoId].remove(imagePath);
   }
 
@@ -103,18 +108,18 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> editBranch(String branchId, Branch branch) async {
-    _branches[branchId] = branch;
+  Future<void> editBranch(Branch branch) async {
+    _branches[branch.id] = branch;
   }
 
   @override
-  Future<void> editStep(String stepId, TodoStep step) async {
-    _steps[stepId] = step;
+  Future<void> editStep(TodoStep step) async {
+    _steps[step.id] = step;
   }
 
   @override
-  Future<void> editTodo(String todoId, Todo todo) async {
-    _todos[todoId] = todo;
+  Future<void> editTodo(Todo todo) async {
+    _todos[todo.id] = todo;
   }
 
   @override

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/todos_list/todo_card.dart';
 
+/// Виджет для отображения списка задач.
 class TodoList extends StatelessWidget {
+  /// Список задач.
   final List<Todo> todos;
 
   TodoList(this.todos);

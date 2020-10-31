@@ -3,7 +3,9 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/todos_list/bloc/todos_list_bloc.dart';
 
+/// Виджет для отображения задачи в списке задач.
 class TodoCard extends StatelessWidget {
+  /// Задача.
   final Todo todo;
 
   TodoCard(this.todo);
@@ -21,9 +23,7 @@ class TodoCard extends StatelessWidget {
               value: todo.wasCompleted,
               onChanged: (newValue) {
                 final editedTodo = todo.copyWith(wasCompleted: newValue);
-                context
-                    .bloc<TodosListBloc>()
-                    .add(TodoEditedEvent(todo.id, editedTodo));
+                context.bloc<TodosListBloc>().add(TodoEditedEvent(editedTodo));
               },
             ),
             Expanded(child: Text(todo.title)),

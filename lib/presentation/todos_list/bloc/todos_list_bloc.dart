@@ -10,10 +10,17 @@ import 'package:todos/domain/repositories/i_todos_repository.dart';
 part 'todos_list_event.dart';
 part 'todos_list_state.dart';
 
+/// BLoC, управляющий состоянием списка задач.
 class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
+  /// Интерактор для взаимодействия с задачами.
   final TodosInteractor _todosInteractor;
+
+  /// Идентификатор ветки задач.
+  ///
+  /// Может быть равен null.
   final String branchId;
 
+  /// Создает BLoC и загружает список задач.
   TodosListBloc(ITodosRepository todosRepository, {this.branchId})
       : _todosInteractor = TodosInteractor(todosRepository),
         super(TodosListLoadingState()) {
@@ -55,7 +62,7 @@ class TodosListBloc extends Bloc<TodosListEvent, TodosListState> {
   Stream<TodosListState> _mapTodoEditedEventToState(
       TodoEditedEvent event) async* {
     if (state is TodosListUsingState) {
-      await _todosInteractor.editTodo(event.todoId, event.todo);
+      await _todosInteractor.editTodo(event.todo);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
       yield TodosListUsingState(todos);
     }
