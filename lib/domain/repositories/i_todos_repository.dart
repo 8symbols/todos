@@ -1,5 +1,4 @@
 import 'package:todos/domain/models/branch.dart';
-import 'package:todos/domain/models/todo_image.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
 
@@ -32,15 +31,11 @@ abstract class ITodosRepository {
 
   Future<TodoStep> getStep(String stepId);
 
-  Future<List<TodoStep>> getSteps({String todoId});
+  Future<List<TodoStep>> getSteps(String todoId);
 
-  Future<void> addImage(String todoId, TodoImage image);
+  Future<void> addImage(String todoId, String imagePath);
 
-  Future<void> editImage(String imageId, TodoImage image);
+  Future<void> deleteImage(String todoId, String imagePath);
 
-  Future<void> deleteImage(String imageId);
-
-  Future<TodoImage> getImage(String imageId);
-
-  Future<List<TodoImage>> getImages({String todoId});
+  Future<List<String>> getImagesPaths(String todoId);
 }

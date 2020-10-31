@@ -1,5 +1,4 @@
 import 'package:todos/domain/models/branch.dart';
-import 'package:todos/domain/models/todo_image.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -9,11 +8,10 @@ class MockTodosRepository implements ITodosRepository {
   final _branches = <String, Branch>{};
   final _todos = <String, Todo>{};
   final _steps = <String, TodoStep>{};
-  final _images = <String, TodoImage>{};
+  final _todosImages = <String, Set<String>>{};
 
   final _branchesTodos = <String, Set<String>>{};
   final _todosSteps = <String, Set<String>>{};
-  final _todosImages = <String, Set<String>>{};
 
   MockTodosRepository() {
     prepopulateRepository();
@@ -48,9 +46,8 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> addImage(String todoId, TodoImage image) async {
-    _images[image.id] = image;
-    _todosImages[todoId].add(image.id);
+  Future<void> addImage(String todoId, String imagePath) async {
+    _todosImages[todoId].add(imagePath);
   }
 
   @override
@@ -78,11 +75,8 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> deleteImage(String imageId) async {
-    _images.remove(imageId);
-    for (final images in _todosImages.values) {
-      images.remove(imageId);
-    }
+  Future<void> deleteImage(String todoId, String imagePath) async {
+    _todosImages[todoId].remove(imagePath);
   }
 
   @override
@@ -105,20 +99,12 @@ class MockTodosRepository implements ITodosRepository {
     }
     _todosSteps.remove(todoId);
 
-    for (final imageId in _todosImages[todoId]) {
-      _images.remove(imageId);
-    }
-    _images.remove(todoId);
+    _todosImages.remove(todoId);
   }
 
   @override
   Future<void> editBranch(String branchId, Branch branch) async {
     _branches[branchId] = branch;
-  }
-
-  @override
-  Future<void> editImage(String imageId, TodoImage image) async {
-    _images[imageId] = image;
   }
 
   @override
@@ -142,16 +128,8 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<TodoImage> getImage(String imageId) async {
-    return _images[imageId];
-  }
-
-  @override
-  Future<List<TodoImage>> getImages({String todoId}) async {
-    if (todoId == null) {
-      return _images.values.toList();
-    }
-    return _todosImages[todoId].map((e) => _images[e]).toList();
+  Future<List<String>> getImagesPaths(String todoId) async {
+    return _todosImages[todoId].toList();
   }
 
   @override
@@ -160,10 +138,7 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<List<TodoStep>> getSteps({String todoId}) async {
-    if (todoId == null) {
-      return _steps.values.toList();
-    }
+  Future<List<TodoStep>> getSteps(String todoId) async {
     return _todosSteps[todoId].map((e) => _steps[e]).toList();
   }
 

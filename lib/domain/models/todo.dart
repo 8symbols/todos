@@ -1,5 +1,4 @@
 import 'package:todos/domain/models/todo_priority.dart';
-import 'package:todos/domain/models/todo_theme.dart';
 import 'package:uuid/uuid.dart';
 
 class Todo {
@@ -21,7 +20,7 @@ class Todo {
 
   final TodoPriority priority;
 
-  final TodoTheme theme;
+  final String themeImagePath;
 
   Todo(
     this.title, {
@@ -30,7 +29,7 @@ class Todo {
     this.wasCompleted = false,
     DateTime creationTime,
     this.priority = TodoPriority.medium,
-    this.theme,
+    this.themeImagePath,
     this.notes,
     this.deadlineTime,
     this.notificationTime,
@@ -47,7 +46,7 @@ class Todo {
     bool wasCompleted,
     DateTime creationTime,
     TodoPriority priority,
-    TodoTheme theme,
+    String themeImagePath,
     String notes,
     DateTime deadlineTime,
     DateTime notificationTime,
@@ -60,7 +59,7 @@ class Todo {
       wasCompleted: wasCompleted ?? this.wasCompleted,
       creationTime: creationTime ?? this.creationTime,
       priority: priority ?? this.priority,
-      theme: theme ?? this.theme,
+      themeImagePath: themeImagePath ?? this.themeImagePath,
       notes: notes ?? this.notes,
       deadlineTime: deadlineTime ?? this.deadlineTime,
       notificationTime: notificationTime ?? this.notificationTime,
