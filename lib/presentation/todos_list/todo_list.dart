@@ -9,14 +9,14 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const kEmptySpaceForFabHeight = 88.0;
+    const emptySpaceForFabHeight = 88.0;
 
     return todos.isEmpty
         ? const Center(child: Text('Нет элементов'))
         : ListView(
             children: [
               ...todos.map((e) => TodoCard(e)).toList(),
-              const SizedBox(height: kEmptySpaceForFabHeight),
+              const SizedBox(height: emptySpaceForFabHeight),
             ],
           );
   }
