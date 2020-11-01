@@ -44,12 +44,14 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     }
   }
 
+  /// Устанавливает загруженные задачи в состояние.
   Stream<TodoListState> _mapTodosListLoadedEventToState(
     TodosListLoadedEvent event,
   ) async* {
     yield TodosListUsingState(event.todos);
   }
 
+  /// Удаляет задачу.
   Stream<TodoListState> _mapTodoDeletedEventToState(
     TodoDeletedEvent event,
   ) async* {
@@ -60,6 +62,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     }
   }
 
+  /// Изменяет задачу.
   Stream<TodoListState> _mapTodoEditedEventToState(
     TodoEditedEvent event,
   ) async* {
@@ -70,6 +73,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     }
   }
 
+  /// Добавляет задачу.
   Stream<TodoListState> _mapTodoAddedEventToState(
     TodoAddedEvent event,
   ) async* {
