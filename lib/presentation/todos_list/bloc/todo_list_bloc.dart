@@ -51,7 +51,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   }
 
   Stream<TodoListState> _mapTodoDeletedEventToState(
-      TodoDeletedEvent event) async* {
+    TodoDeletedEvent event,
+  ) async* {
     if (state is TodosListUsingState) {
       await _todosInteractor.deleteTodo(event.todoId);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
@@ -60,7 +61,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   }
 
   Stream<TodoListState> _mapTodoEditedEventToState(
-      TodoEditedEvent event) async* {
+    TodoEditedEvent event,
+  ) async* {
     if (state is TodosListUsingState) {
       await _todosInteractor.editTodo(event.todo);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
@@ -68,7 +70,9 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     }
   }
 
-  Stream<TodoListState> _mapTodoAddedEventToState(TodoAddedEvent event) async* {
+  Stream<TodoListState> _mapTodoAddedEventToState(
+    TodoAddedEvent event,
+  ) async* {
     if (state is TodosListUsingState) {
       // TODO: Убрать заглушку branchId после реализации веток.
       var mockBranchId = branchId;
