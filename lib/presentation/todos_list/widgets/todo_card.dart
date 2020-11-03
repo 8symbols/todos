@@ -45,10 +45,6 @@ class TodoCard extends StatelessWidget {
                     onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
               ),
               Expanded(child: _buildTodoData()),
-              IconButton(
-                icon: const Icon(Icons.delete_outline, color: Colors.red),
-                onPressed: onDelete,
-              ),
             ],
           ),
         ),
