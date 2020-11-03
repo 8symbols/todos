@@ -7,17 +7,22 @@ abstract class TodoListState {
   /// Может быть равен null.
   final List<TodoViewData> todos;
 
-  TodoListState(this.todos);
+  /// Флаг, сигнализирующий о том, убраны ли из списка выполненные задачи.
+  final bool areCompletedTodosVisible;
+
+  TodoListState(this.todos, this.areCompletedTodosVisible);
 }
 
 /// Состояние загрузки списка задач.
 class TodosListLoadingState extends TodoListState {
   /// Создает состояние и устанавливает null в [todos].
-  TodosListLoadingState() : super(null);
+  TodosListLoadingState(bool areCompletedTodosVisible)
+      : super(null, areCompletedTodosVisible);
 }
 
 /// Состояние работы со списком задач.
 class TodosListUsingState extends TodoListState {
   /// Создает состояние со списком задач [todos].
-  TodosListUsingState(List<TodoViewData> todos) : super(todos);
+  TodosListUsingState(List<TodoViewData> todos, areCompletedTodosVisible)
+      : super(todos, areCompletedTodosVisible);
 }

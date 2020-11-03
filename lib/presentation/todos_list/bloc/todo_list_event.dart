@@ -34,3 +34,22 @@ class TodoAddedEvent extends TodoListEvent {
 
   TodoAddedEvent(this.todo);
 }
+
+/// Событие скрытия или показа выполненных задач.
+class CompletedTodosVisibilityChangedEvent extends TodoListEvent {
+  /// Флаг, сигнализирующий о том, убраны ли из списка выполненные задачи.
+  final bool areCompletedTodosVisible;
+
+  CompletedTodosVisibilityChangedEvent(this.areCompletedTodosVisible);
+}
+
+/// Событие удаления выполненных задач.
+class CompletedTodosDeletedEvent extends TodoListEvent {}
+
+/// Событие изменения порядка сортировки задач.
+class TodosSortOrderChangedEvent extends TodoListEvent {
+  /// Порядок сортировки задач.
+  final TodosSortOrder sortOrder;
+
+  TodosSortOrderChangedEvent(this.sortOrder);
+}

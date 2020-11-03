@@ -5,6 +5,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/todos_list/bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list.dart';
+import 'package:todos/presentation/todos_list/widgets/todo_list_screen_menu_options.dart';
 
 /// Экран списка задач.
 class TodoListScreen extends StatelessWidget {
@@ -31,6 +32,7 @@ class TodoListScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Задачи'),
+          actions: [TodoListScreenMenuOptions()],
         ),
         floatingActionButton: BlocBuilder<TodoListBloc, TodoListState>(
           buildWhen: (previous, current) =>
