@@ -39,27 +39,6 @@ class TodoList extends StatelessWidget {
           );
   }
 
-  void _deleteTodo(BuildContext context, Todo todo) {
-    context.bloc<TodoListBloc>().add(TodoDeletedEvent(todo.id));
-
-    Scaffold.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('Задача "${todo.title}" удалена'),
-          action: SnackBarAction(
-            label: "Отменить",
-            onPressed: () =>
-                context.bloc<TodoListBloc>().add(TodoAddedEvent(todo)),
-          ),
-        ),
-      );
-  }
-
-  void _editTodo(BuildContext context, String todoId, Todo editedTodo) {
-    context.bloc<TodoListBloc>().add(TodoEditedEvent(editedTodo));
-  }
-
   Widget _buildEmptyList() {
     return Center(
       child: Column(
@@ -106,5 +85,26 @@ class TodoList extends StatelessWidget {
     return Wrap(
       children: [for (var i = 0; i < backgroundLinesCount; ++i) backgroundLine],
     );
+  }
+
+  void _deleteTodo(BuildContext context, Todo todo) {
+    context.bloc<TodoListBloc>().add(TodoDeletedEvent(todo.id));
+
+    Scaffold.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('Задача "${todo.title}" удалена'),
+          action: SnackBarAction(
+            label: "Отменить",
+            onPressed: () =>
+                context.bloc<TodoListBloc>().add(TodoAddedEvent(todo)),
+          ),
+        ),
+      );
+  }
+
+  void _editTodo(BuildContext context, String todoId, Todo editedTodo) {
+    context.bloc<TodoListBloc>().add(TodoEditedEvent(editedTodo));
   }
 }
