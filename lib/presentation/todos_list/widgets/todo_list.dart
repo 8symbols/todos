@@ -95,7 +95,7 @@ class TodoList extends StatelessWidget {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text('Задача "${todo.title}" удалена'),
+          content: Text('Задача "${todo.title}" удалена.'),
           action: SnackBarAction(
             label: "Отменить",
             onPressed: () =>

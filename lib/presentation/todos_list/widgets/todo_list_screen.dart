@@ -9,6 +9,7 @@ import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list_screen_menu_options.dart';
+import 'package:todos/presentation/widgets/create_todo_dialog.dart';
 
 /// Экран списка задач.
 class TodoListScreen extends StatefulWidget {
@@ -94,7 +95,35 @@ class _TodoListScreenState extends State<TodoListScreen> {
     );
   }
 
-  void _addTodo(BuildContext context) {
-    context.bloc<TodoListBloc>().add(TodoAddedEvent(Todo('todo')));
+  /// Создает диалог с созданием новой задачи.
+  void _addTodo(BuildContext context) async {
+    const maxTitleLength = 128;
+
+    final todo = await showDialog<Todo>(
+      context: context,
+      builder: (context) => CreateTodoDialog(maxTitleLength),
+    );
+
+    if (todo != null) {
+      if (todo.title.isEmpty || todo.title.length > maxTitleLength) {
+        await showDialog<Todo>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Ошибка'),
+            content: Text(todo.title.isEmpty
+                ? 'Название задачи отсутствует'
+                : 'Слишком длинное название'),
+            actions: [
+              FlatButton(
+                child: const Text('Ок'),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+          ),
+        );
+      } else {
+        context.bloc<TodoListBloc>().add(TodoAddedEvent(todo));
+      }
+    }
   }
 }
