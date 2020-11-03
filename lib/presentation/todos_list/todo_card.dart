@@ -18,24 +18,37 @@ class TodoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dismissibleBackground = Container(
+      color: Colors.red,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: const [Icon(Icons.delete), SizedBox(width: 12.0)],
+      ),
+    );
+
     return Card(
-      key: ValueKey(todo.id),
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Row(
-          children: [
-            Checkbox(
-              value: todo.wasCompleted,
-              onChanged: (newValue) =>
-                  onEdit(todo.copyWith(wasCompleted: newValue)),
-            ),
-            Expanded(child: Text(todo.title)),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: onDelete,
-            ),
-          ],
+      child: Dismissible(
+        key: Key(todo.id),
+        direction: DismissDirection.endToStart,
+        background: dismissibleBackground,
+        onDismissed: (direction) => onDelete(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            children: [
+              Checkbox(
+                value: todo.wasCompleted,
+                onChanged: (newValue) =>
+                    onEdit(todo.copyWith(wasCompleted: newValue)),
+              ),
+              Expanded(child: Text(todo.title)),
+              IconButton(
+                icon: const Icon(Icons.delete_outline, color: Colors.red),
+                onPressed: onDelete,
+              ),
+            ],
+          ),
         ),
       ),
     );
