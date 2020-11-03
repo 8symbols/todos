@@ -32,7 +32,13 @@ class MockTodosRepository implements ITodosRepository {
     final branchesIds = _branches.keys.toList();
     for (var i = 0; i < 20; ++i) {
       final id = Uuid().v4();
-      final todo = Todo(id, id: id);
+      var deadline = DateTime.now();
+      if (i % 2 == 0) {
+        deadline = deadline.subtract(const Duration(days: 1));
+      } else {
+        deadline = deadline.add(const Duration(days: 1));
+      }
+      final todo = Todo(id, id: id, deadlineTime: deadline);
       addTodo(branchesIds[i % branchesIds.length], todo);
     }
 

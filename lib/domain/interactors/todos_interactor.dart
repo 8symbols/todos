@@ -1,5 +1,6 @@
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
+import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 
 /// Интерактор для взаимодействия с задачами.
@@ -47,5 +48,26 @@ class TodosInteractor {
   /// Если [branchId] не задан, получает задачи из всех веток.
   Future<List<Todo>> getTodos({String branchId}) {
     return _repository.getTodos(branchId: branchId);
+  }
+
+  /// Добавляет пункт [step] в задачу c идентификатором [todoId].
+  Future<void> addStep(String todoId, TodoStep step) {
+    return _repository.addStep(todoId, step);
+  }
+
+  /// Устанавливает пункту с идентификатором [step.id] значения
+  /// остальных полей [step].
+  Future<void> editStep(TodoStep step) {
+    return _repository.editStep(step);
+  }
+
+  /// Удаляет пункт с идентификатором [stepId].
+  Future<void> deleteStep(String stepId) {
+    return _repository.deleteStep(stepId);
+  }
+
+  /// Получает все пункты задачи с идентификатором [todoId].
+  Future<List<TodoStep>> getSteps(String todoId) {
+    return _repository.getSteps(todoId);
   }
 }

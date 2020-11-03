@@ -5,7 +5,7 @@ abstract class TodoListState {
   /// Список задач.
   ///
   /// Может быть равен null.
-  final List<Todo> todos;
+  final List<TodoViewData> todos;
 
   TodoListState(this.todos);
 }
@@ -19,5 +19,5 @@ class TodosListLoadingState extends TodoListState {
 /// Состояние работы со списком задач.
 class TodosListUsingState extends TodoListState {
   /// Создает состояние со списком задач [todos].
-  TodosListUsingState(List<Todo> todos) : super(todos);
+  TodosListUsingState(List<TodoViewData> todos) : super(todos);
 }

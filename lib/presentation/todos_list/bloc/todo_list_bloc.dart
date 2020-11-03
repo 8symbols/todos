@@ -6,6 +6,7 @@ import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
 
 part 'todo_list_event.dart';
 part 'todo_list_state.dart';
@@ -48,7 +49,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodosListLoadedEventToState(
     TodosListLoadedEvent event,
   ) async* {
-    yield TodosListUsingState(event.todos);
+    yield TodosListUsingState(await _mapToViewData(event.todos));
   }
 
   /// Удаляет задачу.
@@ -58,7 +59,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     if (state is TodosListUsingState) {
       await _todosInteractor.deleteTodo(event.todoId);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(todos);
+      yield TodosListUsingState(await _mapToViewData(todos));
     }
   }
 
@@ -69,7 +70,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     if (state is TodosListUsingState) {
       await _todosInteractor.editTodo(event.todo);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(todos);
+      yield TodosListUsingState(await _mapToViewData(todos));
     }
   }
 
@@ -88,7 +89,36 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       }
       await _todosInteractor.addTodo(mockBranchId, event.todo);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(todos);
+      yield TodosListUsingState(await _mapToViewData(todos));
     }
+  }
+
+  /// Применяет настройки отображения.
+  List<Todo> _applyViewSettings(List<Todo> todos) {
+    return todos;
+  }
+
+  /// Загружает информацию о каждой задаче.
+  Future<List<TodoViewData>> _loadViewData(List<Todo> todos) async {
+    final futureTodos = todos.map((todo) async {
+      final steps = await _todosInteractor.getSteps(todo.id);
+
+      var completedStepsCount = 0;
+      steps.forEach((step) {
+        if (step.wasCompleted) {
+          ++completedStepsCount;
+        }
+      });
+
+      return TodoViewData(todo, steps.length, completedStepsCount);
+    });
+
+    return Future.wait(futureTodos);
+  }
+
+  /// Применяет настройки отображения и загружает информацию о каждой задаче.
+  Future<List<TodoViewData>> _mapToViewData(List<Todo> todos) async {
+    final filteredTodos = _applyViewSettings(todos);
+    return await _loadViewData(filteredTodos);
   }
 }

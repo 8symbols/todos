@@ -2,33 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/todos_list/bloc/todo_list_bloc.dart';
-import 'package:todos/presentation/todos_list/todo_card.dart';
+import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/presentation/todos_list/widgets/todo_card.dart';
 
 /// Виджет для отображения списка задач.
 class TodoList extends StatelessWidget {
   /// Список задач.
-  final List<Todo> todos;
+  final List<TodoViewData> todosData;
 
-  TodoList(this.todos);
+  TodoList(this.todosData);
 
   @override
   Widget build(BuildContext context) {
     const emptySpaceForFabHeight = 88.0;
 
-    return todos.isEmpty
+    return todosData.isEmpty
         ? _buildEmptyList()
         : Stack(
             children: [
               _buildBackgroundLines(context),
               ListView(
                 children: [
-                  ...todos
-                      .map((todo) => TodoCard(
-                            todo,
-                            onDelete: () => _deleteTodo(context, todo),
-                            onEdit: (editedTodo) =>
-                                _editTodo(context, todo.id, editedTodo),
+                  ...todosData
+                      .map((todoData) => TodoCard(
+                            todoData,
+                            onDelete: () => _deleteTodo(context, todoData.todo),
+                            onEdit: (editedTodo) => _editTodo(
+                                context, todoData.todo.id, editedTodo),
                           ))
                       .toList(),
                   const SizedBox(height: emptySpaceForFabHeight),
