@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todos/presentation/todos_list/bloc/todo_list_bloc.dart';
+
+typedef void TodoEditedCallback(Todo editedTodo);
 
 /// Виджет для отображения задачи в списке задач.
 class TodoCard extends StatelessWidget {
   /// Задача.
   final Todo todo;
 
-  TodoCard(this.todo);
+  /// Callback, вызывающийся при удалении задачи.
+  final VoidCallback onDelete;
+
+  /// Callback, вызывающийся при изменении задачи.
+  final TodoEditedCallback onEdit;
+
+  TodoCard(this.todo, {@required this.onDelete, @required this.onEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -21,17 +27,13 @@ class TodoCard extends StatelessWidget {
           children: [
             Checkbox(
               value: todo.wasCompleted,
-              onChanged: (newValue) {
-                final editedTodo = todo.copyWith(wasCompleted: newValue);
-                context.bloc<TodoListBloc>().add(TodoEditedEvent(editedTodo));
-              },
+              onChanged: (newValue) =>
+                  onEdit(todo.copyWith(wasCompleted: newValue)),
             ),
             Expanded(child: Text(todo.title)),
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: () {
-                context.bloc<TodoListBloc>().add(TodoDeletedEvent(todo.id));
-              },
+              onPressed: onDelete,
             ),
           ],
         ),
