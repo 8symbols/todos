@@ -5,7 +5,7 @@ import 'package:todos/presentation/branch_themes.dart';
 import 'package:todos/presentation/models/popup_menu_item_data.dart';
 import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
-import 'package:todos/presentation/todos_list/models/todos_sort_order.dart';
+import 'package:todos/domain/models/todos_sort_order.dart';
 import 'package:todos/presentation/widgets/branch_theme_selector.dart';
 import 'package:todos/presentation/widgets/popup_menu.dart';
 

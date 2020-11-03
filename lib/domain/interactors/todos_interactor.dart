@@ -1,6 +1,8 @@
+import 'package:todos/domain/factories/todos_comparators_factory.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
+import 'package:todos/domain/models/todos_sort_order.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 
 /// Интерактор для взаимодействия с задачами.
@@ -21,19 +23,31 @@ class TodosInteractor {
     return _repository.editBranch(branch);
   }
 
+  /// Удаляет ветку с идентификатором [branchId].
+  ///
+  /// Связанные с ней задачи также удаляются.
+  Future<void> deleteBranch(String branchId) {
+    return _repository.deleteBranch(branchId);
+  }
+
+  /// Получает ветку с идентификатором [branchId].
+  Future<Branch> getBranch(String branchId) {
+    return _repository.getBranch(branchId);
+  }
+
   /// Получает все ветки.
   Future<List<Branch>> getBranches() {
     return _repository.getBranches();
   }
 
   /// Добавляет задачу [todo] в ветку c идентификатором [branchId].
-  Future<void> addTodo(String branchId, Todo todo) async {
+  Future<void> addTodo(String branchId, Todo todo) {
     return _repository.addTodo(branchId, todo);
   }
 
   /// Устанавливает задаче с идентификатором [todo.id] значения
   /// остальных полей [todo].
-  Future<void> editTodo(Todo todo) async {
+  Future<void> editTodo(Todo todo) {
     return _repository.editTodo(todo);
   }
 
@@ -72,8 +86,35 @@ class TodosInteractor {
     return _repository.deleteStep(stepId);
   }
 
+  /// Получает пункт с идентификатором [stepId].
+  Future<TodoStep> getStep(String stepId) {
+    return _repository.getStep(stepId);
+  }
+
   /// Получает все пункты задачи с идентификатором [todoId].
   Future<List<TodoStep>> getSteps(String todoId) {
     return _repository.getSteps(todoId);
+  }
+
+  /// Добавляет путь к изображению [imagePath] в задачу
+  /// c идентификатором [todoId].
+  Future<void> addImagePath(String todoId, String imagePath) {
+    return _repository.addImagePath(todoId, imagePath);
+  }
+
+  /// Удаляет путь к изображению [imagePath] из задачи
+  /// c идентификатором [todoId].
+  Future<void> deleteImagePath(String todoId, String imagePath) {
+    return _repository.deleteImagePath(todoId, imagePath);
+  }
+
+  /// Получает все пути к изображениям задачи с идентификатором [todoId].
+  Future<List<String>> getImagesPaths(String todoId) {
+    return _repository.getImagesPaths(todoId);
+  }
+
+  /// Сортирует задачи [todos] в соответствии с порядком сортировки [sortOrder].
+  void sortTodos(List<Todo> todos, TodosSortOrder sortOrder) {
+    todos.sort(TodosComparatorsFactory.getComparator(sortOrder));
   }
 }

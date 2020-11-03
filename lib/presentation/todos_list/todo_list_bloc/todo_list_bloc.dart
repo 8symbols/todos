@@ -6,7 +6,7 @@ import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
-import 'package:todos/presentation/todos_list/models/todos_sort_order.dart';
+import 'package:todos/domain/models/todos_sort_order.dart';
 
 part 'todo_list_event.dart';
 part 'todo_list_state.dart';
@@ -146,38 +146,6 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     }
   }
 
-  /// Сортирует задачи в соответствии с [TodoListBloc._sortOrder].
-  void _sortTodos(List<Todo> todos) {
-    final Comparator<DateTime> datetimeComparator = (a, b) {
-      if (a.isBefore(b)) return 1;
-      if (a.isAfter(b)) return -1;
-      return 0;
-    };
-
-    final comparators = <TodosSortOrder, Comparator<Todo>>{
-      TodosSortOrder.creation: (a, b) {
-        return datetimeComparator(a.creationTime, b.creationTime);
-      },
-      TodosSortOrder.creationAsc: (a, b) {
-        return -datetimeComparator(a.creationTime, b.creationTime);
-      },
-      TodosSortOrder.deadline: (a, b) {
-        if (a.deadlineTime == null && b.deadlineTime == null) return 0;
-        if (a.deadlineTime == null) return 1;
-        if (b.deadlineTime == null) return -1;
-        return datetimeComparator(a.deadlineTime, b.deadlineTime);
-      },
-      TodosSortOrder.deadlineAsc: (a, b) {
-        if (a.deadlineTime == null && b.deadlineTime == null) return 0;
-        if (a.deadlineTime == null) return 1;
-        if (b.deadlineTime == null) return -1;
-        return -datetimeComparator(a.deadlineTime, b.deadlineTime);
-      }
-    };
-
-    todos.sort(comparators[_sortOrder]);
-  }
-
   /// Применяет настройки отображения: удаляет выполненные задачи,
   /// если установлен флаг [areCompletedTodosVisible], и сортирует
   /// в соответствии с [TodoListBloc._sortOrder].
@@ -188,7 +156,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     if (!areCompletedTodosVisible) {
       todos = todos.where((todo) => !todo.wasCompleted).toList();
     }
-    _sortTodos(todos);
+
+    _todosInteractor.sortTodos(todos, _sortOrder);
     return todos;
   }
 
