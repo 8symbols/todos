@@ -24,6 +24,7 @@ class TodoList extends StatelessWidget {
               _buildBackgroundLines(context),
               ListView(
                 children: [
+                  const SizedBox(height: 6.0),
                   ...todosData
                       .map((todoData) => TodoCard(
                             todoData,
