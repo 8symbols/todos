@@ -11,7 +11,7 @@ import 'package:todos/presentation/todos_list/widgets/todo_list.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list_screen_menu_options.dart';
 
 /// Экран списка задач.
-class TodoListScreen extends StatelessWidget {
+class TodoListScreen extends StatefulWidget {
   static const routeName = '/todos_list';
 
   /// Репозиторий для работы с задачами.
@@ -22,25 +22,45 @@ class TodoListScreen extends StatelessWidget {
   /// Может быть равна null.
   final Branch branch;
 
+  TodoListScreen(this._todosRepository, {this.branch});
+
+  @override
+  _TodoListScreenState createState() => _TodoListScreenState();
+}
+
+class _TodoListScreenState extends State<TodoListScreen> {
   /// Флаг, сигнализирующий о том, все ли задачи из списка принадлежат
   /// одной ветке.
-  bool get areTodosFromSameBranch => branch != null;
+  bool get areTodosFromSameBranch => widget.branch != null;
 
-  TodoListScreen(this._todosRepository, {this.branch});
+  TodoListBloc _todoListBloc;
+
+  ThemeCubit _themeCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _todoListBloc =
+        TodoListBloc(widget._todosRepository, branchId: widget.branch?.id);
+    _themeCubit = ThemeCubit(widget._todosRepository, branch: widget.branch);
+  }
+
+  @override
+  void dispose() {
+    _todoListBloc.close();
+    _themeCubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<TodoListBloc>(
-          create: (context) =>
-              TodoListBloc(_todosRepository, branchId: branch?.id),
-        ),
-        BlocProvider<ThemeCubit>(
-          create: (context) => ThemeCubit(_todosRepository, branch: branch),
-        )
+        BlocProvider<TodoListBloc>.value(value: _todoListBloc),
+        BlocProvider<ThemeCubit>.value(value: _themeCubit),
       ],
       child: BlocBuilder<ThemeCubit, BranchTheme>(
+        buildWhen: (previous, current) => previous != current,
         builder: (context, state) => Scaffold(
           backgroundColor:
               state?.secondaryColor ?? defaultBranchTheme.secondaryColor,
