@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch.dart';
+import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -23,9 +25,11 @@ class MockTodosRepository implements ITodosRepository {
 
   /// Создает и добавляет в хранилище ветки, задачи и пункты.
   void prepopulateRepository() {
+    const theme = BranchTheme(Color(0xFF6202EE), Color(0xFFB5C9FD));
+
     for (var i = 0; i < 3; ++i) {
       final id = Uuid().v4();
-      final branch = Branch(id, id: id);
+      final branch = Branch(id, theme, id: id);
       addBranch(branch);
     }
 

@@ -15,6 +15,12 @@ class TodosInteractor {
     return _repository.addBranch(branch);
   }
 
+  /// Устанавливает ветке с идентификатором [branch.id] значения
+  /// остальных полей [branch].
+  Future<void> editBranch(Branch branch) {
+    return _repository.editBranch(branch);
+  }
+
   /// Получает все ветки.
   Future<List<Branch>> getBranches() {
     return _repository.getBranches();

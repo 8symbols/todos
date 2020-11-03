@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
-import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
@@ -95,9 +94,6 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       // TODO: Убрать заглушку branchId после реализации веток.
       var mockBranchId = branchId;
       if (mockBranchId == null) {
-        if ((await _todosInteractor.getBranches()).isEmpty) {
-          await _todosInteractor.addBranch(Branch('branch'));
-        }
         mockBranchId = (await _todosInteractor.getBranches())[0].id;
       }
       await _todosInteractor.addTodo(mockBranchId, event.todo);

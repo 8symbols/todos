@@ -29,14 +29,14 @@ class TodoCard extends StatelessWidget {
     );
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       child: Dismissible(
         key: Key(todoData.todo.id),
         direction: DismissDirection.endToStart,
         background: dismissibleBackground,
         onDismissed: (direction) => onDelete(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Row(
             children: [
               Checkbox(

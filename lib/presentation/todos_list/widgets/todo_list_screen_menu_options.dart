@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/domain/models/branch_theme.dart';
+import 'package:todos/presentation/branch_themes.dart';
 import 'package:todos/presentation/models/popup_menu_item_data.dart';
-import 'package:todos/presentation/todos_list/bloc/todo_list_bloc.dart';
+import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
+import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/models/todos_sort_order.dart';
+import 'package:todos/presentation/widgets/branch_theme_selector.dart';
 import 'package:todos/presentation/widgets/popup_menu.dart';
 
+/// Виджет выпадающего списка в меню [AppBar] экрана списка задач.
 class TodoListScreenMenuOptions extends StatelessWidget {
+  /// Флаг, сигнализирующий о том, все ли задачи из списка принадлежат
+  /// одной ветке.
+  final bool areTodosFromSameBranch;
+
+  TodoListScreenMenuOptions(this.areTodosFromSameBranch);
+
   @override
   Widget build(BuildContext context) {
     final hideCompletedTodosOption = PopupMenuItemData(
@@ -36,7 +47,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
             : showCompletedTodosOption,
         deleteCompletedTodosOption,
         chooseSortOrderOption,
-        chooseThemeOption,
+        if (areTodosFromSameBranch) chooseThemeOption,
       ]),
     );
   }
@@ -118,5 +129,36 @@ class TodoListScreenMenuOptions extends StatelessWidget {
     }
   }
 
-  void _chooseBranchTheme(BuildContext context) {}
+  void _chooseBranchTheme(BuildContext context) {
+    showBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Выбор темы',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              BlocBuilder<ThemeCubit, BranchTheme>(
+                builder: (context, state) => BranchThemeSelector(
+                  branchThemes,
+                  state,
+                  onSelect: (selectedTheme) =>
+                      context.bloc<ThemeCubit>().changeTheme(selectedTheme),
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

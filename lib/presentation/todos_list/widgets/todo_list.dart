@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/presentation/todos_list/bloc/todo_list_bloc.dart';
+import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_card.dart';
@@ -85,16 +85,16 @@ class TodoList extends StatelessWidget {
   }
 
   Widget _buildBackgroundLines(BuildContext context) {
-    const backgroundLineThickness = 1.0;
+    const backgroundLineThickness = 2.0;
     const backgroundLinesDistance = 70.0;
 
     const backgroundLine = Padding(
       padding: EdgeInsets.only(top: backgroundLinesDistance),
       child: Divider(
         height: backgroundLineThickness,
-        indent: 20.0,
-        endIndent: 20.0,
-        color: Colors.grey,
+        indent: 25.0,
+        endIndent: 25.0,
+        color: Color(0xFF9DA3B5),
         thickness: backgroundLineThickness,
       ),
     );

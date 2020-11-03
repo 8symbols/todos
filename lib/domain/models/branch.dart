@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,11 +15,10 @@ class Branch {
   /// Создает ветку.
   ///
   /// Если не указан [id], то генерируется новый идентификатор.
-  /// Если не указана тема [theme], то используется стандартная.
   Branch(
-    this.title, {
+    this.title,
+    this.theme, {
     String id,
-    this.theme = const BranchTheme(Color(0xFF6202EE), Color(0xFFB5C9FD)),
   })  : id = id ?? Uuid().v4(),
         assert(title != null),
         assert(theme != null);
@@ -28,8 +26,8 @@ class Branch {
   Branch copyWith({String id, BranchTheme theme, String title}) {
     return Branch(
       title ?? this.title,
+      theme ?? this.theme,
       id: id ?? this.id,
-      theme: theme ?? this.theme,
     );
   }
 }
