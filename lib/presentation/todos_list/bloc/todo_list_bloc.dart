@@ -15,9 +15,9 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   /// Интерактор для взаимодействия с задачами.
   final TodosInteractor _todosInteractor;
 
-  /// Идентификатор ветки задач.
+  /// Ветка задача.
   ///
-  /// Может быть равен null.
+  /// Может быть равна null.
   final String branchId;
 
   /// Создает BLoC и загружает список задач.

@@ -159,4 +159,9 @@ class MockTodosRepository implements ITodosRepository {
     }
     return _branchesTodos[branchId].map((e) => _todos[e]).toList();
   }
+
+  @override
+  Branch getAnyBranch() {
+    return _branches.values.first;
+  }
 }

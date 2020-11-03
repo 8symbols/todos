@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/todos_list/bloc/todo_list_bloc.dart';
@@ -12,21 +13,21 @@ class TodoListScreen extends StatelessWidget {
   /// Репозиторий для работы с задачами.
   final ITodosRepository _todosRepository;
 
-  /// Идентификатор ветки задач.
+  /// Ветка задача.
   ///
-  /// Может быть равен null.
-  final String branchId;
+  /// Может быть равна null.
+  final Branch branch;
 
   /// Флаг, сигнализирующий о том, все ли задачи из списка принадлежат
   /// одной ветке.
-  bool get areTodosFromSameBranch => branchId != null;
+  bool get areTodosFromSameBranch => branch != null;
 
-  TodoListScreen(this._todosRepository, {this.branchId});
+  TodoListScreen(this._todosRepository, {this.branch});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TodoListBloc>(
-      create: (context) => TodoListBloc(_todosRepository, branchId: branchId),
+      create: (context) => TodoListBloc(_todosRepository, branchId: branch.id),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Задачи'),
