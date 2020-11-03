@@ -58,7 +58,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodosListLoadedEventToState(
     TodosListLoadedEvent event,
   ) async* {
-    yield TodosListUsingState(
+    yield TodosListContentState(
         await _mapToViewData(event.todos), state.areCompletedTodosVisible);
   }
 
@@ -66,10 +66,10 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodoDeletedEventToState(
     TodoDeletedEvent event,
   ) async* {
-    if (state is TodosListUsingState) {
+    if (state is TodosListContentState) {
       await _todosInteractor.deleteTodo(event.todoId);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(
+      yield TodosListContentState(
           await _mapToViewData(todos), state.areCompletedTodosVisible);
     }
   }
@@ -78,10 +78,10 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodoEditedEventToState(
     TodoEditedEvent event,
   ) async* {
-    if (state is TodosListUsingState) {
+    if (state is TodosListContentState) {
       await _todosInteractor.editTodo(event.todo);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(
+      yield TodosListContentState(
           await _mapToViewData(todos), state.areCompletedTodosVisible);
     }
   }
@@ -90,7 +90,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodoAddedEventToState(
     TodoAddedEvent event,
   ) async* {
-    if (state is TodosListUsingState) {
+    if (state is TodosListContentState) {
       // TODO: Убрать заглушку branchId после реализации веток.
       var mockBranchId = branchId;
       if (mockBranchId == null) {
@@ -98,7 +98,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       }
       await _todosInteractor.addTodo(mockBranchId, event.todo);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(
+      yield TodosListContentState(
           await _mapToViewData(todos), state.areCompletedTodosVisible);
     }
   }
@@ -107,9 +107,9 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapCompletedTodosVisibilityChangedEventToState(
     CompletedTodosVisibilityChangedEvent event,
   ) async* {
-    if (state is TodosListUsingState) {
+    if (state is TodosListContentState) {
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(
+      yield TodosListContentState(
           await _mapToViewData(todos,
               areCompletedTodosVisible: event.areCompletedTodosVisible),
           event.areCompletedTodosVisible);
@@ -120,7 +120,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapCompletedTodosDeletedEventToState(
     CompletedTodosDeletedEvent event,
   ) async* {
-    if (state is TodosListUsingState) {
+    if (state is TodosListContentState) {
       final todos = await _todosInteractor.getTodos(branchId: branchId);
       for (final todo in todos) {
         if (todo.wasCompleted) {
@@ -129,7 +129,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       }
 
       final newTodos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(
+      yield TodosListContentState(
           await _mapToViewData(newTodos), state.areCompletedTodosVisible);
     }
   }
@@ -138,10 +138,10 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodosSortOrderChangedEventToState(
     TodosSortOrderChangedEvent event,
   ) async* {
-    if (state is TodosListUsingState) {
+    if (state is TodosListContentState) {
       _sortOrder = event.sortOrder;
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListUsingState(
+      yield TodosListContentState(
           await _mapToViewData(todos), state.areCompletedTodosVisible);
     }
   }

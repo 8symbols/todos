@@ -21,8 +21,8 @@ class TodosListLoadingState extends TodoListState {
 }
 
 /// Состояние работы со списком задач.
-class TodosListUsingState extends TodoListState {
+class TodosListContentState extends TodoListState {
   /// Создает состояние со списком задач [todos].
-  TodosListUsingState(List<TodoViewData> todos, areCompletedTodosVisible)
+  TodosListContentState(List<TodoViewData> todos, areCompletedTodosVisible)
       : super(todos, areCompletedTodosVisible);
 }

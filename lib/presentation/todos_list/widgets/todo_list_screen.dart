@@ -74,7 +74,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
             buildWhen: (previous, current) =>
                 previous.runtimeType != current.runtimeType,
             builder: (context, state) =>
-                areTodosFromSameBranch && state is TodosListUsingState
+                areTodosFromSameBranch && state is TodosListContentState
                     ? FloatingActionButton(
                         child: const Icon(Icons.add),
                         onPressed: () => _addTodo(context),
