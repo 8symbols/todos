@@ -70,17 +70,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
             title: const Text('Задачи'),
             actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
           ),
-          floatingActionButton: BlocBuilder<TodoListBloc, TodoListState>(
-            buildWhen: (previous, current) =>
-                previous.runtimeType != current.runtimeType,
-            builder: (context, state) =>
-                areTodosFromSameBranch && state is TodosListContentState
-                    ? FloatingActionButton(
-                        child: const Icon(Icons.add),
-                        onPressed: () => _addTodo(context),
-                      )
-                    : SizedBox.shrink(),
-          ),
+          floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
           body: BlocBuilder<TodoListBloc, TodoListState>(
             builder: (context, state) => state is TodosListLoadingState
                 ? const Center(child: CircularProgressIndicator())
@@ -88,6 +78,19 @@ class _TodoListScreenState extends State<TodoListScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFab() {
+    return BlocBuilder<TodoListBloc, TodoListState>(
+      buildWhen: (previous, current) =>
+          previous.runtimeType != current.runtimeType,
+      builder: (context, state) => state is TodosListContentState
+          ? FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: () => _addTodo(context),
+            )
+          : SizedBox.shrink(),
     );
   }
 
