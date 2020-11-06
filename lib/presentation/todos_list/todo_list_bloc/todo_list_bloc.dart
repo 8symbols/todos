@@ -118,16 +118,10 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     CompletedTodosDeletedEvent event,
   ) async* {
     if (state is TodosListContentState) {
+      await _todosInteractor.deleteCompletedTodos(branchId: branchId);
       final todos = await _todosInteractor.getTodos(branchId: branchId);
-      for (final todo in todos) {
-        if (todo.wasCompleted) {
-          await _todosInteractor.deleteTodo(todo.id);
-        }
-      }
-
-      final newTodos = await _todosInteractor.getTodos(branchId: branchId);
       yield TodosListContentState(
-          await _mapToViewData(newTodos), state.areCompletedTodosVisible);
+          await _mapToViewData(todos), state.areCompletedTodosVisible);
     }
   }
 

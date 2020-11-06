@@ -117,4 +117,16 @@ class TodosInteractor {
   void sortTodos(List<Todo> todos, TodosSortOrder sortOrder) {
     todos.sort(TodosComparatorsFactory.getComparator(sortOrder));
   }
+
+  /// Удаляет завершенные задачи в ветке с идентификатором [branchId].
+  ///
+  /// Если идентификатор не указан, удаляет завершенные задачи из всех веток.
+  Future<void> deleteCompletedTodos({String branchId}) async {
+    List<Todo> todos = await getTodos(branchId: branchId);
+    for (final todo in todos) {
+      if (todo.wasCompleted) {
+        await deleteTodo(todo.id);
+      }
+    }
+  }
 }
