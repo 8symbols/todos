@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch.dart';
+import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -23,16 +25,24 @@ class MockTodosRepository implements ITodosRepository {
 
   /// Создает и добавляет в хранилище ветки, задачи и пункты.
   void prepopulateRepository() {
+    const theme = BranchTheme(Color(0xFF6202EE), Color(0xFFB5C9FD));
+
     for (var i = 0; i < 3; ++i) {
       final id = Uuid().v4();
-      final branch = Branch(id, id: id);
+      final branch = Branch(id, theme, id: id);
       addBranch(branch);
     }
 
     final branchesIds = _branches.keys.toList();
     for (var i = 0; i < 20; ++i) {
       final id = Uuid().v4();
-      final todo = Todo(id, id: id);
+      var deadline = DateTime.now();
+      if (i % 2 == 0) {
+        deadline = deadline.subtract(const Duration(days: 1));
+      } else {
+        deadline = deadline.add(const Duration(days: 1));
+      }
+      final todo = Todo(id, id: id, deadlineTime: deadline);
       addTodo(branchesIds[i % branchesIds.length], todo);
     }
 
@@ -158,5 +168,10 @@ class MockTodosRepository implements ITodosRepository {
       return _todos.values.toList();
     }
     return _branchesTodos[branchId].map((e) => _todos[e]).toList();
+  }
+
+  @override
+  Branch getAnyBranch() {
+    return _branches.values.first;
   }
 }
