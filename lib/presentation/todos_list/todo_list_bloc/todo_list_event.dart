@@ -3,13 +3,8 @@ part of 'todo_list_bloc.dart';
 @immutable
 abstract class TodoListEvent {}
 
-/// Событие окончания загрузки списка задач.
-class TodosListLoadedEvent extends TodoListEvent {
-  /// Загруженный список задач.
-  final List<Todo> todos;
-
-  TodosListLoadedEvent(this.todos);
-}
+/// Событие запроса загрузки списка задач.
+class TodosListLoadingRequestedEvent extends TodoListEvent {}
 
 /// Событие удаления задачи.
 class TodoDeletedEvent extends TodoListEvent {

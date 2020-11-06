@@ -43,6 +43,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     super.initState();
     _todoListBloc =
         TodoListBloc(widget._todosRepository, branchId: widget.branch?.id);
+    _todoListBloc.add(TodosListLoadingRequestedEvent());
     _themeCubit = ThemeCubit(widget._todosRepository, branch: widget.branch);
   }
 

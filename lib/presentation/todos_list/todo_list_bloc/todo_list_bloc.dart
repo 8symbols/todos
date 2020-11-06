@@ -27,18 +27,14 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   /// Создает BLoC и загружает список задач.
   TodoListBloc(ITodosRepository todosRepository, {this.branchId})
       : _todosInteractor = TodosInteractor(todosRepository),
-        super(TodosListLoadingState(true)) {
-    _todosInteractor
-        .getTodos(branchId: branchId)
-        .then((todos) => add(TodosListLoadedEvent(todos)));
-  }
+        super(TodosListLoadingState(true));
 
   @override
   Stream<TodoListState> mapEventToState(
     TodoListEvent event,
   ) async* {
-    if (event is TodosListLoadedEvent) {
-      yield* _mapTodosListLoadedEventToState(event);
+    if (event is TodosListLoadingRequestedEvent) {
+      yield* _mapTodosListLoadingRequestedEventToState(event);
     } else if (event is TodoDeletedEvent) {
       yield* _mapTodoDeletedEventToState(event);
     } else if (event is TodoEditedEvent) {
@@ -54,12 +50,13 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     }
   }
 
-  /// Устанавливает загруженные задачи в состояние.
-  Stream<TodoListState> _mapTodosListLoadedEventToState(
-    TodosListLoadedEvent event,
+  /// Загружает список задач.
+  Stream<TodoListState> _mapTodosListLoadingRequestedEventToState(
+    TodosListLoadingRequestedEvent event,
   ) async* {
+    final todos = await _todosInteractor.getTodos(branchId: branchId);
     yield TodosListContentState(
-        await _mapToViewData(event.todos), state.areCompletedTodosVisible);
+        await _mapToViewData(todos), state.areCompletedTodosVisible);
   }
 
   /// Удаляет задачу.
