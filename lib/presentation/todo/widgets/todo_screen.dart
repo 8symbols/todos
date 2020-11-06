@@ -3,6 +3,7 @@ import 'package:sliver_fab/sliver_fab.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/todo/todo_steps_bloc/todo_steps_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/todo/widgets/todo_images_card.dart';
@@ -29,17 +30,21 @@ class TodoScreen extends StatefulWidget {
 class _TodoScreenState extends State<TodoScreen> {
   TodoStepsBloc _stepsBloc;
 
+  TodoBloc _todoBloc;
+
   @override
   void initState() {
     super.initState();
     final todosRepository = context.repository<ITodosRepository>();
     _stepsBloc = TodoStepsBloc(todosRepository, widget._todo);
     _stepsBloc.add(StepsLoadingRequestedEvent());
+    _todoBloc = TodoBloc(todosRepository, widget._todo);
   }
 
   @override
   void dispose() {
     _stepsBloc.close();
+    _todoBloc.close();
     super.dispose();
   }
 
@@ -50,40 +55,48 @@ class _TodoScreenState extends State<TodoScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<TodoStepsBloc>.value(value: _stepsBloc),
+        BlocProvider<TodoBloc>.value(value: _todoBloc),
       ],
-      child: Scaffold(
-        backgroundColor: widget._branchTheme.secondaryColor,
-        body: SliverFab(
-          floatingWidget: FloatingActionButton(
-            onPressed: () {},
-            child: Icon(
-              Icons.check,
-              color: Colors.white,
+      child: BlocListener<TodoBloc, TodoState>(
+        listener: (context, state) {
+          if (state is TodoDeletedState) {
+            Navigator.of(context).pop();
+          }
+        },
+        child: Scaffold(
+          backgroundColor: widget._branchTheme.secondaryColor,
+          body: SliverFab(
+            floatingWidget: FloatingActionButton(
+              onPressed: () {},
+              child: Icon(
+                Icons.check,
+                color: Colors.white,
+              ),
             ),
+            floatingPosition: const FloatingPosition(left: 16),
+            expandedHeight: appBarExpandedHeight,
+            slivers: <Widget>[
+              TodoSliverAppBar(
+                  appBarExpandedHeight, widget._branchTheme, widget._todo),
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 32.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TodoStepsCard(widget._todo),
+                  ),
+                  const SizedBox(height: 20.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TodoTimeSettingsCard(),
+                  ),
+                  const SizedBox(height: 20.0),
+                  TodoImagesCard(),
+                  const SizedBox(height: 20.0),
+                ]),
+              ),
+            ],
           ),
-          floatingPosition: const FloatingPosition(left: 16),
-          expandedHeight: appBarExpandedHeight,
-          slivers: <Widget>[
-            TodoSliverAppBar(
-                appBarExpandedHeight, widget._branchTheme, widget._todo),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                const SizedBox(height: 32.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TodoStepsCard(widget._todo),
-                ),
-                const SizedBox(height: 20.0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TodoTimeSettingsCard(),
-                ),
-                const SizedBox(height: 20.0),
-                TodoImagesCard(),
-                const SizedBox(height: 20.0),
-              ]),
-            ),
-          ],
         ),
       ),
     );

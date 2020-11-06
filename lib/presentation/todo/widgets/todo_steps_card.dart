@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
+import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/todo/todo_steps_bloc/todo_steps_bloc.dart';
 import 'package:todos/presentation/todo/widgets/todo_step_widget.dart';
 
@@ -61,7 +62,8 @@ class TodoStepsCard extends StatelessWidget {
                           hintText: 'Заметки по задаче...',
                         ),
                         initialValue: _todo.note,
-                        onFieldSubmitted: (value) => print(value),
+                        onFieldSubmitted: (value) =>
+                            _editTodoNote(context, _todo, value),
                       ),
                     ),
                   ],
@@ -82,5 +84,9 @@ class TodoStepsCard extends StatelessWidget {
   void _addStep(BuildContext context) {
     final newStep = TodoStep('');
     context.bloc<TodoStepsBloc>().add(StepAddedEvent(newStep));
+  }
+
+  void _editTodoNote(BuildContext context, Todo todo, String value) {
+    context.bloc<TodoBloc>().add(TodoEditedEvent(todo.copyWith(note: value)));
   }
 }

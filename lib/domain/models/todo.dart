@@ -72,7 +72,7 @@ class Todo {
     DateTime creationTime,
     TodoPriority priority,
     String themeImagePath,
-    String notes,
+    String note,
     DateTime deadlineTime,
     DateTime notificationTime,
     String title,
@@ -85,7 +85,7 @@ class Todo {
       creationTime: creationTime ?? this.creationTime,
       priority: priority ?? this.priority,
       themeImagePath: themeImagePath ?? this.themeImagePath,
-      note: notes ?? this.note,
+      note: note ?? this.note,
       deadlineTime: deadlineTime ?? this.deadlineTime,
       notificationTime: notificationTime ?? this.notificationTime,
     );
