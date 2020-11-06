@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todos/domain/models/todo.dart';
+import 'package:todos/presentation/branch_themes.dart';
+import 'package:todos/presentation/todo/models/todo_screen_arguments.dart';
+import 'package:todos/presentation/todo/widgets/todo_screen.dart';
+import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +35,8 @@ class TodoList extends StatelessWidget {
                             onDelete: () => _deleteTodo(context, todoData.todo),
                             onEdit: (editedTodo) => _editTodo(
                                 context, todoData.todo.id, editedTodo),
+                            onTap: () =>
+                                _openTodoScreen(context, todoData.todo),
                           ))
                       .toList(),
                   const SizedBox(height: emptySpaceForFabHeight),
@@ -107,5 +113,12 @@ class TodoList extends StatelessWidget {
 
   void _editTodo(BuildContext context, String todoId, Todo editedTodo) {
     context.bloc<TodoListBloc>().add(TodoEditedEvent(editedTodo));
+  }
+
+  void _openTodoScreen(BuildContext context, Todo todo) {
+    final branchTheme =
+        context.bloc<ThemeCubit>().state ?? BranchThemes.defaultBranchTheme;
+    final arguments = TodoScreenArguments(branchTheme, todo);
+    Navigator.of(context).pushNamed(TodoScreen.routeName, arguments: arguments);
   }
 }

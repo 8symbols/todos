@@ -15,15 +15,12 @@ import 'package:todos/presentation/widgets/create_todo_dialog.dart';
 class TodoListScreen extends StatefulWidget {
   static const routeName = '/todos_list';
 
-  /// Репозиторий для работы с задачами.
-  final ITodosRepository _todosRepository;
-
   /// Ветка задача.
   ///
   /// Может быть равна null.
   final Branch branch;
 
-  TodoListScreen(this._todosRepository, {this.branch});
+  TodoListScreen({this.branch});
 
   @override
   _TodoListScreenState createState() => _TodoListScreenState();
@@ -41,10 +38,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
   @override
   void initState() {
     super.initState();
-    _todoListBloc =
-        TodoListBloc(widget._todosRepository, branchId: widget.branch?.id);
+    final todosRepository = context.repository<ITodosRepository>();
+    _todoListBloc = TodoListBloc(todosRepository, branchId: widget.branch?.id);
     _todoListBloc.add(TodosListLoadingRequestedEvent());
-    _themeCubit = ThemeCubit(widget._todosRepository, branch: widget.branch);
+    _themeCubit = ThemeCubit(todosRepository, branch: widget.branch);
   }
 
   @override

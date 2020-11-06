@@ -13,10 +13,18 @@ class TodoCard extends StatelessWidget {
   /// Callback, вызывающийся при удалении задачи.
   final VoidCallback onDelete;
 
+  /// Callback, вызывающийся при нажатии на задачу.
+  final VoidCallback onTap;
+
   /// Callback, вызывающийся при изменении задачи.
   final TodoEditedCallback onEdit;
 
-  TodoCard(this.todoData, {@required this.onDelete, @required this.onEdit});
+  TodoCard(
+    this.todoData, {
+    @required this.onDelete,
+    @required this.onEdit,
+    @required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,22 +38,25 @@ class TodoCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-      child: Dismissible(
-        key: Key(todoData.todo.id),
-        direction: DismissDirection.endToStart,
-        background: dismissibleBackground,
-        onDismissed: (direction) => onDelete(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          child: Row(
-            children: [
-              Checkbox(
-                value: todoData.todo.wasCompleted,
-                onChanged: (newValue) =>
-                    onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
-              ),
-              Expanded(child: _buildTodoData()),
-            ],
+      child: InkWell(
+        onTap: onTap,
+        child: Dismissible(
+          key: Key(todoData.todo.id),
+          direction: DismissDirection.endToStart,
+          background: dismissibleBackground,
+          onDismissed: (direction) => onDelete(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Row(
+              children: [
+                Checkbox(
+                  value: todoData.todo.wasCompleted,
+                  onChanged: (newValue) =>
+                      onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
+                ),
+                Expanded(child: _buildTodoData()),
+              ],
+            ),
           ),
         ),
       ),

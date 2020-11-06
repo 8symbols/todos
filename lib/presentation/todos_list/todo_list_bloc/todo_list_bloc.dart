@@ -24,7 +24,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   /// Порядок сортировки задач.
   TodosSortOrder _sortOrder = TodosSortOrder.creation;
 
-  /// Создает BLoC и загружает список задач.
+  /// Создает BLoC.
   TodoListBloc(ITodosRepository todosRepository, {this.branchId})
       : _todosInteractor = TodosInteractor(todosRepository),
         super(TodosListLoadingState(true));
