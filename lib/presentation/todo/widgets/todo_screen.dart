@@ -57,19 +57,23 @@ class _TodoScreenState extends State<TodoScreen> {
         BlocProvider<TodoStepsBloc>.value(value: _stepsBloc),
         BlocProvider<TodoBloc>.value(value: _todoBloc),
       ],
-      child: BlocListener<TodoBloc, TodoState>(
+      child: BlocConsumer<TodoBloc, TodoState>(
         listener: (context, state) {
           if (state is TodoDeletedState) {
             Navigator.of(context).pop();
           }
         },
-        child: Scaffold(
+        buildWhen: (previous, current) =>
+            previous.todo.wasCompleted != current.todo.wasCompleted ||
+            previous.todo.title != current.todo.title,
+        builder: (context, state) => Scaffold(
           backgroundColor: widget._branchTheme.secondaryColor,
           body: SliverFab(
             floatingWidget: FloatingActionButton(
-              onPressed: () {},
+              onPressed: () =>
+                  _changeTodoWasCompleted(context, !state.todo.wasCompleted),
               child: Icon(
-                Icons.check,
+                state.todo.wasCompleted ? Icons.close : Icons.check,
                 color: Colors.white,
               ),
             ),
@@ -77,7 +81,7 @@ class _TodoScreenState extends State<TodoScreen> {
             expandedHeight: appBarExpandedHeight,
             slivers: <Widget>[
               TodoSliverAppBar(
-                  appBarExpandedHeight, widget._branchTheme, widget._todo),
+                  appBarExpandedHeight, widget._branchTheme, state.todo),
               SliverList(
                 delegate: SliverChildListDelegate([
                   const SizedBox(height: 32.0),
@@ -100,5 +104,12 @@ class _TodoScreenState extends State<TodoScreen> {
         ),
       ),
     );
+  }
+
+  void _changeTodoWasCompleted(BuildContext context, bool wasCompleted) {
+    final todo = context.bloc<TodoBloc>().state.todo;
+    context
+        .bloc<TodoBloc>()
+        .add(TodoEditedEvent(todo.copyWith(wasCompleted: wasCompleted)));
   }
 }
