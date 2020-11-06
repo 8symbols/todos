@@ -162,14 +162,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Future<List<TodoViewData>> _loadViewData(List<Todo> todos) async {
     final futureTodos = todos.map((todo) async {
       final steps = await _todosInteractor.getSteps(todo.id);
-
-      var completedStepsCount = 0;
-      steps.forEach((step) {
-        if (step.wasCompleted) {
-          ++completedStepsCount;
-        }
-      });
-
+      final completedStepsCount =
+          steps.where((step) => step.wasCompleted).length;
       return TodoViewData(todo, steps.length, completedStepsCount);
     });
 
