@@ -64,11 +64,11 @@ class _TodoListScreenState extends State<TodoListScreen> {
       child: BlocBuilder<ThemeCubit, BranchTheme>(
         buildWhen: (previous, current) => previous != current,
         builder: (context, state) => Scaffold(
-          backgroundColor:
-              state?.secondaryColor ?? defaultBranchTheme.secondaryColor,
+          backgroundColor: state?.secondaryColor ??
+              BranchThemes.defaultBranchTheme.secondaryColor,
           appBar: AppBar(
-            backgroundColor:
-                state?.primaryColor ?? defaultBranchTheme.primaryColor,
+            backgroundColor: state?.primaryColor ??
+                BranchThemes.defaultBranchTheme.primaryColor,
             title: const Text('Задачи'),
             actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
           ),
