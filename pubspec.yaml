@@ -16,6 +16,7 @@ dependencies:
   flutter_svg: ^0.19.1
   intl: ^0.16.1
   sliver_fab: ^1.0.0
+  circular_check_box: ^1.0.4
 
 dev_dependencies:
   flutter_test:

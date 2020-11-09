@@ -1,3 +1,4 @@
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/domain/models/todo.dart';
@@ -28,7 +29,10 @@ class TodoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const cardMargin = EdgeInsets.symmetric(vertical: 6.0);
+
     final dismissibleBackground = Container(
+      margin: cardMargin,
       color: Colors.red,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -36,26 +40,29 @@ class TodoCard extends StatelessWidget {
       ),
     );
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-      child: InkWell(
-        onTap: onTap,
-        child: Dismissible(
-          key: Key(todoData.todo.id),
-          direction: DismissDirection.endToStart,
-          background: dismissibleBackground,
-          onDismissed: (direction) => onDelete(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Row(
-              children: [
-                Checkbox(
-                  value: todoData.todo.wasCompleted,
-                  onChanged: (newValue) =>
-                      onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
-                ),
-                Expanded(child: _buildTodoData()),
-              ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Dismissible(
+        key: Key(todoData.todo.id),
+        direction: DismissDirection.endToStart,
+        background: dismissibleBackground,
+        onDismissed: (direction) => onDelete(),
+        child: Card(
+          margin: cardMargin,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Row(
+                children: [
+                  CircularCheckBox(
+                    value: todoData.todo.wasCompleted,
+                    onChanged: (newValue) =>
+                        onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
+                  ),
+                  Expanded(child: _buildTodoData()),
+                ],
+              ),
             ),
           ),
         ),
