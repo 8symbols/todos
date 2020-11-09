@@ -5,7 +5,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/todo/todo_steps_bloc/todo_steps_bloc.dart';
-import 'package:todos/presentation/todo/widgets/todo_step_widget.dart';
+import 'package:todos/presentation/todo/widgets/todo_step_item.dart';
 
 /// Карта с пунктами задачи.
 ///
@@ -40,7 +40,7 @@ class TodoStepsCard extends StatelessWidget {
                       ),
                     ),
                     for (final step in state.steps)
-                      TodoStepWidget(
+                      TodoStepItem(
                         step,
                         onDelete: () => _deleteStep(context, step),
                         onEdit: (editedStep) => _editStep(context, editedStep),
