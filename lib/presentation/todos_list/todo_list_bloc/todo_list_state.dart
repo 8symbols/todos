@@ -26,3 +26,16 @@ class TodosListContentState extends TodoListState {
   TodosListContentState(List<TodoViewData> todos, areCompletedTodosVisible)
       : super(todos, areCompletedTodosVisible);
 }
+
+/// Состояние работы со списком задач после удаления задачи.
+class TodosListDeletedTodoState extends TodoListState {
+  /// Удаленная задача
+  final Todo todo;
+
+  /// Создает состояние со списком задач [todos].
+  TodosListDeletedTodoState(
+    this.todo,
+    List<TodoViewData> todos,
+    areCompletedTodosVisible,
+  ) : super(todos, areCompletedTodosVisible);
+}

@@ -63,78 +63,66 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodoDeletedEventToState(
     TodoDeletedEvent event,
   ) async* {
-    if (state is TodosListContentState) {
-      await _todosInteractor.deleteTodo(event.todoId);
-      final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListContentState(
-          await _mapToViewData(todos), state.areCompletedTodosVisible);
-    }
+    await _todosInteractor.deleteTodo(event.todo.id);
+    final todos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodosListDeletedTodoState(event.todo, await _mapToViewData(todos),
+        state.areCompletedTodosVisible);
   }
 
   /// Изменяет задачу.
   Stream<TodoListState> _mapTodoEditedEventToState(
     TodoEditedEvent event,
   ) async* {
-    if (state is TodosListContentState) {
-      await _todosInteractor.editTodo(event.todo);
-      final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListContentState(
-          await _mapToViewData(todos), state.areCompletedTodosVisible);
-    }
+    await _todosInteractor.editTodo(event.todo);
+    final todos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodosListContentState(
+        await _mapToViewData(todos), state.areCompletedTodosVisible);
   }
 
   /// Добавляет задачу.
   Stream<TodoListState> _mapTodoAddedEventToState(
     TodoAddedEvent event,
   ) async* {
-    if (state is TodosListContentState) {
-      // TODO: Убрать заглушку branchId после реализации веток.
-      var mockBranchId = branchId;
-      if (mockBranchId == null) {
-        mockBranchId = (await _todosInteractor.getBranches())[0].id;
-      }
-      await _todosInteractor.addTodo(mockBranchId, event.todo);
-      final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListContentState(
-          await _mapToViewData(todos), state.areCompletedTodosVisible);
+    // TODO: Убрать заглушку branchId после реализации веток.
+    var mockBranchId = branchId;
+    if (mockBranchId == null) {
+      mockBranchId = (await _todosInteractor.getBranches())[0].id;
     }
+    await _todosInteractor.addTodo(mockBranchId, event.todo);
+    final todos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodosListContentState(
+        await _mapToViewData(todos), state.areCompletedTodosVisible);
   }
 
   /// Применяет к списку задач настройки отображения выполненных задач.
   Stream<TodoListState> _mapCompletedTodosVisibilityChangedEventToState(
     CompletedTodosVisibilityChangedEvent event,
   ) async* {
-    if (state is TodosListContentState) {
-      final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListContentState(
-          await _mapToViewData(todos,
-              areCompletedTodosVisible: event.areCompletedTodosVisible),
-          event.areCompletedTodosVisible);
-    }
+    final todos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodosListContentState(
+        await _mapToViewData(todos,
+            areCompletedTodosVisible: event.areCompletedTodosVisible),
+        event.areCompletedTodosVisible);
   }
 
   /// Удаляет выполненные задачи.
   Stream<TodoListState> _mapCompletedTodosDeletedEventToState(
     CompletedTodosDeletedEvent event,
   ) async* {
-    if (state is TodosListContentState) {
-      await _todosInteractor.deleteCompletedTodos(branchId: branchId);
-      final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListContentState(
-          await _mapToViewData(todos), state.areCompletedTodosVisible);
-    }
+    await _todosInteractor.deleteCompletedTodos(branchId: branchId);
+    final todos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodosListContentState(
+        await _mapToViewData(todos), state.areCompletedTodosVisible);
   }
 
   /// Сортирует в соответствии с новым порядком сортировки.
   Stream<TodoListState> _mapTodosSortOrderChangedEventToState(
     TodosSortOrderChangedEvent event,
   ) async* {
-    if (state is TodosListContentState) {
-      _sortOrder = event.sortOrder;
-      final todos = await _todosInteractor.getTodos(branchId: branchId);
-      yield TodosListContentState(
-          await _mapToViewData(todos), state.areCompletedTodosVisible);
-    }
+    _sortOrder = event.sortOrder;
+    final todos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodosListContentState(
+        await _mapToViewData(todos), state.areCompletedTodosVisible);
   }
 
   /// Применяет настройки отображения: удаляет выполненные задачи,

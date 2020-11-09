@@ -8,10 +8,10 @@ class TodosListLoadingRequestedEvent extends TodoListEvent {}
 
 /// Событие удаления задачи.
 class TodoDeletedEvent extends TodoListEvent {
-  /// Идентификатор удаленной задачи.
-  final String todoId;
+  /// Удаленная задача.
+  final Todo todo;
 
-  TodoDeletedEvent(this.todoId);
+  TodoDeletedEvent(this.todo);
 }
 
 /// Событие изменения задачи.

@@ -70,7 +70,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
             actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
           ),
           floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
-          body: BlocBuilder<TodoListBloc, TodoListState>(
+          body: BlocConsumer<TodoListBloc, TodoListState>(
+            listener: (context, state) {
+              if (state is TodosListDeletedTodoState) {
+                _showUndoSnackBar(context, state.todo);
+              }
+            },
             builder: (context, state) => state is TodosListLoadingState
                 ? const Center(child: CircularProgressIndicator())
                 : TodoList(state.todos),
@@ -123,5 +128,20 @@ class _TodoListScreenState extends State<TodoListScreen> {
         context.bloc<TodoListBloc>().add(TodoAddedEvent(todo));
       }
     }
+  }
+
+  void _showUndoSnackBar(BuildContext context, Todo todo) {
+    Scaffold.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('Задача "${todo.title}" удалена.'),
+          action: SnackBarAction(
+            label: "Отменить",
+            onPressed: () =>
+                context.bloc<TodoListBloc>().add(TodoAddedEvent(todo)),
+          ),
+        ),
+      );
   }
 }
