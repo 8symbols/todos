@@ -1,3 +1,4 @@
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo_step.dart';
 
@@ -21,7 +22,7 @@ class TodoStepItem extends StatelessWidget {
     return Row(
       key: ValueKey(step.id),
       children: [
-        Checkbox(
+        CircularCheckBox(
           value: step.wasCompleted,
           onChanged: (value) => onEdit(step.copyWith(wasCompleted: value)),
         ),
@@ -32,6 +33,8 @@ class TodoStepItem extends StatelessWidget {
               decoration: const InputDecoration.collapsed(
                 hintText: 'Введите шаг',
               ),
+              textInputAction: TextInputAction.done,
+              maxLines: null,
               initialValue: step.title,
               onFieldSubmitted: (value) => onEdit(step.copyWith(title: value)),
               autofocus: step.title.isEmpty,

@@ -61,6 +61,8 @@ class TodoStepsCard extends StatelessWidget {
                         decoration: const InputDecoration.collapsed(
                           hintText: 'Заметки по задаче...',
                         ),
+                        textInputAction: TextInputAction.done,
+                        maxLines: null,
                         initialValue: _todo.note,
                         onFieldSubmitted: (value) =>
                             _editTodoNote(context, _todo, value),
