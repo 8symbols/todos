@@ -42,7 +42,6 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
     StepsLoadingRequestedEvent event,
   ) async* {
     final steps = await _todosInteractor.getSteps(_todo.id);
-    sortSteps(steps);
     yield StepsContentState(steps);
   }
 
@@ -50,41 +49,26 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   Stream<TodoStepsState> _mapStepDeletedEventToState(
     StepDeletedEvent event,
   ) async* {
-    if (state is StepsContentState) {
-      await _todosInteractor.deleteStep(event.stepId);
-      final steps = await _todosInteractor.getSteps(_todo.id);
-      sortSteps(steps);
-      yield StepsContentState(steps);
-    }
+    await _todosInteractor.deleteStep(event.stepId);
+    final steps = await _todosInteractor.getSteps(_todo.id);
+    yield StepsContentState(steps);
   }
 
   /// Изменяет пункт задачи в состояние.
   Stream<TodoStepsState> _mapStepEditedEventToState(
     StepEditedEvent event,
   ) async* {
-    if (state is StepsContentState) {
-      await _todosInteractor.editStep(event.step);
-      final steps = await _todosInteractor.getSteps(_todo.id);
-      sortSteps(steps);
-      yield StepsContentState(steps);
-    }
+    await _todosInteractor.editStep(event.step);
+    final steps = await _todosInteractor.getSteps(_todo.id);
+    yield StepsContentState(steps);
   }
 
   /// Добавляет пункт задачи в состояние.
   Stream<TodoStepsState> _mapStepAddedEventToState(
     StepAddedEvent event,
   ) async* {
-    if (state is StepsContentState) {
-      await _todosInteractor.addStep(_todo.id, event.step);
-      final steps = await _todosInteractor.getSteps(_todo.id);
-      sortSteps(steps);
-      yield StepsContentState(steps);
-    }
-  }
-
-  /// Сортирует пункты задачи по порядку их добавления.
-  void sortSteps(List<TodoStep> steps) {
-    // TODO: Добавить сортировку.
-    // steps.sort((a, b) => a.index - b.index);
+    await _todosInteractor.addStep(_todo.id, event.step);
+    final steps = await _todosInteractor.getSteps(_todo.id);
+    yield StepsContentState(steps);
   }
 }
