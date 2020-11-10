@@ -34,16 +34,19 @@ class TodoImagesCard extends StatelessWidget {
   }
 
   Widget _buildAddImageButton(BuildContext context) {
-    return SizedBox(
-      height: _imageSize,
-      width: 60.0,
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.0),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: SizedBox(
+        height: _imageSize,
+        width: 60.0,
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.0),
+          ),
+          color: Theme.of(context).floatingActionButtonTheme.backgroundColor,
+          child: const Icon(Icons.attachment, color: Colors.white),
+          onPressed: () => addImage(context),
         ),
-        color: Theme.of(context).floatingActionButtonTheme.backgroundColor,
-        child: const Icon(Icons.attachment, color: Colors.white),
-        onPressed: () => addImage(context),
       ),
     );
   }
