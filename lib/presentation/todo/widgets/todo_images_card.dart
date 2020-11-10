@@ -76,8 +76,7 @@ class TodoImagesCard extends StatelessWidget {
           right: 4.0,
           top: 4.0,
           child: InkWell(
-            onTap: () =>
-                context.bloc<TodoImagesBloc>().add(ImageDeletedEvent(path)),
+            onTap: () => _deleteImage(context, path),
             child: Container(
               padding: const EdgeInsets.all(2.0),
               width: 20.0,
@@ -98,5 +97,29 @@ class TodoImagesCard extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _deleteImage(BuildContext context, String path) async {
+    final wasDeletionConfirmed = await showDialog<bool>(
+      context: context,
+      child: AlertDialog(
+        title: const Text('Удалить изображение?'),
+        content: const Text('Это действие нельзя отменить.'),
+        actions: [
+          FlatButton(
+            child: const Text('Подтвердить'),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+          FlatButton(
+            child: const Text('Отмена'),
+            onPressed: () => Navigator.of(context).pop(false),
+          ),
+        ],
+      ),
+    );
+
+    if (wasDeletionConfirmed == true) {
+      context.bloc<TodoImagesBloc>().add(ImageDeletedEvent(path));
+    }
   }
 }
