@@ -15,7 +15,7 @@ class NotificationsService extends INotificationsService {
   @override
   Future<bool> scheduleNotification(Todo todo) async {
     const method = 'scheduleNotification';
-    await platform.invokeMethod(method, {
+    return await platform.invokeMethod(method, {
       "todo_id": todo.id,
       "title": todo.title,
       "time_millis": todo.notificationTime.millisecondsSinceEpoch,
@@ -30,7 +30,7 @@ class NotificationsService extends INotificationsService {
   @override
   Future<bool> cancelNotification(Todo todo) async {
     const method = 'cancelNotification';
-    await platform.invokeMethod(method, {
+    return await platform.invokeMethod(method, {
       "todo_id": todo.id,
       "title": todo.title,
     });

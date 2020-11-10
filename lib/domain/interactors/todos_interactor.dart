@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:todos/domain/factories/todos_comparators_factory.dart';
+import 'package:todos/domain/helpers/filesystem_helper.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
@@ -31,6 +34,10 @@ class TodosInteractor {
   ///
   /// Связанные с ней задачи также удаляются.
   Future<void> deleteBranch(String branchId) async {
+    final todos = await getTodos(branchId: branchId);
+    for (final todo in todos) {
+      await deleteTodo(todo.id);
+    }
     return _repository.deleteBranch(branchId);
   }
 
@@ -126,15 +133,17 @@ class TodosInteractor {
     return _repository.getSteps(todoId);
   }
 
-  /// Добавляет путь к изображению [imagePath] в задачу
-  /// c идентификатором [todoId].
-  Future<void> addImagePath(String todoId, String imagePath) async {
+  /// Копирует картинку по пути [tmpImagePath] в локальную директорию и
+  /// и добавляет путь к копии в задачу c идентификатором [todoId].
+  Future<void> addImagePath(String todoId, String tmpImagePath) async {
+    final imagePath = await FileSystemHelper.copyToLocal(tmpImagePath);
     return _repository.addImagePath(todoId, imagePath);
   }
 
   /// Удаляет путь к изображению [imagePath] из задачи
-  /// c идентификатором [todoId].
+  /// c идентификатором [todoId], а также само изображение.
   Future<void> deleteImagePath(String todoId, String imagePath) async {
+    await File(imagePath).delete();
     return _repository.deleteImagePath(todoId, imagePath);
   }
 

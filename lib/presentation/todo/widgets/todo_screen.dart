@@ -5,6 +5,7 @@ import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
+import 'package:todos/presentation/todo/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/todo/todo_steps_bloc/todo_steps_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/todo/widgets/todo_images_card.dart';
@@ -31,14 +32,18 @@ class TodoScreen extends StatefulWidget {
 class _TodoScreenState extends State<TodoScreen> {
   TodoStepsBloc _stepsBloc;
 
+  TodoImagesBloc _imagesBloc;
+
   TodoBloc _todoBloc;
 
   @override
   void initState() {
     super.initState();
     final todosRepository = context.repository<ITodosRepository>();
-    _stepsBloc = TodoStepsBloc(todosRepository, widget._todo);
-    _stepsBloc.add(StepsLoadingRequestedEvent());
+    _stepsBloc = TodoStepsBloc(todosRepository, widget._todo)
+      ..add(StepsLoadingRequestedEvent());
+    _imagesBloc = TodoImagesBloc(todosRepository, widget._todo)
+      ..add(ImagesLoadingRequestedEvent());
     _todoBloc = TodoBloc(todosRepository, NotificationsService(), widget._todo);
   }
 
@@ -56,6 +61,7 @@ class _TodoScreenState extends State<TodoScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<TodoStepsBloc>.value(value: _stepsBloc),
+        BlocProvider<TodoImagesBloc>.value(value: _imagesBloc),
         BlocProvider<TodoBloc>.value(value: _todoBloc),
       ],
       child: BlocConsumer<TodoBloc, TodoState>(
