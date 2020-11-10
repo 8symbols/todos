@@ -70,6 +70,7 @@ class _TodoScreenState extends State<TodoScreen> {
             Navigator.of(context).pop();
           }
         },
+        buildWhen: (previous, current) => current is! TodoDeletedState,
         builder: (context, state) => Scaffold(
           backgroundColor: widget._branchTheme.secondaryColor,
           body: SliverFab(
