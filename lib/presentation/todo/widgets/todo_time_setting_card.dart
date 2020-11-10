@@ -1,28 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:todos/domain/models/todo.dart';
+import 'package:todos/domain/wrappers/nullable.dart';
+import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
+import 'package:todos/presentation/todo/widgets/select_time_item.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// Карта с настройками временных параметров задачи.
 class TodoTimeSettingsCard extends StatelessWidget {
+  /// Задача.
+  final Todo todo;
+
+  TodoTimeSettingsCard(this.todo);
+
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FlatButton.icon(
-              icon: const Icon(Icons.notifications_active_outlined),
-              label: const Text('Напомнить'),
-              onPressed: () {},
+            SelectTimeItem(
+              const Icon(Icons.notifications_active_outlined),
+              'Напомнить',
+              todo.notificationTime,
+              onDelete: () => context.bloc<TodoBloc>().add(TodoEditedEvent(
+                  todo.copyWith(notificationTime: Nullable(null)))),
+              onSelect: (selectedDateTime) => context.bloc<TodoBloc>().add(
+                  TodoEditedEvent(todo.copyWith(
+                      notificationTime: Nullable(selectedDateTime)))),
             ),
             const Divider(
               height: 2.0,
               indent: 44.0,
               thickness: 2.0,
             ),
-            FlatButton.icon(
-              icon: const Icon(Icons.event),
-              label: const Text('Добавить дату выполнения'),
-              onPressed: () {},
+            SelectTimeItem(
+              const Icon(Icons.event),
+              'Добавить дату выполнения',
+              todo.deadlineTime,
+              onDelete: () => context.bloc<TodoBloc>().add(
+                  TodoEditedEvent(todo.copyWith(deadlineTime: Nullable(null)))),
+              onSelect: (selectedDateTime) => context.bloc<TodoBloc>().add(
+                  TodoEditedEvent(
+                      todo.copyWith(deadlineTime: Nullable(selectedDateTime)))),
             ),
           ],
         ),

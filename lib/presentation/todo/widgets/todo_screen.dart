@@ -63,9 +63,6 @@ class _TodoScreenState extends State<TodoScreen> {
             Navigator.of(context).pop();
           }
         },
-        buildWhen: (previous, current) =>
-            previous.todo.wasCompleted != current.todo.wasCompleted ||
-            previous.todo.title != current.todo.title,
         builder: (context, state) => Scaffold(
           backgroundColor: widget._branchTheme.secondaryColor,
           body: SliverFab(
@@ -92,7 +89,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   const SizedBox(height: 20.0),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TodoTimeSettingsCard(),
+                    child: TodoTimeSettingsCard(state.todo),
                   ),
                   const SizedBox(height: 20.0),
                   TodoImagesCard(),
