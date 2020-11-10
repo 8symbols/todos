@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sliver_fab/sliver_fab.dart';
+import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -38,7 +39,7 @@ class _TodoScreenState extends State<TodoScreen> {
     final todosRepository = context.repository<ITodosRepository>();
     _stepsBloc = TodoStepsBloc(todosRepository, widget._todo);
     _stepsBloc.add(StepsLoadingRequestedEvent());
-    _todoBloc = TodoBloc(todosRepository, widget._todo);
+    _todoBloc = TodoBloc(todosRepository, NotificationsService(), widget._todo);
   }
 
   @override
