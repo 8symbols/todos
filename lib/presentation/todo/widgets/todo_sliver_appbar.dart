@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/presentation/todo/widgets/todo_screen_menu_option.dart';
+import 'package:todos/presentation/todo/widgets/todo_screen_menu_options.dart';
 
 /// AppBar на экране задачи.
 class TodoSliverAppBar extends StatelessWidget {
@@ -24,7 +24,7 @@ class TodoSliverAppBar extends StatelessWidget {
       backgroundColor: _branchTheme.primaryColor,
       expandedHeight: _expandedHeight,
       pinned: true,
-      actions: [TodoScreenMenuOptions()],
+      actions: [TodoScreenMenuOptions(_todo)],
       flexibleSpace: FlexibleSpaceBar(
         titlePadding:
             const EdgeInsets.only(left: 72.0, right: 40.0, bottom: 16.0),

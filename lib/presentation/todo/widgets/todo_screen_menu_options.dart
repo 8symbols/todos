@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/models/popup_menu_item_data.dart';
 import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/widgets/popup_menu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/presentation/widgets/todo_editor_dialog.dart';
 
 /// Виджет выпадающего списка в меню [AppBar] экрана задачи.
 class TodoScreenMenuOptions extends StatelessWidget {
+  /// Задача.
+  final Todo todo;
+
+  TodoScreenMenuOptions(this.todo);
+
   @override
   Widget build(BuildContext context) {
     final editTodoOption = PopupMenuItemData(
@@ -21,7 +28,16 @@ class TodoScreenMenuOptions extends StatelessWidget {
     ]);
   }
 
-  void _editTodo(BuildContext context) {}
+  void _editTodo(BuildContext context) async {
+    final editedTodo = await showDialog<Todo>(
+      context: context,
+      child: TodoEditorDialog(todo),
+    );
+
+    if (editedTodo != null && editedTodo != todo) {
+      context.bloc<TodoBloc>().add(TodoEditedEvent(editedTodo));
+    }
+  }
 
   void _deleteTodo(BuildContext context) {
     context.bloc<TodoBloc>().add(TodoDeletedEvent());
