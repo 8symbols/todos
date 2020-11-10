@@ -20,6 +20,7 @@ dependencies:
   image_picker: ^0.6.7+14
   path_provider: ^1.6.24
   path: ^1.7.0
+  photo_view: ^0.10.2
 
 dev_dependencies:
   flutter_test:

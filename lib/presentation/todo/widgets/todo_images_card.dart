@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:todos/presentation/todo/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:photo_view/photo_view.dart';
 
 /// Карта с изображениями задачи.
 class TodoImagesCard extends StatelessWidget {
@@ -47,28 +48,20 @@ class TodoImagesCard extends StatelessWidget {
     );
   }
 
-  Future<void> addImage(BuildContext context) async {
-    final tmpPath = await showDialog(
-      context: context,
-      child: ImageSelectorDialog(),
-    );
-
-    if (tmpPath != null) {
-      context.bloc<TodoImagesBloc>().add(ImageAddedEvent(tmpPath));
-    }
-  }
-
   Widget _buildImage(BuildContext context, String path) {
     return Stack(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
-          child: SizedBox(
-            width: _imageSize,
-            height: _imageSize,
-            child: Image.file(
-              File(path),
-              fit: BoxFit.cover,
+          child: InkWell(
+            onTap: () => openImageFullscreen(context, path),
+            child: SizedBox(
+              width: _imageSize,
+              height: _imageSize,
+              child: Image.file(
+                File(path),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
@@ -99,6 +92,17 @@ class TodoImagesCard extends StatelessWidget {
     );
   }
 
+  Future<void> addImage(BuildContext context) async {
+    final tmpPath = await showDialog(
+      context: context,
+      child: ImageSelectorDialog(),
+    );
+
+    if (tmpPath != null) {
+      context.bloc<TodoImagesBloc>().add(ImageAddedEvent(tmpPath));
+    }
+  }
+
   Future<void> _deleteImage(BuildContext context, String path) async {
     final wasDeletionConfirmed = await showDialog<bool>(
       context: context,
@@ -121,5 +125,17 @@ class TodoImagesCard extends StatelessWidget {
     if (wasDeletionConfirmed == true) {
       context.bloc<TodoImagesBloc>().add(ImageDeletedEvent(path));
     }
+  }
+
+  void openImageFullscreen(BuildContext context, String path) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Container(
+          child: PhotoView(
+            imageProvider: FileImage(File(path)),
+          ),
+        ),
+      ),
+    );
   }
 }
