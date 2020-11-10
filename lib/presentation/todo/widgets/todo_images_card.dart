@@ -20,7 +20,9 @@ class TodoImagesCard extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18.0),
                   ),
-                  color: Colors.green,
+                  color: Theme.of(context)
+                      .floatingActionButtonTheme
+                      .backgroundColor,
                   child: const Icon(
                     Icons.attachment,
                     color: Colors.white,
