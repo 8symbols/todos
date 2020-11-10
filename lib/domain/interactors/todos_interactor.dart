@@ -4,13 +4,17 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/models/todos_sort_order.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/domain/services/i_notifications_service.dart';
 
 /// Интерактор для взаимодействия с задачами.
 class TodosInteractor {
   /// Хранилище задач.
   final ITodosRepository _repository;
 
-  TodosInteractor(this._repository);
+  /// Сервис для работы с уведомлениями.
+  final INotificationsService _notificationsService;
+
+  TodosInteractor(this._repository, this._notificationsService);
 
   /// Добавляет ветку задач [branch].
   Future<void> addBranch(Branch branch) async {
@@ -47,14 +51,40 @@ class TodosInteractor {
 
   /// Устанавливает задаче с идентификатором [todo.id] значения
   /// остальных полей [todo].
+  ///
+  /// В случае изменения [todo.notificationTime] удаляет предыдущее уведомление.
+  /// В случае изменения [todo.themeImagePath] удаляет предыдущее изображение.
   Future<void> editTodo(Todo todo) async {
+    final oldTodo = await getTodo(todo.id);
+    await _handleNotifications(oldTodo, todo);
     return _repository.editTodo(todo);
+  }
+
+  /// Удаляет предыдущее уведомление и устанавливает новое, если необходимо.
+  Future<void> _handleNotifications(Todo oldTodo, Todo newTodo) async {
+    if (oldTodo.notificationTime == null && newTodo.notificationTime != null) {
+      await _notificationsService.scheduleNotification(newTodo);
+    } else if (oldTodo.notificationTime != null &&
+        newTodo.notificationTime == null) {
+      await _notificationsService.cancelNotification(oldTodo);
+    } else if (oldTodo.notificationTime != null &&
+        newTodo.notificationTime != null) {
+      if (!oldTodo.notificationTime
+          .isAtSameMomentAs(newTodo.notificationTime)) {
+        await _notificationsService.cancelNotification(oldTodo);
+        await _notificationsService.scheduleNotification(newTodo);
+      }
+    }
   }
 
   /// Удаляет задачу с идентификатором [todoId].
   ///
-  /// Связанные с ней пункты и изображения также удаляются.
+  /// Связанные с ней пункты, уведомления и изображения также удаляются.
   Future<void> deleteTodo(String todoId) async {
+    final todo = await getTodo(todoId);
+    if (todo.notificationTime != null) {
+      await _notificationsService.cancelNotification(todo);
+    }
     return _repository.deleteTodo(todoId);
   }
 

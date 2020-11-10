@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/branch_theme.dart';
@@ -15,7 +16,8 @@ class ThemeCubit extends Cubit<BranchTheme> {
   final TodosInteractor _todosInteractor;
 
   ThemeCubit(ITodosRepository todosRepository, {this.branch})
-      : _todosInteractor = TodosInteractor(todosRepository),
+      : _todosInteractor =
+            TodosInteractor(todosRepository, NotificationsService()),
         super(branch?.theme);
 
   /// Меняет тему ветки.

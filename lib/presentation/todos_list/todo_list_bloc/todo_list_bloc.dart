@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -26,7 +27,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
 
   /// Создает BLoC.
   TodoListBloc(ITodosRepository todosRepository, {this.branchId})
-      : _todosInteractor = TodosInteractor(todosRepository),
+      : _todosInteractor =
+            TodosInteractor(todosRepository, NotificationsService()),
         super(TodosListLoadingState(true));
 
   @override
