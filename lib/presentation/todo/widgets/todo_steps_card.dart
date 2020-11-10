@@ -14,12 +14,12 @@ class TodoStepsCard extends StatelessWidget {
   /// Задача.
   final Todo _todo;
 
+  static final _creationDateFormat = DateFormat('dd.MM.yyyy HH:mm');
+
   TodoStepsCard(this._todo);
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
-
     return BlocBuilder<TodoStepsBloc, TodoStepsState>(
       builder: (context, state) => state is StepsLoadingState
           ? const Center(child: CircularProgressIndicator())
@@ -32,7 +32,7 @@ class TodoStepsCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(left: 14.0),
                       child: Text(
-                        'Создано: ${dateFormat.format(_todo.creationTime)}',
+                        'Создано: ${_creationDateFormat.format(_todo.creationTime)}',
                         style: const TextStyle(
                           fontSize: 13.0,
                           fontWeight: FontWeight.w300,

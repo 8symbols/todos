@@ -20,6 +20,8 @@ class TodoCard extends StatelessWidget {
   /// Callback, вызывающийся при изменении задачи.
   final TodoEditedCallback onEdit;
 
+  static final _deadlineDateFormat = DateFormat('dd.MM.yyyy HH:mm');
+
   TodoCard(
     this.todoData, {
     @required this.onDelete,
@@ -71,8 +73,6 @@ class TodoCard extends StatelessWidget {
   }
 
   Widget _buildTodoData() {
-    final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -89,7 +89,7 @@ class TodoCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 2.0),
             child: Text(
-              'До ${dateFormat.format(todoData.todo.deadlineTime)}',
+              'До ${_deadlineDateFormat.format(todoData.todo.deadlineTime)}',
               style: TextStyle(
                 fontSize: 13.5,
                 fontStyle: FontStyle.italic,
