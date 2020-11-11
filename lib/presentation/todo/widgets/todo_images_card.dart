@@ -71,23 +71,18 @@ class TodoImagesCard extends StatelessWidget {
         Positioned(
           right: 4.0,
           top: 4.0,
-          child: InkWell(
-            onTap: () => _deleteImage(context, path),
-            child: Container(
+          child: SizedBox(
+            height: 20.0,
+            width: 20.0,
+            child: RaisedButton(
               padding: const EdgeInsets.all(2.0),
-              width: 20.0,
-              height: 20.0,
-              decoration: BoxDecoration(
-                color:
-                    Theme.of(context).floatingActionButtonTheme.backgroundColor,
-                shape: BoxShape.circle,
+              shape: CircleBorder(),
+              color:
+                  Theme.of(context).floatingActionButtonTheme.backgroundColor,
+              child: const FittedBox(
+                child: Icon(Icons.close, color: Colors.white),
               ),
-              child: FittedBox(
-                child: const Icon(
-                  Icons.close,
-                  color: Colors.white,
-                ),
-              ),
+              onPressed: () => _deleteImage(context, path),
             ),
           ),
         ),
@@ -102,7 +97,7 @@ class TodoImagesCard extends StatelessWidget {
     );
 
     if (tmpPath != null) {
-      context.bloc<TodoImagesBloc>().add(ImageAddedEvent(tmpPath));
+      context.read<TodoImagesBloc>().add(ImageAddedEvent(tmpPath));
     }
   }
 
@@ -126,7 +121,7 @@ class TodoImagesCard extends StatelessWidget {
     );
 
     if (wasDeletionConfirmed == true) {
-      context.bloc<TodoImagesBloc>().add(ImageDeletedEvent(path));
+      context.read<TodoImagesBloc>().add(ImageDeletedEvent(path));
     }
   }
 

@@ -39,7 +39,7 @@ class _TodoScreenState extends State<TodoScreen> {
   @override
   void initState() {
     super.initState();
-    final todosRepository = context.repository<ITodosRepository>();
+    final todosRepository = context.read<ITodosRepository>();
     _stepsBloc = TodoStepsBloc(todosRepository, widget._todo)
       ..add(StepsLoadingRequestedEvent());
     _imagesBloc = TodoImagesBloc(todosRepository, widget._todo)
@@ -51,6 +51,7 @@ class _TodoScreenState extends State<TodoScreen> {
   void dispose() {
     _stepsBloc.close();
     _todoBloc.close();
+    _imagesBloc.close();
     super.dispose();
   }
 
@@ -112,9 +113,9 @@ class _TodoScreenState extends State<TodoScreen> {
   }
 
   void _changeTodoWasCompleted(BuildContext context, bool wasCompleted) {
-    final todo = context.bloc<TodoBloc>().state.todo;
+    final todo = context.read<TodoBloc>().state.todo;
     context
-        .bloc<TodoBloc>()
+        .read<TodoBloc>()
         .add(TodoEditedEvent(todo.copyWith(wasCompleted: wasCompleted)));
   }
 }

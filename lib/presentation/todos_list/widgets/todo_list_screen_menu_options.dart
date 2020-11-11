@@ -54,13 +54,13 @@ class TodoListScreenMenuOptions extends StatelessWidget {
 
   void _hideCompletedTodos(BuildContext context) {
     context
-        .bloc<TodoListBloc>()
+        .read<TodoListBloc>()
         .add(CompletedTodosVisibilityChangedEvent(false));
   }
 
   void _showCompletedTodos(BuildContext context) {
     context
-        .bloc<TodoListBloc>()
+        .read<TodoListBloc>()
         .add(CompletedTodosVisibilityChangedEvent(true));
   }
 
@@ -88,7 +88,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
     );
 
     if (wasDeletionConfirmed == true) {
-      context.bloc<TodoListBloc>().add(CompletedTodosDeletedEvent());
+      context.read<TodoListBloc>().add(CompletedTodosDeletedEvent());
     }
   }
 
@@ -124,7 +124,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
 
     if (chosenSortOrder != null) {
       context
-          .bloc<TodoListBloc>()
+          .read<TodoListBloc>()
           .add(TodosSortOrderChangedEvent(chosenSortOrder));
     }
   }
@@ -152,7 +152,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
                   BranchThemes.branchThemes,
                   state,
                   onSelect: (selectedTheme) =>
-                      context.bloc<ThemeCubit>().changeTheme(selectedTheme),
+                      context.read<ThemeCubit>().changeTheme(selectedTheme),
                 ),
               )
             ],

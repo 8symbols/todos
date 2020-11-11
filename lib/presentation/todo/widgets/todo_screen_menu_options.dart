@@ -35,11 +35,11 @@ class TodoScreenMenuOptions extends StatelessWidget {
     );
 
     if (editedTodo != null && editedTodo != todo) {
-      context.bloc<TodoBloc>().add(TodoEditedEvent(editedTodo));
+      context.read<TodoBloc>().add(TodoEditedEvent(editedTodo));
     }
   }
 
   void _deleteTodo(BuildContext context) {
-    context.bloc<TodoBloc>().add(TodoDeletedEvent());
+    context.read<TodoBloc>().add(TodoDeletedEvent());
   }
 }

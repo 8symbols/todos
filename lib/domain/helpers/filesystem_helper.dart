@@ -18,4 +18,9 @@ abstract class FileSystemHelper {
     final newFile = await oldFile.copy(newPath);
     return newFile.path;
   }
+
+  /// Удаляет файл по пути [path].
+  static Future<void> deleteFile(String path) async {
+    return await File(path).delete();
+  }
 }

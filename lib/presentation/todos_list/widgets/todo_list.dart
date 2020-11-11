@@ -95,19 +95,19 @@ class TodoList extends StatelessWidget {
   }
 
   void _deleteTodo(BuildContext context, Todo todo) {
-    context.bloc<TodoListBloc>().add(TodoDeletedEvent(todo));
+    context.read<TodoListBloc>().add(TodoDeletedEvent(todo));
   }
 
   void _editTodo(BuildContext context, String todoId, Todo editedTodo) {
-    context.bloc<TodoListBloc>().add(TodoEditedEvent(editedTodo));
+    context.read<TodoListBloc>().add(TodoEditedEvent(editedTodo));
   }
 
   void _openTodoScreen(BuildContext context, Todo todo) async {
     final branchTheme =
-        context.bloc<ThemeCubit>().state ?? BranchThemes.defaultBranchTheme;
+        context.read<ThemeCubit>().state ?? BranchThemes.defaultBranchTheme;
     final arguments = TodoScreenArguments(branchTheme, todo);
     await Navigator.of(context)
         .pushNamed(TodoScreen.routeName, arguments: arguments);
-    context.bloc<TodoListBloc>().add(TodosListLoadingRequestedEvent());
+    context.read<TodoListBloc>().add(TodosListLoadingRequestedEvent());
   }
 }

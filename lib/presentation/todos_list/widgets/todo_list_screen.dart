@@ -38,7 +38,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
   @override
   void initState() {
     super.initState();
-    final todosRepository = context.repository<ITodosRepository>();
+    final todosRepository = context.read<ITodosRepository>();
     _todoListBloc = TodoListBloc(todosRepository, branchId: widget.branch?.id);
     _todoListBloc.add(TodosListLoadingRequestedEvent());
     _themeCubit = ThemeCubit(todosRepository, branch: widget.branch);
@@ -107,7 +107,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     );
 
     if (editedTodo != null) {
-      context.bloc<TodoListBloc>().add(TodoAddedEvent(editedTodo));
+      context.read<TodoListBloc>().add(TodoAddedEvent(editedTodo));
     }
   }
 
@@ -120,7 +120,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
           action: SnackBarAction(
             label: "Отменить",
             onPressed: () =>
-                context.bloc<TodoListBloc>().add(TodoAddedEvent(todo)),
+                context.read<TodoListBloc>().add(TodoAddedEvent(todo)),
           ),
         ),
       );

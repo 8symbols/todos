@@ -23,9 +23,9 @@ class TodoTimeSettingsCard extends StatelessWidget {
               const Icon(Icons.notifications_active_outlined),
               'Напомнить',
               todo.notificationTime,
-              onDelete: () => context.bloc<TodoBloc>().add(TodoEditedEvent(
+              onDelete: () => context.read<TodoBloc>().add(TodoEditedEvent(
                   todo.copyWith(notificationTime: Nullable(null)))),
-              onSelect: (selectedDateTime) => context.bloc<TodoBloc>().add(
+              onSelect: (selectedDateTime) => context.read<TodoBloc>().add(
                   TodoEditedEvent(todo.copyWith(
                       notificationTime: Nullable(selectedDateTime)))),
             ),
@@ -38,9 +38,9 @@ class TodoTimeSettingsCard extends StatelessWidget {
               const Icon(Icons.event),
               'Добавить дату выполнения',
               todo.deadlineTime,
-              onDelete: () => context.bloc<TodoBloc>().add(
+              onDelete: () => context.read<TodoBloc>().add(
                   TodoEditedEvent(todo.copyWith(deadlineTime: Nullable(null)))),
-              onSelect: (selectedDateTime) => context.bloc<TodoBloc>().add(
+              onSelect: (selectedDateTime) => context.read<TodoBloc>().add(
                   TodoEditedEvent(
                       todo.copyWith(deadlineTime: Nullable(selectedDateTime)))),
             ),

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:todos/domain/factories/todos_comparators_factory.dart';
 import 'package:todos/domain/helpers/filesystem_helper.dart';
 import 'package:todos/domain/models/branch.dart';
@@ -8,6 +6,7 @@ import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/models/todos_sort_order.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_notifications_service.dart';
+import 'package:todos/domain/wrappers/nullable.dart';
 
 /// Интерактор для взаимодействия с задачами.
 class TodosInteractor {
@@ -52,18 +51,33 @@ class TodosInteractor {
   }
 
   /// Добавляет задачу [todo] в ветку c идентификатором [branchId].
+  ///
+  /// Устанавливает уведомление, если задано [todo.notificationTime].
+  /// Если задано [todo.themeImagePath], копирует картинку в локальную
+  /// директорию и устанавливает в [todo.themeImagePath] путь на копию.
   Future<void> addTodo(String branchId, Todo todo) async {
+    if (todo.notificationTime != null) {
+      await _notificationsService.scheduleNotification(todo);
+    }
+    if (todo.themeImagePath != null) {
+      final newPath = await FileSystemHelper.copyToLocal(todo.themeImagePath);
+      todo = todo.copyWith(themeImagePath: Nullable(newPath));
+    }
     return _repository.addTodo(branchId, todo);
   }
 
   /// Устанавливает задаче с идентификатором [todo.id] значения
   /// остальных полей [todo].
   ///
-  /// В случае изменения [todo.notificationTime] удаляет предыдущее уведомление.
-  /// В случае изменения [todo.themeImagePath] удаляет предыдущее изображение.
+  /// В случае изменения [todo.notificationTime] удаляет предыдущее уведомление
+  /// и устанавливает новое.
+  /// В случае изменения [todo.themeImagePath] удаляет предыдущее изображение,
+  /// копирует новое в локальную директорию и устанавливает в
+  /// [todo.themeImagePath] путь на копию.
   Future<void> editTodo(Todo todo) async {
     final oldTodo = await getTodo(todo.id);
     await _handleNotifications(oldTodo, todo);
+    todo = await _handleThemeImages(oldTodo, todo);
     return _repository.editTodo(todo);
   }
 
@@ -84,6 +98,24 @@ class TodosInteractor {
     }
   }
 
+  /// Удаляет предыдущее изображение и копирует новое, если необходимо.
+  ///
+  /// Возвращает [newTodo]. Если копирует новое изображение, то устанавливает
+  /// в [newTodo.themeImagePath] путь к нему.
+  Future<Todo> _handleThemeImages(Todo oldTodo, Todo newTodo) async {
+    if (oldTodo.themeImagePath != newTodo.themeImagePath) {
+      if (oldTodo.themeImagePath != null) {
+        await FileSystemHelper.deleteFile(oldTodo.themeImagePath);
+      }
+      if (newTodo.themeImagePath != null) {
+        final newPath =
+            await FileSystemHelper.copyToLocal(newTodo.themeImagePath);
+        newTodo = newTodo.copyWith(themeImagePath: Nullable(newPath));
+      }
+    }
+    return newTodo;
+  }
+
   /// Удаляет задачу с идентификатором [todoId].
   ///
   /// Связанные с ней пункты, уведомления и изображения также удаляются.
@@ -91,6 +123,13 @@ class TodosInteractor {
     final todo = await getTodo(todoId);
     if (todo.notificationTime != null) {
       await _notificationsService.cancelNotification(todo);
+    }
+    if (todo.themeImagePath != null) {
+      await FileSystemHelper.deleteFile(todo.themeImagePath);
+    }
+    final imagesPaths = await getImagesPaths(todoId);
+    for (final imagePath in imagesPaths) {
+      await deleteImagePath(todoId, imagePath);
     }
     return _repository.deleteTodo(todoId);
   }
@@ -143,7 +182,7 @@ class TodosInteractor {
   /// Удаляет путь к изображению [imagePath] из задачи
   /// c идентификатором [todoId], а также само изображение.
   Future<void> deleteImagePath(String todoId, String imagePath) async {
-    await File(imagePath).delete();
+    await FileSystemHelper.deleteFile(imagePath);
     return _repository.deleteImagePath(todoId, imagePath);
   }
 

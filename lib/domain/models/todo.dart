@@ -72,8 +72,8 @@ class Todo {
     bool wasCompleted,
     DateTime creationTime,
     TodoPriority priority,
-    String themeImagePath,
-    String note,
+    Nullable<String> themeImagePath,
+    Nullable<String> note,
     Nullable<DateTime> deadlineTime,
     Nullable<DateTime> notificationTime,
     String title,
@@ -85,8 +85,9 @@ class Todo {
       wasCompleted: wasCompleted ?? this.wasCompleted,
       creationTime: creationTime ?? this.creationTime,
       priority: priority ?? this.priority,
-      themeImagePath: themeImagePath ?? this.themeImagePath,
-      note: note ?? this.note,
+      themeImagePath:
+          themeImagePath != null ? themeImagePath.value : this.themeImagePath,
+      note: note != null ? note.value : this.note,
       deadlineTime:
           deadlineTime != null ? deadlineTime.value : this.deadlineTime,
       notificationTime: notificationTime != null
