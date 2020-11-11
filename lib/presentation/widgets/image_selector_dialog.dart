@@ -4,12 +4,7 @@ import 'package:image_picker/image_picker.dart';
 /// Диалог для выбора изображения.
 ///
 /// Возвращает путь [String] к расположению файла в кеше.
-class ImageSelectorDialog extends StatefulWidget {
-  @override
-  _ImageSelectorDialogState createState() => _ImageSelectorDialogState();
-}
-
-class _ImageSelectorDialogState extends State<ImageSelectorDialog> {
+class ImageSelectorDialog extends StatelessWidget {
   final picker = ImagePicker();
 
   Widget build(BuildContext context) {
