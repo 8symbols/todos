@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/models/popup_menu_item_data.dart';
 import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
+import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/popup_menu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/widgets/todo_editor_dialog.dart';
@@ -39,7 +40,19 @@ class TodoScreenMenuOptions extends StatelessWidget {
     }
   }
 
-  void _deleteTodo(BuildContext context) {
-    context.read<TodoBloc>().add(TodoDeletedEvent());
+  void _deleteTodo(BuildContext context) async {
+    final wasDeletionConfirmed = await showDialog<bool>(
+      context: context,
+      child: const BooleanDialog(
+        title: 'Удалить задачу?',
+        content: 'Это действие нельзя отменить.',
+        acceptButtonText: 'Подтвердить',
+        rejectButtonText: 'Отмена',
+      ),
+    );
+
+    if (wasDeletionConfirmed == true) {
+      context.read<TodoBloc>().add(TodoDeletedEvent());
+    }
   }
 }

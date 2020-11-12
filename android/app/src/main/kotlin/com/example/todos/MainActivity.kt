@@ -13,8 +13,8 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     companion object {
-        private val FLUTTER_CHANNEL = "todos/notifications"
-        val NOTIFICATION_CHANNEL_ID = "TODO_CHANNEL_ID"
+        private const val FLUTTER_CHANNEL = "todos/notifications"
+        const val NOTIFICATION_CHANNEL_ID = "TODO_CHANNEL_ID"
     }
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
@@ -25,51 +25,54 @@ class MainActivity : FlutterActivity() {
                     val todoId = call.argument<String>("todo_id")!!
                     val title = call.argument<String>("title")!!
                     val time = call.argument<Long>("time_millis")!!
-                    val notification = getNotification(title)!!
+                    val notification = getNotification(title, time)
 
                     val id = todoId.hashCode()
                     scheduleNotification(notification, id, time)
-                    result.success(true)
+                    return@setMethodCallHandler result.success(true)
                 }
                 "cancelNotification" -> {
+                    val todoId = call.argument<String>("todo_id")!!
                     val title = call.argument<String>("title")!!
-                    val notification = getNotification(title)!!
+                    val time = call.argument<Long>("time_millis")!!
+                    val notification = getNotification(title, time)
 
-                    val id = title.hashCode()
+                    val id = todoId.hashCode()
                     cancelNotification(notification, id)
-                    result.success(true)
+                    return@setMethodCallHandler result.success(true)
                 }
                 else -> {
-                    result.notImplemented()
+                    return@setMethodCallHandler result.notImplemented()
                 }
             }
         }
     }
 
     private fun scheduleNotification(notification: Notification, id: Int, time_millis: Long) {
-        val notificationIntent = Intent(this, NotificationPublisher::class.java)
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, id)
-        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification)
-        val pendingIntent = PendingIntent.getBroadcast(this, id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager[AlarmManager.RTC_WAKEUP, time_millis] = pendingIntent
+        alarmManager[AlarmManager.RTC_WAKEUP, time_millis] = getNotificationPendingIntent(notification, id)
     }
 
     private fun cancelNotification(notification: Notification, id: Int) {
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(getNotificationPendingIntent(notification, id))
+    }
+
+    private fun getNotificationPendingIntent(notification: Notification, id: Int): PendingIntent {
         val notificationIntent = Intent(this, NotificationPublisher::class.java)
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, id)
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification)
-        val pendingIntent = PendingIntent.getBroadcast(this, id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.cancel(pendingIntent)
+        return PendingIntent.getBroadcast(this, id, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-    private fun getNotification(content: String): Notification? {
+    private fun getNotification(content: String, time: Long): Notification {
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-        builder.setContentTitle("Напоминание о задаче")
-        builder.setContentText(content)
-        builder.setAutoCancel(true)
-        builder.setSmallIcon(R.drawable.ic_stat_name)
+                .setContentTitle("Напоминание о задаче")
+                .setContentText(content)
+                .setAutoCancel(true)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setWhen(time)
+                .setShowWhen(true)
         return builder.build()
     }
 

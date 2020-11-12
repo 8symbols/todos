@@ -7,15 +7,16 @@ import 'package:todos/domain/wrappers/nullable.dart';
 import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/todo/todo_steps_bloc/todo_steps_bloc.dart';
 import 'package:todos/presentation/todo/widgets/todo_step_item.dart';
+import 'package:todos/presentation/widgets/boolean_dialog.dart';
 
 /// Карта с пунктами задачи.
 ///
 /// Также отображает время создания задачи и заметки о ней.
 class TodoStepsCard extends StatelessWidget {
+  static final _creationDateFormat = DateFormat('dd.MM.yyyy HH:mm');
+
   /// Задача.
   final Todo _todo;
-
-  static final _creationDateFormat = DateFormat('dd.MM.yyyy HH:mm');
 
   TodoStepsCard(this._todo);
 
@@ -32,7 +33,9 @@ class TodoStepsCard extends StatelessWidget {
             context.read<TodoBloc>().state.todo.wasCompleted;
         final wereAllStepsCompleted =
             state.steps.every((step) => step.wasCompleted);
-        if (!wasTodoCompleted && wereAllStepsCompleted) {
+        if (!wasTodoCompleted &&
+            wereAllStepsCompleted &&
+            state.steps.isNotEmpty) {
           _suggestToCompleteTask(context);
         }
       },
@@ -88,7 +91,7 @@ class TodoStepsCard extends StatelessWidget {
         textInputAction: TextInputAction.done,
         maxLines: null,
         initialValue: _todo.note,
-        onFieldSubmitted: (value) => _editTodoNote(context, _todo, value),
+        onFieldSubmitted: (value) => _editTodoNote(context, value),
       ),
     );
   }
@@ -106,28 +109,18 @@ class TodoStepsCard extends StatelessWidget {
     context.read<TodoStepsBloc>().add(StepAddedEvent(newStep));
   }
 
-  void _editTodoNote(BuildContext context, Todo todo, String value) {
+  void _editTodoNote(BuildContext context, String value) {
     context
         .read<TodoBloc>()
-        .add(TodoEditedEvent(todo.copyWith(note: Nullable(value))));
+        .add(TodoEditedEvent(_todo.copyWith(note: Nullable(value))));
   }
 
   Future<void> _suggestToCompleteTask(BuildContext context) async {
     final shouldCompleteTodo = await showDialog<bool>(
       context: context,
-      child: AlertDialog(
-        title: const Text('Все шаги выполнены'),
-        content: const Text('Хотите завершить задание?'),
-        actions: [
-          FlatButton(
-            child: const Text('Нет'),
-            onPressed: () => Navigator.of(context).pop(false),
-          ),
-          FlatButton(
-            child: const Text('Да'),
-            onPressed: () => Navigator.of(context).pop(true),
-          )
-        ],
+      child: const BooleanDialog(
+        title: 'Все шаги выполнены',
+        content: 'Хотите завершить задание?',
       ),
     );
 

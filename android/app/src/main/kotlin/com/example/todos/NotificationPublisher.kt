@@ -11,8 +11,8 @@ import com.example.todos.MainActivity.Companion.NOTIFICATION_CHANNEL_ID
 
 class NotificationPublisher : BroadcastReceiver() {
     companion object {
-        var NOTIFICATION_ID = "notification-id"
-        var NOTIFICATION = "notification"
+        const val NOTIFICATION_ID = "notification-id"
+        const val NOTIFICATION = "notification"
     }
 
     override fun onReceive(context: Context, intent: Intent) {

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:todos/presentation/todo/todo_images_bloc/todo_images_bloc.dart';
+import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:photo_view/photo_view.dart';
@@ -57,7 +58,7 @@ class TodoImagesCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
           child: InkWell(
-            onTap: () => openImageFullscreen(context, path),
+            onTap: () => _openImageFullscreen(context, path),
             child: SizedBox(
               width: _imageSize,
               height: _imageSize,
@@ -104,19 +105,11 @@ class TodoImagesCard extends StatelessWidget {
   Future<void> _deleteImage(BuildContext context, String path) async {
     final wasDeletionConfirmed = await showDialog<bool>(
       context: context,
-      child: AlertDialog(
-        title: const Text('Удалить изображение?'),
-        content: const Text('Это действие нельзя отменить.'),
-        actions: [
-          FlatButton(
-            child: const Text('Подтвердить'),
-            onPressed: () => Navigator.of(context).pop(true),
-          ),
-          FlatButton(
-            child: const Text('Отмена'),
-            onPressed: () => Navigator.of(context).pop(false),
-          ),
-        ],
+      child: const BooleanDialog(
+        title: 'Удалить изображение?',
+        content: 'Это действие нельзя отменить.',
+        acceptButtonText: 'Подтвердить',
+        rejectButtonText: 'Отмена',
       ),
     );
 
@@ -125,7 +118,7 @@ class TodoImagesCard extends StatelessWidget {
     }
   }
 
-  void openImageFullscreen(BuildContext context, String path) {
+  void _openImageFullscreen(BuildContext context, String path) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Container(

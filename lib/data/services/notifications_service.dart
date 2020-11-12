@@ -14,8 +14,7 @@ class NotificationsService extends INotificationsService {
   /// уведомления в миллисекундах "time_millis".
   @override
   Future<bool> scheduleNotification(Todo todo) async {
-    const method = 'scheduleNotification';
-    return await platform.invokeMethod(method, {
+    return await platform.invokeMethod('scheduleNotification', {
       "todo_id": todo.id,
       "title": todo.title,
       "time_millis": todo.notificationTime.millisecondsSinceEpoch,
@@ -26,13 +25,13 @@ class NotificationsService extends INotificationsService {
   ///
   /// Вызывает метод "cancelNotification".
   ///
-  /// Передает id задачи "todo_id" и название задачи "title".
-  @override
+  /// Передает id задачи "todo_id", название задачи "title" и время
+  /// уведомления в миллисекундах "time_millis".  @override
   Future<bool> cancelNotification(Todo todo) async {
-    const method = 'cancelNotification';
-    return await platform.invokeMethod(method, {
+    return await platform.invokeMethod('cancelNotification', {
       "todo_id": todo.id,
       "title": todo.title,
+      "time_millis": todo.notificationTime.millisecondsSinceEpoch,
     });
   }
 }

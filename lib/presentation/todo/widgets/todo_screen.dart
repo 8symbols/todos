@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sliver_fab/sliver_fab.dart';
 import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
@@ -57,7 +56,7 @@ class _TodoScreenState extends State<TodoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const appBarExpandedHeight = 200.0;
+    const appBarMaxExtent = 200.0;
 
     return MultiBlocProvider(
       providers: [
@@ -74,26 +73,23 @@ class _TodoScreenState extends State<TodoScreen> {
         buildWhen: (previous, current) => current is! TodoDeletedState,
         builder: (context, state) => Scaffold(
           backgroundColor: widget._branchTheme.secondaryColor,
-          body: SliverFab(
-            floatingWidget: FloatingActionButton(
-              onPressed: () =>
-                  _changeTodoWasCompleted(context, !state.todo.wasCompleted),
-              child: Icon(
-                state.todo.wasCompleted ? Icons.close : Icons.check,
-                color: Colors.white,
-              ),
-            ),
-            floatingPosition: const FloatingPosition(left: 16),
-            expandedHeight: appBarExpandedHeight,
+          body: CustomScrollView(
             slivers: <Widget>[
-              TodoSliverAppBar(
-                  appBarExpandedHeight, widget._branchTheme, state.todo),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: TodoSliverAppBar(
+                  appBarMaxExtent,
+                  MediaQuery.of(context).padding.top,
+                  widget._branchTheme,
+                  state.todo,
+                ),
+              ),
               SliverList(
                 delegate: SliverChildListDelegate([
-                  const SizedBox(height: 32.0),
+                  const SizedBox(height: 4.0),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TodoStepsCard(widget._todo),
+                    child: TodoStepsCard(state.todo),
                   ),
                   const SizedBox(height: 20.0),
                   Padding(
@@ -110,12 +106,5 @@ class _TodoScreenState extends State<TodoScreen> {
         ),
       ),
     );
-  }
-
-  void _changeTodoWasCompleted(BuildContext context, bool wasCompleted) {
-    final todo = context.read<TodoBloc>().state.todo;
-    context
-        .read<TodoBloc>()
-        .add(TodoEditedEvent(todo.copyWith(wasCompleted: wasCompleted)));
   }
 }

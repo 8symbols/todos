@@ -6,6 +6,7 @@ import 'package:todos/presentation/models/popup_menu_item_data.dart';
 import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/domain/models/todos_sort_order.dart';
+import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/branch_theme_selector.dart';
 import 'package:todos/presentation/widgets/popup_menu.dart';
 
@@ -68,23 +69,12 @@ class TodoListScreenMenuOptions extends StatelessWidget {
     final wasDeletionConfirmed = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Подтвердите удаление'),
-          content: const Text(
-              'Удалить выполненные задачи? Это действие необратимо.'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Подтвердить'),
-              onPressed: () => Navigator.of(context).pop(true),
-            ),
-            TextButton(
-              child: const Text('Отмена'),
-              onPressed: () => Navigator.of(context).pop(false),
-            ),
-          ],
-        );
-      },
+      builder: (BuildContext context) => const BooleanDialog(
+        title: 'Подтвердите удаление',
+        content: 'Удалить выполненные задачи? Это действие необратимо.',
+        acceptButtonText: 'Подтвердить',
+        rejectButtonText: 'Отмена',
+      ),
     );
 
     if (wasDeletionConfirmed == true) {
