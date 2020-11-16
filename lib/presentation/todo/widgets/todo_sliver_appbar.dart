@@ -118,7 +118,7 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
           height: _minExtent,
           child: IconTheme(
             data: const IconThemeData(color: Colors.white),
-            child: TodoScreenMenuOptions(_todo),
+            child: TodoScreenMenuOptions(_todo, _branchTheme),
           ),
         ),
       ],

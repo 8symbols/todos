@@ -174,7 +174,7 @@ class _FlickrImagesGridState extends State<FlickrImagesGrid> {
       ),
     );
 
-    if (wasSelectionConfirmed) {
+    if (wasSelectionConfirmed == true) {
       final file = await DefaultCacheManager().getSingleFile(url);
       Navigator.of(context).pop(file.path);
     }

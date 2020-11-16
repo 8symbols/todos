@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/wrappers/nullable.dart';
 import 'package:todos/presentation/branch_themes.dart';
@@ -13,6 +14,9 @@ class TodoEditorDialog extends StatefulWidget {
   /// Задача.
   final Todo todo;
 
+  /// Тема ветки.
+  final BranchTheme branchTheme;
+
   /// Флаг, сигнализирующий о том, создается сейчас задача или редактируется.
   ///
   /// Если установлен, то дает возможность отредактировать название,
@@ -20,7 +24,7 @@ class TodoEditorDialog extends StatefulWidget {
   /// возможность отредактировать название и фотографию темы.
   final bool isNewTodo;
 
-  TodoEditorDialog(this.todo, {this.isNewTodo = false});
+  TodoEditorDialog(this.todo, this.branchTheme, {this.isNewTodo = false});
 
   @override
   _TodoEditorDialogState createState() => _TodoEditorDialogState(todo);
@@ -128,7 +132,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
             onPressed: () async {
               final imagePath = await showDialog<String>(
                 context: context,
-                child: ImageSelectorDialog(),
+                child: ImageSelectorDialog(widget.branchTheme),
               );
               if (imagePath != null) {
                 setState(() {

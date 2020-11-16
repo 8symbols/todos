@@ -97,7 +97,7 @@ class _TodoScreenState extends State<TodoScreen> {
                     child: TodoTimeSettingsCard(state.todo),
                   ),
                   const SizedBox(height: 20.0),
-                  TodoImagesCard(),
+                  TodoImagesCard(widget._branchTheme),
                   const SizedBox(height: 20.0),
                 ]),
               ),

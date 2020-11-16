@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/presentation/todo/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/utils/image_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
@@ -10,6 +11,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Карта с изображениями задачи.
 class TodoImagesCard extends StatelessWidget {
   static const _imageSize = 100.0;
+
+  /// Тема ветки.
+  final BranchTheme branchTheme;
+
+  const TodoImagesCard(this.branchTheme);
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +102,7 @@ class TodoImagesCard extends StatelessWidget {
   Future<void> addImage(BuildContext context) async {
     final tmpPath = await showDialog(
       context: context,
-      child: ImageSelectorDialog(),
+      child: ImageSelectorDialog(branchTheme),
     );
 
     if (tmpPath != null) {
