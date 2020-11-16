@@ -6,7 +6,7 @@ class PopupMenu extends StatelessWidget {
   /// Элементы меню.
   final List<PopupMenuItemData> options;
 
-  PopupMenu(this.options);
+  const PopupMenu(this.options);
 
   @override
   Widget build(BuildContext context) {

@@ -9,21 +9,18 @@ import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list_screen_menu_options.dart';
-import 'package:todos/presentation/widgets/create_todo_dialog.dart';
+import 'package:todos/presentation/widgets/todo_editor_dialog.dart';
 
 /// Экран списка задач.
 class TodoListScreen extends StatefulWidget {
   static const routeName = '/todos_list';
-
-  /// Репозиторий для работы с задачами.
-  final ITodosRepository _todosRepository;
 
   /// Ветка задача.
   ///
   /// Может быть равна null.
   final Branch branch;
 
-  TodoListScreen(this._todosRepository, {this.branch});
+  TodoListScreen({this.branch});
 
   @override
   _TodoListScreenState createState() => _TodoListScreenState();
@@ -41,10 +38,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
   @override
   void initState() {
     super.initState();
-    _todoListBloc =
-        TodoListBloc(widget._todosRepository, branchId: widget.branch?.id);
+    final todosRepository = context.read<ITodosRepository>();
+    _todoListBloc = TodoListBloc(todosRepository, branchId: widget.branch?.id);
     _todoListBloc.add(TodosListLoadingRequestedEvent());
-    _themeCubit = ThemeCubit(widget._todosRepository, branch: widget.branch);
+    _themeCubit = ThemeCubit(todosRepository, branch: widget.branch);
   }
 
   @override
@@ -73,7 +70,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
             actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
           ),
           floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
-          body: BlocBuilder<TodoListBloc, TodoListState>(
+          body: BlocConsumer<TodoListBloc, TodoListState>(
+            listener: (context, state) {
+              if (state is TodosListDeletedTodoState) {
+                _showUndoSnackBar(context, state.todo);
+              }
+            },
             builder: (context, state) => state is TodosListLoadingState
                 ? const Center(child: CircularProgressIndicator())
                 : TodoList(state.todos),
@@ -98,33 +100,29 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   /// Создает диалог с созданием новой задачи.
   void _addTodo(BuildContext context) async {
-    const maxTitleLength = 128;
-
-    final todo = await showDialog<Todo>(
+    final newTodo = Todo('');
+    final editedTodo = await showDialog<Todo>(
       context: context,
-      builder: (context) => CreateTodoDialog(maxTitleLength),
+      builder: (context) => TodoEditorDialog(newTodo, isNewTodo: true),
     );
 
-    if (todo != null) {
-      if (todo.title.isEmpty || todo.title.length > maxTitleLength) {
-        await showDialog<Todo>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Ошибка'),
-            content: Text(todo.title.isEmpty
-                ? 'Название задачи отсутствует'
-                : 'Слишком длинное название'),
-            actions: [
-              FlatButton(
-                child: const Text('Ок'),
-                onPressed: () => Navigator.of(context).pop(),
-              )
-            ],
-          ),
-        );
-      } else {
-        context.bloc<TodoListBloc>().add(TodoAddedEvent(todo));
-      }
+    if (editedTodo != null) {
+      context.read<TodoListBloc>().add(TodoAddedEvent(editedTodo));
     }
+  }
+
+  void _showUndoSnackBar(BuildContext context, Todo todo) {
+    Scaffold.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('Задача "${todo.title}" удалена.'),
+          action: SnackBarAction(
+            label: "Отменить",
+            onPressed: () =>
+                context.read<TodoListBloc>().add(TodoAddedEvent(todo)),
+          ),
+        ),
+      );
   }
 }

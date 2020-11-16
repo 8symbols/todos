@@ -1,3 +1,4 @@
+import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/domain/models/todo.dart';
@@ -13,14 +14,27 @@ class TodoCard extends StatelessWidget {
   /// Callback, вызывающийся при удалении задачи.
   final VoidCallback onDelete;
 
+  /// Callback, вызывающийся при нажатии на задачу.
+  final VoidCallback onTap;
+
   /// Callback, вызывающийся при изменении задачи.
   final TodoEditedCallback onEdit;
 
-  TodoCard(this.todoData, {@required this.onDelete, @required this.onEdit});
+  static final _deadlineDateFormat = DateFormat('dd.MM.yyyy HH:mm');
+
+  TodoCard(
+    this.todoData, {
+    @required this.onDelete,
+    @required this.onEdit,
+    @required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    const cardMargin = EdgeInsets.symmetric(vertical: 6.0);
+
     final dismissibleBackground = Container(
+      margin: cardMargin,
       color: Colors.red,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -28,24 +42,30 @@ class TodoCard extends StatelessWidget {
       ),
     );
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Dismissible(
         key: Key(todoData.todo.id),
         direction: DismissDirection.endToStart,
         background: dismissibleBackground,
         onDismissed: (direction) => onDelete(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          child: Row(
-            children: [
-              Checkbox(
-                value: todoData.todo.wasCompleted,
-                onChanged: (newValue) =>
-                    onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
+        child: Card(
+          margin: cardMargin,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Row(
+                children: [
+                  CircularCheckBox(
+                    value: todoData.todo.wasCompleted,
+                    onChanged: (newValue) =>
+                        onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
+                  ),
+                  Expanded(child: _buildTodoData()),
+                ],
               ),
-              Expanded(child: _buildTodoData()),
-            ],
+            ),
           ),
         ),
       ),
@@ -53,8 +73,6 @@ class TodoCard extends StatelessWidget {
   }
 
   Widget _buildTodoData() {
-    final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -71,7 +89,7 @@ class TodoCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 2.0),
             child: Text(
-              'До ${dateFormat.format(todoData.todo.deadlineTime)}',
+              'До ${_deadlineDateFormat.format(todoData.todo.deadlineTime)}',
               style: TextStyle(
                 fontSize: 13.5,
                 fontStyle: FontStyle.italic,

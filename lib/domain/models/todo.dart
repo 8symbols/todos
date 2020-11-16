@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo_priority.dart';
+import 'package:todos/domain/wrappers/nullable.dart';
 import 'package:uuid/uuid.dart';
 
 /// Модель задачи.
@@ -71,10 +72,10 @@ class Todo {
     bool wasCompleted,
     DateTime creationTime,
     TodoPriority priority,
-    String themeImagePath,
-    String notes,
-    DateTime deadlineTime,
-    DateTime notificationTime,
+    Nullable<String> themeImagePath,
+    Nullable<String> note,
+    Nullable<DateTime> deadlineTime,
+    Nullable<DateTime> notificationTime,
     String title,
   }) {
     return Todo(
@@ -84,10 +85,14 @@ class Todo {
       wasCompleted: wasCompleted ?? this.wasCompleted,
       creationTime: creationTime ?? this.creationTime,
       priority: priority ?? this.priority,
-      themeImagePath: themeImagePath ?? this.themeImagePath,
-      note: notes ?? this.note,
-      deadlineTime: deadlineTime ?? this.deadlineTime,
-      notificationTime: notificationTime ?? this.notificationTime,
+      themeImagePath:
+          themeImagePath != null ? themeImagePath.value : this.themeImagePath,
+      note: note != null ? note.value : this.note,
+      deadlineTime:
+          deadlineTime != null ? deadlineTime.value : this.deadlineTime,
+      notificationTime: notificationTime != null
+          ? notificationTime.value
+          : this.notificationTime,
     );
   }
 }

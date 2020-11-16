@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todos/domain/models/todo.dart';
+import 'package:todos/presentation/branch_themes.dart';
+import 'package:todos/presentation/todo/models/todo_screen_arguments.dart';
+import 'package:todos/presentation/todo/widgets/todo_screen.dart';
+import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/presentation/todos_list/widgets/empty_todo_list.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_card.dart';
 
 /// Виджет для отображения списка задач.
@@ -18,7 +22,7 @@ class TodoList extends StatelessWidget {
     const emptySpaceForFabHeight = 88.0;
 
     return todosData.isEmpty
-        ? _buildEmptyList()
+        ? EmptyTodoList()
         : Stack(
             children: [
               _buildBackgroundLines(context),
@@ -31,6 +35,8 @@ class TodoList extends StatelessWidget {
                             onDelete: () => _deleteTodo(context, todoData.todo),
                             onEdit: (editedTodo) => _editTodo(
                                 context, todoData.todo.id, editedTodo),
+                            onTap: () =>
+                                _openTodoScreen(context, todoData.todo),
                           ))
                       .toList(),
                   const SizedBox(height: emptySpaceForFabHeight),
@@ -38,30 +44,6 @@ class TodoList extends StatelessWidget {
               ),
             ],
           );
-  }
-
-  Widget _buildEmptyList() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            'assets/images/todolist.svg',
-            width: 200.0,
-            height: 200.0,
-          ),
-          const SizedBox(height: 16.0),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 150.0),
-            child: const Text(
-              'На данный момент задачи отсутствуют',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18.0),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildBackgroundLines(BuildContext context) {
@@ -89,23 +71,19 @@ class TodoList extends StatelessWidget {
   }
 
   void _deleteTodo(BuildContext context, Todo todo) {
-    context.bloc<TodoListBloc>().add(TodoDeletedEvent(todo.id));
-
-    Scaffold.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('Задача "${todo.title}" удалена.'),
-          action: SnackBarAction(
-            label: "Отменить",
-            onPressed: () =>
-                context.bloc<TodoListBloc>().add(TodoAddedEvent(todo)),
-          ),
-        ),
-      );
+    context.read<TodoListBloc>().add(TodoDeletedEvent(todo));
   }
 
   void _editTodo(BuildContext context, String todoId, Todo editedTodo) {
-    context.bloc<TodoListBloc>().add(TodoEditedEvent(editedTodo));
+    context.read<TodoListBloc>().add(TodoEditedEvent(editedTodo));
+  }
+
+  void _openTodoScreen(BuildContext context, Todo todo) async {
+    final branchTheme =
+        context.read<ThemeCubit>().state ?? BranchThemes.defaultBranchTheme;
+    final arguments = TodoScreenArguments(branchTheme, todo);
+    await Navigator.of(context)
+        .pushNamed(TodoScreen.routeName, arguments: arguments);
+    context.read<TodoListBloc>().add(TodosListLoadingRequestedEvent());
   }
 }
