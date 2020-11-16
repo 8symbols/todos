@@ -8,6 +8,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/todo/widgets/todo_screen_menu_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/presentation/utils/image_utils.dart';
 
 /// AppBar на экране задачи.
 class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
@@ -42,6 +43,10 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
+    final imageProvider = _todo.themeImagePath != null
+        ? FileImage(File(_todo.themeImagePath))
+        : null;
+
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -52,8 +57,15 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                if (_todo.themeImagePath != null)
-                  Image.file(File(_todo.themeImagePath), fit: BoxFit.cover),
+                if (imageProvider != null)
+                  InkWell(
+                    onDoubleTap: () =>
+                        ImageUtils.openImageFullScreen(context, imageProvider),
+                    child: Image(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 Padding(
                   padding: EdgeInsets.only(top: _unsafeAreaHeight),
                   child: _buildAppBarContent(context, shrinkOffset),

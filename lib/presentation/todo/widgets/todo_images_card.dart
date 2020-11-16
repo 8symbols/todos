@@ -65,7 +65,7 @@ class TodoImagesCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
           child: InkWell(
-            onTap: () =>
+            onDoubleTap: () =>
                 ImageUtils.openImageFullScreen(context, FileImage(File(path))),
             child: SizedBox(
               width: _imageSize,
