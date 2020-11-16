@@ -60,25 +60,29 @@ class _TodoListScreenState extends State<TodoListScreen> {
       ],
       child: BlocBuilder<ThemeCubit, BranchTheme>(
         buildWhen: (previous, current) => previous != current,
-        builder: (context, state) => Scaffold(
-          backgroundColor: state?.secondaryColor ??
-              BranchThemes.defaultBranchTheme.secondaryColor,
-          appBar: AppBar(
-            backgroundColor: state?.primaryColor ??
+        builder: (context, state) => Theme(
+          data: Theme.of(context).copyWith(
+            primaryColor: state?.primaryColor ??
                 BranchThemes.defaultBranchTheme.primaryColor,
-            title: const Text('Задачи'),
-            actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
+            scaffoldBackgroundColor: state?.secondaryColor ??
+                BranchThemes.defaultBranchTheme.secondaryColor,
           ),
-          floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
-          body: BlocConsumer<TodoListBloc, TodoListState>(
-            listener: (context, state) {
-              if (state is TodosListDeletedTodoState) {
-                _showUndoSnackBar(context, state.todo);
-              }
-            },
-            builder: (context, state) => state is TodosListLoadingState
-                ? const Center(child: CircularProgressIndicator())
-                : TodoList(state.todos),
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Задачи'),
+              actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
+            ),
+            floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
+            body: BlocConsumer<TodoListBloc, TodoListState>(
+              listener: (context, state) {
+                if (state is TodosListDeletedTodoState) {
+                  _showUndoSnackBar(context, state.todo);
+                }
+              },
+              builder: (context, state) => state is TodosListLoadingState
+                  ? const Center(child: CircularProgressIndicator())
+                  : TodoList(state.todos),
+            ),
           ),
         ),
       ),

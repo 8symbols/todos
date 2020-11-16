@@ -54,10 +54,15 @@ class _FlickrScreenState extends State<FlickrScreen> {
         BlocProvider<SearchBarCubit>.value(value: _searchBarCubit),
         BlocProvider<FlickrImagesBloc>.value(value: _imagesBloc),
       ],
-      child: Scaffold(
-        backgroundColor: widget._branchTheme.secondaryColor,
-        appBar: _buildAppBar(context),
-        body: FlickrImagesGrid(),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          primaryColor: widget._branchTheme.primaryColor,
+          scaffoldBackgroundColor: widget._branchTheme.secondaryColor,
+        ),
+        child: Scaffold(
+          appBar: _buildAppBar(context),
+          body: FlickrImagesGrid(),
+        ),
       ),
     );
   }
@@ -68,7 +73,6 @@ class _FlickrScreenState extends State<FlickrScreen> {
       child: BlocBuilder<SearchBarCubit, bool>(
         builder: (context, shouldShowSearchBar) => shouldShowSearchBar
             ? SearchAppBar(
-                backgroundColor: widget._branchTheme.primaryColor,
                 hintText: 'Найти изображения...',
                 onSubmitted: (query) => context.read<FlickrImagesBloc>().add(
                       SearchImagesLoadingRequestedEvent(query),
@@ -81,7 +85,6 @@ class _FlickrScreenState extends State<FlickrScreen> {
                 },
               )
             : AppBar(
-                backgroundColor: widget._branchTheme.primaryColor,
                 title: const Text('Недавнее'),
                 actions: [
                   IconButton(

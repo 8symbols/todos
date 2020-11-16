@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 
 /// [Appbar] с поисковой строкой.
 class SearchAppBar extends StatelessWidget {
-  /// Цвет бекграунда.
-  ///
-  /// Может быть равен null.
-  final Color backgroundColor;
-
   /// Подсказка в поле ввода.
   ///
   /// Может быть равным null.
@@ -21,7 +16,6 @@ class SearchAppBar extends StatelessWidget {
   SearchAppBar({
     @required this.onBackPressed,
     @required this.onSubmitted,
-    this.backgroundColor,
     this.hintText,
   });
 
@@ -29,7 +23,6 @@ class SearchAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBar(
       titleSpacing: 0.0,
-      backgroundColor: backgroundColor,
       automaticallyImplyLeading: false,
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),

@@ -48,7 +48,7 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
         Padding(
           padding: const EdgeInsets.only(bottom: _fabSize / 2.0),
           child: Container(
-            color: _branchTheme.primaryColor,
+            color: Theme.of(context).primaryColor,
             child: Stack(
               fit: StackFit.expand,
               children: [

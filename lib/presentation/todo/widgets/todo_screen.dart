@@ -64,44 +64,49 @@ class _TodoScreenState extends State<TodoScreen> {
         BlocProvider<TodoImagesBloc>.value(value: _imagesBloc),
         BlocProvider<TodoBloc>.value(value: _todoBloc),
       ],
-      child: BlocConsumer<TodoBloc, TodoState>(
-        listener: (context, state) {
-          if (state is TodoDeletedState) {
-            Navigator.of(context).pop();
-          }
-        },
-        buildWhen: (previous, current) => current is! TodoDeletedState,
-        builder: (context, state) => Scaffold(
-          backgroundColor: widget._branchTheme.secondaryColor,
-          body: CustomScrollView(
-            slivers: <Widget>[
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: TodoSliverAppBar(
-                  appBarMaxExtent,
-                  MediaQuery.of(context).padding.top,
-                  widget._branchTheme,
-                  state.todo,
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          primaryColor: widget._branchTheme.primaryColor,
+          scaffoldBackgroundColor: widget._branchTheme.secondaryColor,
+        ),
+        child: BlocConsumer<TodoBloc, TodoState>(
+          listener: (context, state) {
+            if (state is TodoDeletedState) {
+              Navigator.of(context).pop();
+            }
+          },
+          buildWhen: (previous, current) => current is! TodoDeletedState,
+          builder: (context, state) => Scaffold(
+            body: CustomScrollView(
+              slivers: <Widget>[
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: TodoSliverAppBar(
+                    appBarMaxExtent,
+                    MediaQuery.of(context).padding.top,
+                    widget._branchTheme,
+                    state.todo,
+                  ),
                 ),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  const SizedBox(height: 4.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TodoStepsCard(state.todo),
-                  ),
-                  const SizedBox(height: 20.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TodoTimeSettingsCard(state.todo),
-                  ),
-                  const SizedBox(height: 20.0),
-                  TodoImagesCard(widget._branchTheme),
-                  const SizedBox(height: 20.0),
-                ]),
-              ),
-            ],
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    const SizedBox(height: 4.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TodoStepsCard(state.todo),
+                    ),
+                    const SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TodoTimeSettingsCard(state.todo),
+                    ),
+                    const SizedBox(height: 20.0),
+                    TodoImagesCard(widget._branchTheme),
+                    const SizedBox(height: 20.0),
+                  ]),
+                ),
+              ],
+            ),
           ),
         ),
       ),
