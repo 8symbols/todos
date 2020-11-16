@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:bordered_text/bordered_text.dart';
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
@@ -109,7 +110,12 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
             child: FlexibleSpaceBar(
               centerTitle: true,
               titlePadding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
-              title: Text(_todo.title),
+              title: _todo.themeImagePath == null
+                  ? Text(_todo.title)
+                  : BorderedText(
+                      strokeWidth: 2.0,
+                      child: Text(_todo.title),
+                    ),
             ),
           ),
         ),
