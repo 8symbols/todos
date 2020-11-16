@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 /// Класс с функциями для работы с файловой системой.
-abstract class FileSystemHelper {
+abstract class FileSystemUtils {
   /// Копирует файл по пути [path] в локалькую директорию.
   ///
   /// Возвращает путь к новому файлу.
