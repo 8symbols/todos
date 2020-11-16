@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:todos/presentation/todo/todo_images_bloc/todo_images_bloc.dart';
+import 'package:todos/presentation/utils/image_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:photo_view/photo_view.dart';
 
 /// Карта с изображениями задачи.
 class TodoImagesCard extends StatelessWidget {
@@ -59,7 +59,8 @@ class TodoImagesCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
           child: InkWell(
-            onTap: () => _openImageFullscreen(context, path),
+            onTap: () =>
+                ImageUtils.openImageFullScreen(context, FileImage(File(path))),
             child: SizedBox(
               width: _imageSize,
               height: _imageSize,
@@ -117,17 +118,5 @@ class TodoImagesCard extends StatelessWidget {
     if (wasDeletionConfirmed == true) {
       context.read<TodoImagesBloc>().add(ImageDeletedEvent(path));
     }
-  }
-
-  void _openImageFullscreen(BuildContext context, String path) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => Container(
-          child: PhotoView(
-            imageProvider: FileImage(File(path)),
-          ),
-        ),
-      ),
-    );
   }
 }
