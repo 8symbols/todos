@@ -20,14 +20,15 @@ class TodoImagesCard extends StatelessWidget {
               margin: const EdgeInsets.symmetric(vertical: 4.0),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    const SizedBox(width: 12.0),
-                    ...state.imagesPaths
-                        .map((path) => _buildImage(context, path)),
-                    _buildAddImageButton(context),
-                    const SizedBox(width: 12.0),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: Row(
+                    children: [
+                      ...state.imagesPaths
+                          .map((path) => _buildImage(context, path)),
+                      _buildAddImageButton(context),
+                    ],
+                  ),
                 ),
               ),
             ),
