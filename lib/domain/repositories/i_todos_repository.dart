@@ -69,8 +69,6 @@ abstract class ITodosRepository {
   /// Получает все пути к изображениям задачи с идентификатором [todoId].
   Future<List<String>> getImagesPaths(String todoId);
 
-  /// Возвращает какую-нибудь ветку.
-  ///
-  /// Временный метод. После разработки экрана веток будет удален.
-  Branch getAnyBranch();
+  /// Возвращает ветку, которой принадлжеит задача [todo].
+  Future<Branch> getTodoBranch(Todo todo);
 }

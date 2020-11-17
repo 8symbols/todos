@@ -30,10 +30,14 @@ class TodoListContentState extends TodoListState {
 
 /// Состояние работы со списком задач после удаления задачи.
 class TodoListDeletedTodoState extends TodoListState {
-  /// Удаленная задача
+  /// Ветка удаленной задачи.
+  final String branchId;
+
+  /// Удаленная задача.
   final Todo todo;
 
   TodoListDeletedTodoState(
+    this.branchId,
     this.todo,
     List<TodoViewData> todos,
     TodoListViewSettings viewSettings,

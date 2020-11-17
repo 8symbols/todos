@@ -88,7 +88,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
             body: BlocConsumer<TodoListBloc, TodoListState>(
               listener: (context, state) {
                 if (state is TodoListDeletedTodoState) {
-                  _showUndoSnackBar(context, state.todo);
+                  _showUndoSnackBar(context, state.branchId, state.todo);
                 }
               },
               builder: (context, state) => state is TodoListLoadingState
@@ -130,7 +130,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     }
   }
 
-  void _showUndoSnackBar(BuildContext context, Todo todo) {
+  void _showUndoSnackBar(BuildContext context, String branchId, Todo todo) {
     Scaffold.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -138,8 +138,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
           content: Text('Задача "${todo.title}" удалена.'),
           action: SnackBarAction(
             label: "Отменить",
-            onPressed: () =>
-                context.read<TodoListBloc>().add(TodoAddedEvent(todo)),
+            onPressed: () => context
+                .read<TodoListBloc>()
+                .add(TodoRestoredEvent(branchId, todo)),
           ),
         ),
       );

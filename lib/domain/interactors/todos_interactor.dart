@@ -192,6 +192,11 @@ class TodosInteractor {
     return _repository.getImagesPaths(todoId);
   }
 
+  /// Возвращает ветку, которой принадлжеит задача [todo].
+  Future<Branch> getTodoBranch(Todo todo) async {
+    return _repository.getTodoBranch(todo);
+  }
+
   /// Сортирует задачи [todos] в соответствии с порядком сортировки [sortOrder].
   void sortTodos(List<Todo> todos, TodosSortOrder sortOrder) {
     todos.sort(TodosComparatorsFactory.getComparator(sortOrder));

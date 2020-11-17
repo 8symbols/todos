@@ -50,6 +50,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       yield* _mapTodoEditedEventToState(event);
     } else if (event is TodoAddedEvent) {
       yield* _mapTodoAddedEventToState(event);
+    } else if (event is TodoRestoredEvent) {
+      yield* _mapTodoRestoredEventToState(event);
     } else if (event is CompletedTodosDeletedEvent) {
       yield* _mapCompletedTodosDeletedEventToState(event);
     } else if (event is TodoListViewSettingsChangedEvent) {
@@ -73,9 +75,14 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodoDeletedEventToState(
     TodoDeletedEvent event,
   ) async* {
+    final todoBranchId =
+        branchId ?? (await _todosInteractor.getTodoBranch(event.todo)).id;
+
     await _todosInteractor.deleteTodo(event.todo.id);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+
     yield TodoListDeletedTodoState(
+      todoBranchId,
       event.todo,
       await _mapTodosToView(),
       state.viewSettings,
@@ -96,6 +103,15 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     TodoAddedEvent event,
   ) async* {
     await _todosInteractor.addTodo(branchId, event.todo);
+    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
+  }
+
+  /// Возвращает удаленную задачу.
+  Stream<TodoListState> _mapTodoRestoredEventToState(
+    TodoRestoredEvent event,
+  ) async* {
+    await _todosInteractor.addTodo(event.branchId, event.todo);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
     yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }

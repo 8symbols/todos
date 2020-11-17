@@ -31,6 +31,17 @@ class TodoAddedEvent extends TodoListEvent {
   TodoAddedEvent(this.todo);
 }
 
+/// Событие отмены удаления задачи.
+class TodoRestoredEvent extends TodoListEvent {
+  /// Ветка удаленной задачи.
+  final String branchId;
+
+  /// Удаленная задача.
+  final Todo todo;
+
+  TodoRestoredEvent(this.branchId, this.todo);
+}
+
 /// Событие удаления выполненных задач.
 class CompletedTodosDeletedEvent extends TodoListEvent {}
 
