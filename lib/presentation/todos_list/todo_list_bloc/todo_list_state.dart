@@ -4,51 +4,38 @@ part of 'todo_list_bloc.dart';
 abstract class TodoListState {
   /// Список задач.
   ///
-  /// Может быть равен null.
+  /// Равен null до инициализации.
   final List<TodoViewData> todos;
 
-  /// Флаг, сигнализирующий о том, убраны ли из списка выполненные задачи.
-  final bool areCompletedTodosVisible;
+  /// Настройки отображения.
+  ///
+  /// Равены null до инициализации.
+  final TodoListViewSettings viewSettings;
 
-  /// Флаг, сигнализирующий о том, убраны ли из списка не избранные задачи.
-  final bool areNonFavoriteTodosVisible;
-
-  TodoListState(
-    this.todos,
-    this.areCompletedTodosVisible,
-    this.areNonFavoriteTodosVisible,
-  );
+  const TodoListState(this.todos, this.viewSettings);
 }
 
 /// Состояние загрузки списка задач.
-class TodosListLoadingState extends TodoListState {
-  /// Создает состояние и устанавливает null в [todos].
-  TodosListLoadingState(
-    bool areCompletedTodosVisible,
-    bool areNonFavoriteTodosVisible,
-  ) : super(null, areCompletedTodosVisible, areNonFavoriteTodosVisible);
+class TodoListLoadingState extends TodoListState {
+  TodoListLoadingState() : super(null, null);
 }
 
 /// Состояние работы со списком задач.
-class TodosListContentState extends TodoListState {
-  /// Создает состояние со списком задач [todos].
-  TodosListContentState(
+class TodoListContentState extends TodoListState {
+  TodoListContentState(
     List<TodoViewData> todos,
-    areCompletedTodosVisible,
-    bool areNonFavoriteTodosVisible,
-  ) : super(todos, areCompletedTodosVisible, areNonFavoriteTodosVisible);
+    TodoListViewSettings viewSettings,
+  ) : super(todos, viewSettings);
 }
 
 /// Состояние работы со списком задач после удаления задачи.
-class TodosListDeletedTodoState extends TodoListState {
+class TodoListDeletedTodoState extends TodoListState {
   /// Удаленная задача
   final Todo todo;
 
-  /// Создает состояние со списком задач [todos].
-  TodosListDeletedTodoState(
+  TodoListDeletedTodoState(
     this.todo,
     List<TodoViewData> todos,
-    areCompletedTodosVisible,
-    bool areNonFavoriteTodosVisible,
-  ) : super(todos, areCompletedTodosVisible, areNonFavoriteTodosVisible);
+    TodoListViewSettings viewSettings,
+  ) : super(todos, viewSettings);
 }

@@ -3,8 +3,9 @@ part of 'todo_list_bloc.dart';
 @immutable
 abstract class TodoListEvent {}
 
-/// Событие запроса загрузки списка задач.
-class TodosListLoadingRequestedEvent extends TodoListEvent {}
+/// Событие запроса загрузки настроек отображения списка задач
+/// и самого списка задач.
+class InitializationRequestedEvent extends TodoListEvent {}
 
 /// Событие удаления задачи.
 class TodoDeletedEvent extends TodoListEvent {
@@ -30,29 +31,13 @@ class TodoAddedEvent extends TodoListEvent {
   TodoAddedEvent(this.todo);
 }
 
-/// Событие скрытия или показа выполненных задач.
-class CompletedTodosVisibilityChangedEvent extends TodoListEvent {
-  /// Флаг, сигнализирующий о том, убраны ли из списка выполненные задачи.
-  final bool areCompletedTodosVisible;
-
-  CompletedTodosVisibilityChangedEvent(this.areCompletedTodosVisible);
-}
-
-/// Событие скрытия или показа не избранных задач.
-class NonFavoriteTodosVisibilityChangedEvent extends TodoListEvent {
-  /// Флаг, сигнализирующий о том, убраны ли из списка не избранные задачи.
-  final bool areNonFavoriteTodosVisible;
-
-  NonFavoriteTodosVisibilityChangedEvent(this.areNonFavoriteTodosVisible);
-}
-
 /// Событие удаления выполненных задач.
 class CompletedTodosDeletedEvent extends TodoListEvent {}
 
-/// Событие изменения порядка сортировки задач.
-class TodosSortOrderChangedEvent extends TodoListEvent {
-  /// Порядок сортировки задач.
-  final TodosSortOrder sortOrder;
+/// Событие изменения настроек отображения.
+class TodoListViewSettingsChangedEvent extends TodoListEvent {
+  /// Настройки отображения.
+  final TodoListViewSettings viewSettings;
 
-  TodosSortOrderChangedEvent(this.sortOrder);
+  TodoListViewSettingsChangedEvent(this.viewSettings);
 }

@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:todos/data/services/notifications_service.dart';
+import 'package:todos/domain/interactors/settings_interactor.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
+import 'package:todos/domain/models/todo_list_view_settings.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
-import 'package:todos/domain/models/todos_sort_order.dart';
 
 part 'todo_list_event.dart';
 part 'todo_list_state.dart';
@@ -17,52 +19,53 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   /// Интерактор для взаимодействия с задачами.
   final TodosInteractor _todosInteractor;
 
+  /// Интерактор для взаимодействия с настройками.
+  final SettingsInteractor _settingsInteractor;
+
   /// Ветка задача.
   ///
   /// Может быть равна null.
   final String branchId;
 
-  /// Порядок сортировки задач.
-  TodosSortOrder _sortOrder = TodosSortOrder.creation;
+  List<Todo> _allTodos;
 
-  /// Создает BLoC.
-  TodoListBloc(ITodosRepository todosRepository, {this.branchId})
-      : _todosInteractor =
+  TodoListBloc(
+    ITodosRepository todosRepository,
+    ISettingsStorage settingsStorage, {
+    this.branchId,
+  })  : _todosInteractor =
             TodosInteractor(todosRepository, NotificationsService()),
-        super(TodosListLoadingState(true, true));
+        _settingsInteractor = SettingsInteractor(settingsStorage),
+        super(TodoListLoadingState());
 
   @override
   Stream<TodoListState> mapEventToState(
     TodoListEvent event,
   ) async* {
-    if (event is TodosListLoadingRequestedEvent) {
-      yield* _mapTodosListLoadingRequestedEventToState(event);
+    if (event is InitializationRequestedEvent) {
+      yield* _mapInitializationRequestedEventToState(event);
     } else if (event is TodoDeletedEvent) {
       yield* _mapTodoDeletedEventToState(event);
     } else if (event is TodoEditedEvent) {
       yield* _mapTodoEditedEventToState(event);
     } else if (event is TodoAddedEvent) {
       yield* _mapTodoAddedEventToState(event);
-    } else if (event is CompletedTodosVisibilityChangedEvent) {
-      yield* _mapCompletedTodosVisibilityChangedEventToState(event);
-    } else if (event is NonFavoriteTodosVisibilityChangedEvent) {
-      yield* _mapFavoriteTodosVisibilityChangedEventToState(event);
     } else if (event is CompletedTodosDeletedEvent) {
       yield* _mapCompletedTodosDeletedEventToState(event);
-    } else if (event is TodosSortOrderChangedEvent) {
-      yield* _mapTodosSortOrderChangedEventToState(event);
+    } else if (event is TodoListViewSettingsChangedEvent) {
+      yield* _mapTodoListViewSettingsChangedEventToState(event);
     }
   }
 
-  /// Загружает список задач.
-  Stream<TodoListState> _mapTodosListLoadingRequestedEventToState(
-    TodosListLoadingRequestedEvent event,
+  /// Загружает настройки списка задач и список задач.
+  Stream<TodoListState> _mapInitializationRequestedEventToState(
+    InitializationRequestedEvent event,
   ) async* {
-    final todos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodosListContentState(
-      await _mapToViewData(todos),
-      state.areCompletedTodosVisible,
-      state.areNonFavoriteTodosVisible,
+    final settings = await _settingsInteractor.getTodoListViewSettings();
+    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodoListContentState(
+      await _mapTodosToView(viewSettings: settings),
+      settings,
     );
   }
 
@@ -71,12 +74,11 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     TodoDeletedEvent event,
   ) async* {
     await _todosInteractor.deleteTodo(event.todo.id);
-    final todos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodosListDeletedTodoState(
+    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodoListDeletedTodoState(
       event.todo,
-      await _mapToViewData(todos),
-      state.areCompletedTodosVisible,
-      state.areNonFavoriteTodosVisible,
+      await _mapTodosToView(),
+      state.viewSettings,
     );
   }
 
@@ -85,12 +87,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     TodoEditedEvent event,
   ) async* {
     await _todosInteractor.editTodo(event.todo);
-    final todos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodosListContentState(
-      await _mapToViewData(todos),
-      state.areCompletedTodosVisible,
-      state.areNonFavoriteTodosVisible,
-    );
+    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Добавляет задачу.
@@ -98,42 +96,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     TodoAddedEvent event,
   ) async* {
     await _todosInteractor.addTodo(branchId, event.todo);
-    final todos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodosListContentState(
-      await _mapToViewData(todos),
-      state.areCompletedTodosVisible,
-      state.areNonFavoriteTodosVisible,
-    );
-  }
-
-  /// Применяет к списку задач настройки отображения выполненных задач.
-  Stream<TodoListState> _mapCompletedTodosVisibilityChangedEventToState(
-    CompletedTodosVisibilityChangedEvent event,
-  ) async* {
-    final todos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodosListContentState(
-      await _mapToViewData(
-        todos,
-        areCompletedTodosVisible: event.areCompletedTodosVisible,
-      ),
-      event.areCompletedTodosVisible,
-      state.areNonFavoriteTodosVisible,
-    );
-  }
-
-  /// Применяет к списку задач настройки отображения избранных задач.
-  Stream<TodoListState> _mapFavoriteTodosVisibilityChangedEventToState(
-    NonFavoriteTodosVisibilityChangedEvent event,
-  ) async* {
-    final todos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodosListContentState(
-      await _mapToViewData(
-        todos,
-        areNonFavoriteTodosVisible: event.areNonFavoriteTodosVisible,
-      ),
-      state.areCompletedTodosVisible,
-      event.areNonFavoriteTodosVisible,
-    );
+    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Удаляет выполненные задачи.
@@ -141,46 +105,19 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     CompletedTodosDeletedEvent event,
   ) async* {
     await _todosInteractor.deleteCompletedTodos(branchId: branchId);
-    final todos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodosListContentState(
-      await _mapToViewData(todos),
-      state.areCompletedTodosVisible,
-      state.areNonFavoriteTodosVisible,
-    );
+    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }
 
-  /// Сортирует в соответствии с новым порядком сортировки.
-  Stream<TodoListState> _mapTodosSortOrderChangedEventToState(
-    TodosSortOrderChangedEvent event,
+  /// Сохраняет и применяет новые настройки отображения.
+  Stream<TodoListState> _mapTodoListViewSettingsChangedEventToState(
+    TodoListViewSettingsChangedEvent event,
   ) async* {
-    _sortOrder = event.sortOrder;
-    final todos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodosListContentState(
-      await _mapToViewData(todos),
-      state.areCompletedTodosVisible,
-      state.areNonFavoriteTodosVisible,
+    await _settingsInteractor.saveTodoListViewSettings(event.viewSettings);
+    yield TodoListContentState(
+      await _mapTodosToView(viewSettings: event.viewSettings),
+      event.viewSettings,
     );
-  }
-
-  /// Применяет настройки отображения: удаляет выполненные задачи,
-  /// если не установлен [areCompletedTodosVisible], удаляет не избранные
-  /// задачи, если не установлен [areNonFavoriteTodosVisible], и сортирует
-  /// в соответствии с [TodoListBloc._sortOrder].
-  List<Todo> _applyViewSettings(
-    List<Todo> todos,
-    bool areCompletedTodosVisible,
-    bool areNonFavoriteTodosVisible,
-  ) {
-    if (!areCompletedTodosVisible) {
-      todos = todos.where((todo) => !todo.wasCompleted).toList();
-    }
-
-    if (!areNonFavoriteTodosVisible) {
-      todos = todos.where((todo) => todo.isFavorite).toList();
-    }
-
-    _todosInteractor.sortTodos(todos, _sortOrder);
-    return todos;
   }
 
   /// Загружает информацию о каждой задаче.
@@ -195,24 +132,18 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     return Future.wait(futureTodos);
   }
 
-  /// Применяет настройки отображения и загружает информацию о каждой задаче.
+  /// Создает новый список на основе [_allTodos], применяет к нему настройки
+  /// отображения [viewSettings] и загружает информацию о каждой задаче.
   ///
-  /// Если не указано, нужно ли включать в список выполненные задачи,
-  /// берется настройка из [TodoListState.areCompletedTodosVisible].
-  ///
-  /// Если не указано, нужно ли включать в список избранные задачи,
-  /// берется настройка из [TodoListState.areNonFavoriteTodosVisible].
-  Future<List<TodoViewData>> _mapToViewData(
-    List<Todo> todos, {
-    bool areCompletedTodosVisible,
-    bool areNonFavoriteTodosVisible,
+  /// Если [viewSettings] не задано, берет настройки из
+  /// [TodoListState.viewSettings].
+  Future<List<TodoViewData>> _mapTodosToView({
+    TodoListViewSettings viewSettings,
   }) async {
-    areCompletedTodosVisible ??= state.areCompletedTodosVisible;
-    areNonFavoriteTodosVisible ??= state.areNonFavoriteTodosVisible;
-    final filteredTodos = _applyViewSettings(
-      todos,
-      areCompletedTodosVisible,
-      areNonFavoriteTodosVisible,
+    viewSettings ??= state.viewSettings;
+    final filteredTodos = _todosInteractor.applyViewSettings(
+      _allTodos,
+      viewSettings,
     );
     return await _loadViewData(filteredTodos);
   }

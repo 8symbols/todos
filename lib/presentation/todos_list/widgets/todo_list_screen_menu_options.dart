@@ -10,6 +10,7 @@ import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/branch_editor_dialog.dart';
 import 'package:todos/presentation/widgets/branch_theme_selector.dart';
 import 'package:todos/presentation/widgets/popup_menu.dart';
+import 'package:todos/presentation/widgets/todos_sort_order_selector.dart';
 
 /// Виджет выпадающего списка в меню [AppBar] экрана списка задач.
 class TodoListScreenMenuOptions extends StatelessWidget {
@@ -54,19 +55,18 @@ class TodoListScreenMenuOptions extends StatelessWidget {
 
     return BlocBuilder<TodoListBloc, TodoListState>(
       buildWhen: (previous, current) =>
-          previous.areCompletedTodosVisible !=
-              current.areCompletedTodosVisible ||
-          previous.areNonFavoriteTodosVisible !=
-              current.areNonFavoriteTodosVisible,
+          previous.viewSettings != current.viewSettings,
       builder: (context, state) => PopupMenu([
-        state.areCompletedTodosVisible
-            ? hideCompletedTodosOption
-            : showCompletedTodosOption,
-        state.areNonFavoriteTodosVisible
-            ? hideNonFavoriteTodosOption
-            : showNonFavoriteTodosOption,
-        deleteCompletedTodosOption,
-        chooseSortOrderOption,
+        if (state.todos != null) ...[
+          state.viewSettings.areCompletedTodosVisible
+              ? hideCompletedTodosOption
+              : showCompletedTodosOption,
+          state.viewSettings.areNonFavoriteTodosVisible
+              ? hideNonFavoriteTodosOption
+              : showNonFavoriteTodosOption,
+          chooseSortOrderOption,
+          deleteCompletedTodosOption,
+        ],
         if (areTodosFromSameBranch) ...[
           chooseThemeOption,
           editBranchOption,
@@ -76,27 +76,19 @@ class TodoListScreenMenuOptions extends StatelessWidget {
   }
 
   void _hideCompletedTodos(BuildContext context) {
-    context
-        .read<TodoListBloc>()
-        .add(CompletedTodosVisibilityChangedEvent(false));
+    _setCompletedVisibility(context, false);
   }
 
   void _showCompletedTodos(BuildContext context) {
-    context
-        .read<TodoListBloc>()
-        .add(CompletedTodosVisibilityChangedEvent(true));
+    _setCompletedVisibility(context, true);
   }
 
   void _hideNonFavoriteTodos(BuildContext context) {
-    context
-        .read<TodoListBloc>()
-        .add(NonFavoriteTodosVisibilityChangedEvent(false));
+    _setNonFavoriteVisibility(context, false);
   }
 
   void _showNonFavoriteTodos(BuildContext context) {
-    context
-        .read<TodoListBloc>()
-        .add(NonFavoriteTodosVisibilityChangedEvent(true));
+    _setNonFavoriteVisibility(context, true);
   }
 
   void _deleteCompletedTodos(BuildContext context) async {
@@ -119,37 +111,18 @@ class TodoListScreenMenuOptions extends StatelessWidget {
   void _chooseSortOrder(BuildContext context) async {
     final chosenSortOrder = await showDialog<TodosSortOrder>(
       context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Выберите порядок сортировки'),
-          children: <Widget>[
-            SimpleDialogOption(
-              child: const Text('Дата создания (сначала новые)'),
-              onPressed: () => Navigator.pop(context, TodosSortOrder.creation),
-            ),
-            SimpleDialogOption(
-              child: const Text('Дата создания (сначала старые)'),
-              onPressed: () =>
-                  Navigator.pop(context, TodosSortOrder.creationAsc),
-            ),
-            SimpleDialogOption(
-              child: const Text('Дедлайн (сначала далекие от дедлайна)'),
-              onPressed: () => Navigator.pop(context, TodosSortOrder.deadline),
-            ),
-            SimpleDialogOption(
-              child: const Text('Дедлайн (сначала близкие к дедлайну)'),
-              onPressed: () =>
-                  Navigator.pop(context, TodosSortOrder.deadlineAsc),
-            ),
-          ],
-        );
-      },
+      child: TodosSortOrderSelector(),
     );
 
     if (chosenSortOrder != null) {
+      final newViewSettings = context
+          .read<TodoListBloc>()
+          .state
+          .viewSettings
+          .copyWith(sortOrder: chosenSortOrder);
       context
           .read<TodoListBloc>()
-          .add(TodosSortOrderChangedEvent(chosenSortOrder));
+          .add(TodoListViewSettingsChangedEvent(newViewSettings));
     }
   }
 
@@ -198,5 +171,27 @@ class TodoListScreenMenuOptions extends StatelessWidget {
     if (editedBranch != null && editedBranch != branch) {
       context.read<BranchCubit>().editBranch(editedBranch);
     }
+  }
+
+  void _setCompletedVisibility(BuildContext context, bool areVisible) {
+    final newViewSettings = context
+        .read<TodoListBloc>()
+        .state
+        .viewSettings
+        .copyWith(areCompletedTodosVisible: areVisible);
+    context
+        .read<TodoListBloc>()
+        .add(TodoListViewSettingsChangedEvent(newViewSettings));
+  }
+
+  void _setNonFavoriteVisibility(BuildContext context, bool areVisible) {
+    final newViewSettings = context
+        .read<TodoListBloc>()
+        .state
+        .viewSettings
+        .copyWith(areNonFavoriteTodosVisible: areVisible);
+    context
+        .read<TodoListBloc>()
+        .add(TodoListViewSettingsChangedEvent(newViewSettings));
   }
 }

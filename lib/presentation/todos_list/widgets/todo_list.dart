@@ -84,6 +84,6 @@ class TodoList extends StatelessWidget {
     final arguments = TodoScreenArguments(branchTheme, todo);
     await Navigator.of(context)
         .pushNamed(TodoScreen.routeName, arguments: arguments);
-    context.read<TodoListBloc>().add(TodosListLoadingRequestedEvent());
+    context.read<TodoListBloc>().add(InitializationRequestedEvent());
   }
 }

@@ -4,6 +4,7 @@ import 'package:marquee_widget/marquee_widget.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/branch_themes.dart';
 import 'package:todos/presentation/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
@@ -39,8 +40,14 @@ class _TodoListScreenState extends State<TodoListScreen> {
   void initState() {
     super.initState();
     final todosRepository = context.read<ITodosRepository>();
-    _todoListBloc = TodoListBloc(todosRepository, branchId: widget.branch?.id);
-    _todoListBloc.add(TodosListLoadingRequestedEvent());
+    final settingsStorage = context.read<ISettingsStorage>();
+
+    _todoListBloc = TodoListBloc(
+      todosRepository,
+      settingsStorage,
+      branchId: widget.branch?.id,
+    )..add(InitializationRequestedEvent());
+
     _themeCubit = BranchCubit(todosRepository, branch: widget.branch);
   }
 
@@ -80,11 +87,11 @@ class _TodoListScreenState extends State<TodoListScreen> {
             floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
             body: BlocConsumer<TodoListBloc, TodoListState>(
               listener: (context, state) {
-                if (state is TodosListDeletedTodoState) {
+                if (state is TodoListDeletedTodoState) {
                   _showUndoSnackBar(context, state.todo);
                 }
               },
-              builder: (context, state) => state is TodosListLoadingState
+              builder: (context, state) => state is TodoListLoadingState
                   ? const Center(child: CircularProgressIndicator())
                   : TodoList(state.todos),
             ),
@@ -98,7 +105,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     return BlocBuilder<TodoListBloc, TodoListState>(
       buildWhen: (previous, current) =>
           previous.runtimeType != current.runtimeType,
-      builder: (context, state) => state is TodosListContentState
+      builder: (context, state) => state is TodoListContentState
           ? FloatingActionButton(
               child: const Icon(Icons.add),
               onPressed: () => _addTodo(context),

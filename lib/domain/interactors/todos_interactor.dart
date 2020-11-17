@@ -1,4 +1,5 @@
 import 'package:todos/domain/factories/todos_comparators_factory.dart';
+import 'package:todos/domain/models/todo_list_view_settings.dart';
 import 'package:todos/domain/utils/filesystem_utils.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
@@ -194,6 +195,30 @@ class TodosInteractor {
   /// Сортирует задачи [todos] в соответствии с порядком сортировки [sortOrder].
   void sortTodos(List<Todo> todos, TodosSortOrder sortOrder) {
     todos.sort(TodosComparatorsFactory.getComparator(sortOrder));
+  }
+
+  /// Создает новый список на основе [todos] и применяет к нему
+  /// насройки отображения [viewSettings].
+  List<Todo> applyViewSettings(
+    List<Todo> todos,
+    TodoListViewSettings viewSettings,
+  ) {
+    final oldTodos = todos;
+
+    if (!viewSettings.areCompletedTodosVisible) {
+      todos = todos.where((todo) => !todo.wasCompleted).toList();
+    }
+
+    if (!viewSettings.areNonFavoriteTodosVisible) {
+      todos = todos.where((todo) => todo.isFavorite).toList();
+    }
+
+    if (identical(todos, oldTodos)) {
+      todos = List<Todo>.from(todos);
+    }
+
+    sortTodos(todos, viewSettings.sortOrder);
+    return todos;
   }
 
   /// Удаляет завершенные задачи в ветке с идентификатором [branchId].
