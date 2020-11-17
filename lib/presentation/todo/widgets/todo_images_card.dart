@@ -5,6 +5,7 @@ import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/presentation/todo/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/utils/image_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
+import 'package:todos/presentation/widgets/deletable_item.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -60,42 +61,23 @@ class TodoImagesCard extends StatelessWidget {
   }
 
   Widget _buildImage(BuildContext context, String path) {
-    return Stack(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
-          child: InkWell(
-            onDoubleTap: () =>
-                ImageUtils.openImageFullScreen(context, FileImage(File(path))),
-            child: SizedBox(
-              width: _imageSize,
-              height: _imageSize,
-              child: Image.file(
-                File(path),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          right: 4.0,
-          top: 4.0,
+    return DeletableItem(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
+        child: InkWell(
+          onDoubleTap: () =>
+              ImageUtils.openImageFullScreen(context, FileImage(File(path))),
           child: SizedBox(
-            height: 20.0,
-            width: 20.0,
-            child: RaisedButton(
-              padding: const EdgeInsets.all(2.0),
-              shape: CircleBorder(),
-              color:
-                  Theme.of(context).floatingActionButtonTheme.backgroundColor,
-              child: const FittedBox(
-                child: Icon(Icons.close, color: Colors.white),
-              ),
-              onPressed: () => _deleteImage(context, path),
+            width: _imageSize,
+            height: _imageSize,
+            child: Image.file(
+              File(path),
+              fit: BoxFit.cover,
             ),
           ),
         ),
-      ],
+      ),
+      onDelete: () => _deleteImage(context, path),
     );
   }
 
