@@ -30,6 +30,9 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
   /// Предполагается, что это значение "MediaQuery.of(context).padding.top".
   final double _unsafeAreaHeight;
 
+  /// Есть ли фотография на заднем плане.
+  bool get _hasBackgroundImage => _todo.themeImagePath != null;
+
   TodoSliverAppBar(
     this._maxExtent,
     this._unsafeAreaHeight,
@@ -43,9 +46,8 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    final imageProvider = _todo.themeImagePath != null
-        ? FileImage(File(_todo.themeImagePath))
-        : null;
+    final imageProvider =
+        _hasBackgroundImage ? FileImage(File(_todo.themeImagePath)) : null;
 
     return Stack(
       fit: StackFit.expand,
@@ -57,7 +59,7 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                if (imageProvider != null)
+                if (_hasBackgroundImage)
                   InkWell(
                     onDoubleTap: () =>
                         ImageUtils.openImageFullScreen(context, imageProvider),
@@ -101,14 +103,18 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
 
   Widget _buildAppBarContent(BuildContext context, double shrinkOffset) {
     final currentExtent = max(minExtent, maxExtent - shrinkOffset);
+    final buttonsColor = _hasBackgroundImage
+        ? Theme.of(context).floatingActionButtonTheme.backgroundColor
+        : null;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: _minExtent,
-          height: _minExtent,
-          child: IconButton(
+        _buildButtonWithBackground(
+          _minExtent,
+          buttonsColor,
+          IconButton(
+            padding: EdgeInsets.zero,
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
           ),
@@ -121,25 +127,49 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
             minExtent: minExtent,
             child: FlexibleSpaceBar(
               centerTitle: true,
-              titlePadding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
-              title: _todo.themeImagePath == null
-                  ? Text(_todo.title)
-                  : BorderedText(
-                      strokeWidth: 2.0,
-                      child: Text(_todo.title),
-                    ),
+              titlePadding:
+                  const EdgeInsets.only(top: 4.0, bottom: 8.0, left: 4.0),
+              title: _hasBackgroundImage
+                  ? BorderedText(
+                      strokeColor: buttonsColor,
+                      strokeWidth: 4.0,
+                      child: Text(
+                        _todo.title,
+                        overflow: TextOverflow.visible,
+                      ),
+                    )
+                  : Text(_todo.title),
             ),
           ),
         ),
-        SizedBox(
-          width: 48.0,
-          height: _minExtent,
-          child: IconTheme(
+        _buildButtonWithBackground(
+          48.0,
+          buttonsColor,
+          IconTheme(
             data: const IconThemeData(color: Colors.white),
             child: TodoScreenMenuOptions(_todo, _branchTheme),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildButtonWithBackground(
+    double width,
+    Color backgroundColor,
+    Widget button,
+  ) {
+    return SizedBox(
+      width: width,
+      height: _minExtent,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 12.0),
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          shape: BoxShape.circle,
+        ),
+        child: button,
+      ),
     );
   }
 
