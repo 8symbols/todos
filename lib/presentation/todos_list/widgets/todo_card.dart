@@ -38,7 +38,12 @@ class TodoCard extends StatelessWidget {
       color: Colors.red,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: const [Icon(Icons.delete), SizedBox(width: 12.0)],
+        children: const [
+          Padding(
+            padding: EdgeInsets.only(right: 12.0),
+            child: Icon(Icons.delete, color: Colors.white),
+          ),
+        ],
       ),
     );
 
