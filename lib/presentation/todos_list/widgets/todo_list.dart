@@ -3,7 +3,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/branch_themes.dart';
 import 'package:todos/presentation/todo/models/todo_screen_arguments.dart';
 import 'package:todos/presentation/todo/widgets/todo_screen.dart';
-import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
+import 'package:todos/presentation/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,8 +79,8 @@ class TodoList extends StatelessWidget {
   }
 
   void _openTodoScreen(BuildContext context, Todo todo) async {
-    final branchTheme =
-        context.read<ThemeCubit>().state ?? BranchThemes.defaultBranchTheme;
+    final branchTheme = context.read<BranchCubit>().state?.theme ??
+        BranchThemes.defaultBranchTheme;
     final arguments = TodoScreenArguments(branchTheme, todo);
     await Navigator.of(context)
         .pushNamed(TodoScreen.routeName, arguments: arguments);

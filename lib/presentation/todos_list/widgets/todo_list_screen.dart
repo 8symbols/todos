@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marquee_widget/marquee_widget.dart';
 import 'package:todos/domain/models/branch.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/branch_themes.dart';
-import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
+import 'package:todos/presentation/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list_screen_menu_options.dart';
@@ -33,7 +33,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   TodoListBloc _todoListBloc;
 
-  ThemeCubit _themeCubit;
+  BranchCubit _themeCubit;
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     final todosRepository = context.read<ITodosRepository>();
     _todoListBloc = TodoListBloc(todosRepository, branchId: widget.branch?.id);
     _todoListBloc.add(TodosListLoadingRequestedEvent());
-    _themeCubit = ThemeCubit(todosRepository, branch: widget.branch);
+    _themeCubit = BranchCubit(todosRepository, branch: widget.branch);
   }
 
   @override
@@ -56,20 +56,25 @@ class _TodoListScreenState extends State<TodoListScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<TodoListBloc>.value(value: _todoListBloc),
-        BlocProvider<ThemeCubit>.value(value: _themeCubit),
+        BlocProvider<BranchCubit>.value(value: _themeCubit),
       ],
-      child: BlocBuilder<ThemeCubit, BranchTheme>(
-        buildWhen: (previous, current) => previous != current,
+      child: BlocBuilder<BranchCubit, Branch>(
         builder: (context, state) => Theme(
           data: Theme.of(context).copyWith(
-            primaryColor: state?.primaryColor ??
+            primaryColor: state?.theme?.primaryColor ??
                 BranchThemes.defaultBranchTheme.primaryColor,
-            scaffoldBackgroundColor: state?.secondaryColor ??
+            scaffoldBackgroundColor: state?.theme?.secondaryColor ??
                 BranchThemes.defaultBranchTheme.secondaryColor,
           ),
           child: Scaffold(
             appBar: AppBar(
-              title: const Text('Задачи'),
+              title: Marquee(
+                directionMarguee: DirectionMarguee.oneDirection,
+                animationDuration: const Duration(seconds: 4),
+                child: Text(
+                  areTodosFromSameBranch ? state.title : 'Все задачи',
+                ),
+              ),
               actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
             ),
             floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
@@ -105,8 +110,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
   /// Создает диалог с созданием новой задачи.
   void _addTodo(BuildContext context) async {
     final newTodo = Todo('');
-    final branchTheme =
-        context.read<ThemeCubit>().state ?? BranchThemes.defaultBranchTheme;
+    final branchTheme = context.read<BranchCubit>().state?.theme ??
+        BranchThemes.defaultBranchTheme;
     final editedTodo = await showDialog<Todo>(
       context: context,
       builder: (context) =>

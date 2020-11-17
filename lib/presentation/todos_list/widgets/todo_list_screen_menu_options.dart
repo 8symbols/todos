@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todos/domain/models/branch_theme.dart';
+import 'package:todos/domain/models/branch.dart';
 import 'package:todos/presentation/branch_themes.dart';
 import 'package:todos/presentation/models/popup_menu_item_data.dart';
-import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
+import 'package:todos/presentation/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/domain/models/todos_sort_order.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
+import 'package:todos/presentation/widgets/branch_editor_dialog.dart';
 import 'package:todos/presentation/widgets/branch_theme_selector.dart';
 import 'package:todos/presentation/widgets/popup_menu.dart';
 
@@ -39,6 +40,10 @@ class TodoListScreenMenuOptions extends StatelessWidget {
         Icons.style_outlined, 'Выбрать тему',
         onSelected: _chooseBranchTheme);
 
+    final editBranchOption = PopupMenuItemData(
+        Icons.edit_outlined, 'Редактировать ветку',
+        onSelected: _editBranch);
+
     return BlocBuilder<TodoListBloc, TodoListState>(
       buildWhen: (previous, current) =>
           previous.areCompletedTodosVisible != current.areCompletedTodosVisible,
@@ -48,7 +53,10 @@ class TodoListScreenMenuOptions extends StatelessWidget {
             : showCompletedTodosOption,
         deleteCompletedTodosOption,
         chooseSortOrderOption,
-        if (areTodosFromSameBranch) chooseThemeOption,
+        if (areTodosFromSameBranch) ...[
+          chooseThemeOption,
+          editBranchOption,
+        ],
       ]),
     );
   }
@@ -137,12 +145,13 @@ class TodoListScreenMenuOptions extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12.0),
-              BlocBuilder<ThemeCubit, BranchTheme>(
+              BlocBuilder<BranchCubit, Branch>(
                 builder: (context, state) => BranchThemeSelector(
                   BranchThemes.branchThemes,
-                  state,
-                  onSelect: (selectedTheme) =>
-                      context.read<ThemeCubit>().changeTheme(selectedTheme),
+                  state.theme,
+                  onSelect: (selectedTheme) => context
+                      .read<BranchCubit>()
+                      .editBranch(state.copyWith(theme: selectedTheme)),
                 ),
               )
             ],
@@ -150,5 +159,18 @@ class TodoListScreenMenuOptions extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _editBranch(BuildContext context) async {
+    final branch = context.read<BranchCubit>().state;
+
+    final editedBranch = await showDialog<Branch>(
+      context: context,
+      child: BranchEditorDialog(branch),
+    );
+
+    if (editedBranch != null && editedBranch != branch) {
+      context.read<BranchCubit>().editBranch(editedBranch);
+    }
   }
 }
