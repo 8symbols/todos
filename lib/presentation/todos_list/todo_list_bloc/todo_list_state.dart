@@ -10,21 +10,33 @@ abstract class TodoListState {
   /// Флаг, сигнализирующий о том, убраны ли из списка выполненные задачи.
   final bool areCompletedTodosVisible;
 
-  TodoListState(this.todos, this.areCompletedTodosVisible);
+  /// Флаг, сигнализирующий о том, убраны ли из списка не избранные задачи.
+  final bool areNonFavoriteTodosVisible;
+
+  TodoListState(
+    this.todos,
+    this.areCompletedTodosVisible,
+    this.areNonFavoriteTodosVisible,
+  );
 }
 
 /// Состояние загрузки списка задач.
 class TodosListLoadingState extends TodoListState {
   /// Создает состояние и устанавливает null в [todos].
-  TodosListLoadingState(bool areCompletedTodosVisible)
-      : super(null, areCompletedTodosVisible);
+  TodosListLoadingState(
+    bool areCompletedTodosVisible,
+    bool areNonFavoriteTodosVisible,
+  ) : super(null, areCompletedTodosVisible, areNonFavoriteTodosVisible);
 }
 
 /// Состояние работы со списком задач.
 class TodosListContentState extends TodoListState {
   /// Создает состояние со списком задач [todos].
-  TodosListContentState(List<TodoViewData> todos, areCompletedTodosVisible)
-      : super(todos, areCompletedTodosVisible);
+  TodosListContentState(
+    List<TodoViewData> todos,
+    areCompletedTodosVisible,
+    bool areNonFavoriteTodosVisible,
+  ) : super(todos, areCompletedTodosVisible, areNonFavoriteTodosVisible);
 }
 
 /// Состояние работы со списком задач после удаления задачи.
@@ -37,5 +49,6 @@ class TodosListDeletedTodoState extends TodoListState {
     this.todo,
     List<TodoViewData> todos,
     areCompletedTodosVisible,
-  ) : super(todos, areCompletedTodosVisible);
+    bool areNonFavoriteTodosVisible,
+  ) : super(todos, areCompletedTodosVisible, areNonFavoriteTodosVisible);
 }

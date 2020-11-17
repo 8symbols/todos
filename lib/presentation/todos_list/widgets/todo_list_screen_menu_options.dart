@@ -29,6 +29,14 @@ class TodoListScreenMenuOptions extends StatelessWidget {
         Icons.visibility_outlined, 'Показать выполненные',
         onSelected: _showCompletedTodos);
 
+    final hideNonFavoriteTodosOption = PopupMenuItemData(
+        Icons.star, 'Только избранные',
+        onSelected: _hideNonFavoriteTodos);
+
+    final showNonFavoriteTodosOption = PopupMenuItemData(
+        Icons.star_outline, 'Все задачи',
+        onSelected: _showNonFavoriteTodos);
+
     final deleteCompletedTodosOption = PopupMenuItemData(
         Icons.delete_outline, 'Удалить выполненные',
         onSelected: _deleteCompletedTodos);
@@ -46,11 +54,17 @@ class TodoListScreenMenuOptions extends StatelessWidget {
 
     return BlocBuilder<TodoListBloc, TodoListState>(
       buildWhen: (previous, current) =>
-          previous.areCompletedTodosVisible != current.areCompletedTodosVisible,
+          previous.areCompletedTodosVisible !=
+              current.areCompletedTodosVisible ||
+          previous.areNonFavoriteTodosVisible !=
+              current.areNonFavoriteTodosVisible,
       builder: (context, state) => PopupMenu([
         state.areCompletedTodosVisible
             ? hideCompletedTodosOption
             : showCompletedTodosOption,
+        state.areNonFavoriteTodosVisible
+            ? hideNonFavoriteTodosOption
+            : showNonFavoriteTodosOption,
         deleteCompletedTodosOption,
         chooseSortOrderOption,
         if (areTodosFromSameBranch) ...[
@@ -71,6 +85,18 @@ class TodoListScreenMenuOptions extends StatelessWidget {
     context
         .read<TodoListBloc>()
         .add(CompletedTodosVisibilityChangedEvent(true));
+  }
+
+  void _hideNonFavoriteTodos(BuildContext context) {
+    context
+        .read<TodoListBloc>()
+        .add(NonFavoriteTodosVisibilityChangedEvent(false));
+  }
+
+  void _showNonFavoriteTodos(BuildContext context) {
+    context
+        .read<TodoListBloc>()
+        .add(NonFavoriteTodosVisibilityChangedEvent(true));
   }
 
   void _deleteCompletedTodos(BuildContext context) async {

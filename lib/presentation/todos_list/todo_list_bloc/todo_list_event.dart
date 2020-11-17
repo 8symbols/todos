@@ -38,6 +38,14 @@ class CompletedTodosVisibilityChangedEvent extends TodoListEvent {
   CompletedTodosVisibilityChangedEvent(this.areCompletedTodosVisible);
 }
 
+/// Событие скрытия или показа не избранных задач.
+class NonFavoriteTodosVisibilityChangedEvent extends TodoListEvent {
+  /// Флаг, сигнализирующий о том, убраны ли из списка не избранные задачи.
+  final bool areNonFavoriteTodosVisible;
+
+  NonFavoriteTodosVisibilityChangedEvent(this.areNonFavoriteTodosVisible);
+}
+
 /// Событие удаления выполненных задач.
 class CompletedTodosDeletedEvent extends TodoListEvent {}
 
