@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/wrappers/nullable.dart';
-import 'package:todos/presentation/branch_themes.dart';
+import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:todos/presentation/widgets/select_datetime_button.dart';
 

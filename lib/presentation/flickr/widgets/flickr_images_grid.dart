@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:todos/presentation/constants/assets_paths.dart';
 import 'package:todos/presentation/flickr/flickr_images_bloc/flickr_images_bloc.dart';
 import 'package:todos/presentation/utils/image_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
@@ -117,11 +118,11 @@ class _FlickrImagesGridState extends State<FlickrImagesGrid> {
         (context, index) => CachedNetworkImage(
           imageUrl: state.urls[index],
           errorWidget: (context, url, error) => const Image(
-            image: AssetImage('assets/images/error.png'),
+            image: AssetImage(AssetsPaths.imageNotAvailable),
             fit: BoxFit.cover,
           ),
           placeholder: (context, url) => const Image(
-            image: AssetImage('assets/images/placeholder.jpg'),
+            image: AssetImage(AssetsPaths.imagePlaceholder),
             fit: BoxFit.cover,
           ),
           imageBuilder: (context, imageProvider) => InkWell(

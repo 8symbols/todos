@@ -5,7 +5,7 @@ import 'package:todos/data/services/settings_storage.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/theme.dart';
-import 'routes.dart';
+import 'package:todos/presentation/routes.dart';
 
 void main() => runApp(App());
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todos/presentation/branch_themes.dart';
+import 'package:todos/presentation/constants/branch_themes.dart';
 
 /// Тема приложения.
 final theme = ThemeData(

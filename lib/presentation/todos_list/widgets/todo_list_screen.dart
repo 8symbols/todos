@@ -5,7 +5,7 @@ import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
-import 'package:todos/presentation/branch_themes.dart';
+import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list.dart';

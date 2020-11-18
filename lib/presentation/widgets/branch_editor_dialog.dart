@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch.dart';
-import 'package:todos/presentation/branch_themes.dart';
+import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/widgets/branch_theme_selector.dart';
 
 /// Диалог, который позволяет создать или отредактировать ветку.
