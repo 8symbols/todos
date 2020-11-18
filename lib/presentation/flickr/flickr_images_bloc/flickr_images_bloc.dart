@@ -96,8 +96,8 @@ class FlickrImagesBloc extends Bloc<ImagesEvent, ImagesState> {
           : ImagesContentState(urls, page, newPage.isLast);
     } catch (_) {
       yield page == 1
-          ? const ImagesFailedToLoadErrorState([], 1, false)
-          : ImagesFailedToLoadErrorState(
+          ? const ImagesFailedToLoadState([], 1, false)
+          : ImagesFailedToLoadState(
               state.urls,
               state.page,
               state.wereAllPagesLoaded,

@@ -52,8 +52,8 @@ class ImagesLoadingState extends ImagesState {
 }
 
 /// Состояние ошибки загрузки.
-class ImagesFailedToLoadErrorState extends ImagesState {
-  const ImagesFailedToLoadErrorState(
+class ImagesFailedToLoadState extends ImagesState {
+  const ImagesFailedToLoadState(
     List<String> urls,
     int page,
     bool wereAllPagesLoaded,

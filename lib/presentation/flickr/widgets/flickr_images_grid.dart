@@ -141,7 +141,7 @@ class _FlickrImagesGridState extends State<FlickrImagesGrid> {
 
   Widget _buildStatus(BuildContext context, ImagesState state) {
     return Center(
-      child: state is ImagesFailedToLoadErrorState
+      child: state is ImagesFailedToLoadState
           ? const Text('Произошла ошибка.')
           : state.wereAllPagesLoaded
               ? const Text('Больше изображений нет.')
