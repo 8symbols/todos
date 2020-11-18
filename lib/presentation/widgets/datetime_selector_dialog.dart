@@ -7,6 +7,7 @@ class DateTimeSelectorDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
+      title: const Text('Выберите время'),
       children: [
         SimpleDialogOption(
           child: const Text('Сегодня (18:00)'),
@@ -25,11 +26,11 @@ class DateTimeSelectorDialog extends StatelessWidget {
           },
         ),
         SimpleDialogOption(
-          child: const Text('Через неделю (18:00)'),
+          child: const Text('Через неделю (9:00)'),
           onPressed: () {
             final now = DateTime.now();
             Navigator.of(context)
-                .pop(DateTime(now.year, now.month, now.day + 1, 18));
+                .pop(DateTime(now.year, now.month, now.day + 7, 9));
           },
         ),
         SimpleDialogOption(

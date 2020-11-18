@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/models/popup_menu_item_data.dart';
 import 'package:todos/presentation/todo/todo_bloc/todo_bloc.dart';
@@ -12,7 +13,10 @@ class TodoScreenMenuOptions extends StatelessWidget {
   /// Задача.
   final Todo todo;
 
-  TodoScreenMenuOptions(this.todo);
+  /// Тема ветки.
+  final BranchTheme branchTheme;
+
+  TodoScreenMenuOptions(this.todo, this.branchTheme);
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +36,7 @@ class TodoScreenMenuOptions extends StatelessWidget {
   void _editTodo(BuildContext context) async {
     final editedTodo = await showDialog<Todo>(
       context: context,
-      child: TodoEditorDialog(todo),
+      child: TodoEditorDialog(todo, branchTheme),
     );
 
     if (editedTodo != null && editedTodo != todo) {

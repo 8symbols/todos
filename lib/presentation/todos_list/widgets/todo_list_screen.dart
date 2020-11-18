@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marquee_widget/marquee_widget.dart';
 import 'package:todos/domain/models/branch.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
-import 'package:todos/presentation/branch_themes.dart';
-import 'package:todos/presentation/todos_list/theme_cubit/theme_cubit.dart';
+import 'package:todos/domain/services/i_settings_storage.dart';
+import 'package:todos/presentation/constants/branch_themes.dart';
+import 'package:todos/presentation/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list_screen_menu_options.dart';
@@ -33,15 +34,21 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   TodoListBloc _todoListBloc;
 
-  ThemeCubit _themeCubit;
+  BranchCubit _themeCubit;
 
   @override
   void initState() {
     super.initState();
     final todosRepository = context.read<ITodosRepository>();
-    _todoListBloc = TodoListBloc(todosRepository, branchId: widget.branch?.id);
-    _todoListBloc.add(TodosListLoadingRequestedEvent());
-    _themeCubit = ThemeCubit(todosRepository, branch: widget.branch);
+    final settingsStorage = context.read<ISettingsStorage>();
+
+    _todoListBloc = TodoListBloc(
+      todosRepository,
+      settingsStorage,
+      branchId: widget.branch?.id,
+    )..add(InitializationRequestedEvent());
+
+    _themeCubit = BranchCubit(todosRepository, branch: widget.branch);
   }
 
   @override
@@ -56,29 +63,38 @@ class _TodoListScreenState extends State<TodoListScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<TodoListBloc>.value(value: _todoListBloc),
-        BlocProvider<ThemeCubit>.value(value: _themeCubit),
+        BlocProvider<BranchCubit>.value(value: _themeCubit),
       ],
-      child: BlocBuilder<ThemeCubit, BranchTheme>(
-        buildWhen: (previous, current) => previous != current,
-        builder: (context, state) => Scaffold(
-          backgroundColor: state?.secondaryColor ??
-              BranchThemes.defaultBranchTheme.secondaryColor,
-          appBar: AppBar(
-            backgroundColor: state?.primaryColor ??
+      child: BlocBuilder<BranchCubit, Branch>(
+        builder: (context, state) => Theme(
+          data: Theme.of(context).copyWith(
+            primaryColor: state?.theme?.primaryColor ??
                 BranchThemes.defaultBranchTheme.primaryColor,
-            title: const Text('Задачи'),
-            actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
+            scaffoldBackgroundColor: state?.theme?.secondaryColor ??
+                BranchThemes.defaultBranchTheme.secondaryColor,
           ),
-          floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
-          body: BlocConsumer<TodoListBloc, TodoListState>(
-            listener: (context, state) {
-              if (state is TodosListDeletedTodoState) {
-                _showUndoSnackBar(context, state.todo);
-              }
-            },
-            builder: (context, state) => state is TodosListLoadingState
-                ? const Center(child: CircularProgressIndicator())
-                : TodoList(state.todos),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Marquee(
+                directionMarguee: DirectionMarguee.oneDirection,
+                animationDuration: const Duration(seconds: 4),
+                child: Text(
+                  areTodosFromSameBranch ? state.title : 'Все задачи',
+                ),
+              ),
+              actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
+            ),
+            floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
+            body: BlocConsumer<TodoListBloc, TodoListState>(
+              listener: (context, state) {
+                if (state is TodoListDeletedTodoState) {
+                  _showUndoSnackBar(context, state.branchId, state.todo);
+                }
+              },
+              builder: (context, state) => state is TodoListLoadingState
+                  ? const Center(child: CircularProgressIndicator())
+                  : TodoList(state.todos),
+            ),
           ),
         ),
       ),
@@ -89,7 +105,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     return BlocBuilder<TodoListBloc, TodoListState>(
       buildWhen: (previous, current) =>
           previous.runtimeType != current.runtimeType,
-      builder: (context, state) => state is TodosListContentState
+      builder: (context, state) => state is TodoListContentState
           ? FloatingActionButton(
               child: const Icon(Icons.add),
               onPressed: () => _addTodo(context),
@@ -101,9 +117,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
   /// Создает диалог с созданием новой задачи.
   void _addTodo(BuildContext context) async {
     final newTodo = Todo('');
+    final branchTheme = context.read<BranchCubit>().state?.theme ??
+        BranchThemes.defaultBranchTheme;
     final editedTodo = await showDialog<Todo>(
       context: context,
-      builder: (context) => TodoEditorDialog(newTodo, isNewTodo: true),
+      builder: (context) =>
+          TodoEditorDialog(newTodo, branchTheme, isNewTodo: true),
     );
 
     if (editedTodo != null) {
@@ -111,7 +130,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     }
   }
 
-  void _showUndoSnackBar(BuildContext context, Todo todo) {
+  void _showUndoSnackBar(BuildContext context, String branchId, Todo todo) {
     Scaffold.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -119,8 +138,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
           content: Text('Задача "${todo.title}" удалена.'),
           action: SnackBarAction(
             label: "Отменить",
-            onPressed: () =>
-                context.read<TodoListBloc>().add(TodoAddedEvent(todo)),
+            onPressed: () => context
+                .read<TodoListBloc>()
+                .add(TodoRestoredEvent(branchId, todo)),
           ),
         ),
       );

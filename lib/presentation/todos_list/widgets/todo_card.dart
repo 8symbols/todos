@@ -38,7 +38,12 @@ class TodoCard extends StatelessWidget {
       color: Colors.red,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: const [Icon(Icons.delete), SizedBox(width: 12.0)],
+        children: const [
+          Padding(
+            padding: EdgeInsets.only(right: 12.0),
+            child: Icon(Icons.delete, color: Colors.white),
+          ),
+        ],
       ),
     );
 
@@ -63,6 +68,15 @@ class TodoCard extends StatelessWidget {
                         onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
                   ),
                   Expanded(child: _buildTodoData()),
+                  IconButton(
+                    icon: Icon(
+                      todoData.todo.isFavorite ? Icons.star : Icons.star_border,
+                      color: Colors.orangeAccent,
+                      size: 32.0,
+                    ),
+                    onPressed: () => onEdit(todoData.todo
+                        .copyWith(isFavorite: !todoData.todo.isFavorite)),
+                  ),
                 ],
               ),
             ),

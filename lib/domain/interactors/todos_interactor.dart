@@ -1,5 +1,6 @@
 import 'package:todos/domain/factories/todos_comparators_factory.dart';
-import 'package:todos/domain/helpers/filesystem_helper.dart';
+import 'package:todos/domain/models/todo_list_view_settings.dart';
+import 'package:todos/domain/utils/filesystem_utils.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
@@ -60,7 +61,7 @@ class TodosInteractor {
       await _notificationsService.scheduleNotification(todo);
     }
     if (todo.themeImagePath != null) {
-      final newPath = await FileSystemHelper.copyToLocal(todo.themeImagePath);
+      final newPath = await FileSystemUtils.copyToLocal(todo.themeImagePath);
       todo = todo.copyWith(themeImagePath: Nullable(newPath));
     }
     return _repository.addTodo(branchId, todo);
@@ -105,11 +106,11 @@ class TodosInteractor {
   Future<Todo> _handleThemeImages(Todo oldTodo, Todo newTodo) async {
     if (oldTodo.themeImagePath != newTodo.themeImagePath) {
       if (oldTodo.themeImagePath != null) {
-        await FileSystemHelper.deleteFile(oldTodo.themeImagePath);
+        await FileSystemUtils.deleteFile(oldTodo.themeImagePath);
       }
       if (newTodo.themeImagePath != null) {
         final newPath =
-            await FileSystemHelper.copyToLocal(newTodo.themeImagePath);
+            await FileSystemUtils.copyToLocal(newTodo.themeImagePath);
         newTodo = newTodo.copyWith(themeImagePath: Nullable(newPath));
       }
     }
@@ -125,7 +126,7 @@ class TodosInteractor {
       await _notificationsService.cancelNotification(todo);
     }
     if (todo.themeImagePath != null) {
-      await FileSystemHelper.deleteFile(todo.themeImagePath);
+      await FileSystemUtils.deleteFile(todo.themeImagePath);
     }
     final imagesPaths = await getImagesPaths(todoId);
     for (final imagePath in imagesPaths) {
@@ -175,14 +176,14 @@ class TodosInteractor {
   /// Копирует картинку по пути [tmpImagePath] в локальную директорию и
   /// и добавляет путь к копии в задачу c идентификатором [todoId].
   Future<void> addImagePath(String todoId, String tmpImagePath) async {
-    final imagePath = await FileSystemHelper.copyToLocal(tmpImagePath);
+    final imagePath = await FileSystemUtils.copyToLocal(tmpImagePath);
     return _repository.addImagePath(todoId, imagePath);
   }
 
   /// Удаляет путь к изображению [imagePath] из задачи
   /// c идентификатором [todoId], а также само изображение.
   Future<void> deleteImagePath(String todoId, String imagePath) async {
-    await FileSystemHelper.deleteFile(imagePath);
+    await FileSystemUtils.deleteFile(imagePath);
     return _repository.deleteImagePath(todoId, imagePath);
   }
 
@@ -191,9 +192,38 @@ class TodosInteractor {
     return _repository.getImagesPaths(todoId);
   }
 
+  /// Возвращает ветку, которой принадлжеит задача [todo].
+  Future<Branch> getTodoBranch(Todo todo) async {
+    return _repository.getTodoBranch(todo);
+  }
+
   /// Сортирует задачи [todos] в соответствии с порядком сортировки [sortOrder].
   void sortTodos(List<Todo> todos, TodosSortOrder sortOrder) {
     todos.sort(TodosComparatorsFactory.getComparator(sortOrder));
+  }
+
+  /// Создает новый список на основе [todos] и применяет к нему
+  /// насройки отображения [viewSettings].
+  List<Todo> applyViewSettings(
+    List<Todo> todos,
+    TodoListViewSettings viewSettings,
+  ) {
+    final oldTodos = todos;
+
+    if (!viewSettings.areCompletedTodosVisible) {
+      todos = todos.where((todo) => !todo.wasCompleted).toList();
+    }
+
+    if (!viewSettings.areNonFavoriteTodosVisible) {
+      todos = todos.where((todo) => todo.isFavorite).toList();
+    }
+
+    if (identical(todos, oldTodos)) {
+      todos = List<Todo>.from(todos);
+    }
+
+    sortTodos(todos, viewSettings.sortOrder);
+    return todos;
   }
 
   /// Удаляет завершенные задачи в ветке с идентификатором [branchId].

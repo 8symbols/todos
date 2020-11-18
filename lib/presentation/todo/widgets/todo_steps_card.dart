@@ -96,8 +96,20 @@ class TodoStepsCard extends StatelessWidget {
     );
   }
 
-  void _deleteStep(BuildContext context, TodoStep step) {
-    context.read<TodoStepsBloc>().add(StepDeletedEvent(step.id));
+  Future<void> _deleteStep(BuildContext context, TodoStep step) async {
+    final wasDeletionConfirmed = await showDialog<bool>(
+      context: context,
+      child: const BooleanDialog(
+        title: 'Удалить шаг?',
+        content: 'Это действие нельзя отменить.',
+        acceptButtonText: 'Подтвердить',
+        rejectButtonText: 'Отмена',
+      ),
+    );
+
+    if (wasDeletionConfirmed == true) {
+      context.read<TodoStepsBloc>().add(StepDeletedEvent(step.id));
+    }
   }
 
   void _editStep(BuildContext context, TodoStep editedStep) {

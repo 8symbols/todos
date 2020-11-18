@@ -11,6 +11,7 @@ class PopupMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<PopupMenuItemData>(
+      padding: EdgeInsets.zero,
       onSelected: (value) => value.onSelected(context),
       itemBuilder: (BuildContext context) {
         return options.map((PopupMenuItemData data) {

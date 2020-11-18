@@ -171,7 +171,12 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Branch getAnyBranch() {
-    return _branches.values.first;
+  Future<Branch> getTodoBranch(Todo todo) async {
+    for (final branchTodos in _branchesTodos.entries) {
+      if (branchTodos.value.contains(todo.id)) {
+        return _branches[branchTodos.key];
+      }
+    }
+    return null;
   }
 }
