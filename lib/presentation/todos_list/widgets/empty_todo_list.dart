@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:todos/presentation/constants/assets_paths.dart';
 
 /// Виджет для отображения пустого списка задач.
 class EmptyTodoList extends StatefulWidget {
@@ -67,14 +68,14 @@ class _EmptyTodoListState extends State<EmptyTodoList>
             child: Stack(
               children: [
                 SvgPicture.asset(
-                  'assets/images/todolist_background.svg',
+                  AssetsPaths.todoListBackground,
                   width: _imageSideSize,
                   height: _imageSideSize,
                 ),
                 PositionedTransition(
                   rect: _animation,
                   child: SvgPicture.asset(
-                    'assets/images/todolist.svg',
+                    AssetsPaths.todoList,
                     width: _imageSideSize,
                     height: _imageSideSize,
                   ),

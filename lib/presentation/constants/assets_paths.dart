@@ -8,4 +8,10 @@ abstract class AssetsPaths {
 
   /// Анимация изображения с горами на карте всех задач.
   static const mountainsAnimation = 'assets/animations/mountains.riv';
+
+  /// Фон для списка задач.
+  static const todoListBackground = 'assets/images/todolist_background.svg';
+
+  /// Список задач.
+  static const todoList = 'assets/images/todolist.svg';
 }
