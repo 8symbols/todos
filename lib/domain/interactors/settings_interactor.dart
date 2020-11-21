@@ -17,4 +17,14 @@ class SettingsInteractor {
   Future<TodoListViewSettings> getTodoListViewSettings() async {
     return _settingsStorage.getTodoListViewSettings();
   }
+
+  /// Сохраняет последний поисковый запрос во Flickr.
+  Future<void> saveLastFlickrQuery(String query) async {
+    return _settingsStorage.saveLastFlickrQuery(query);
+  }
+
+  /// Загружает последний поисковый запрос во Flickr.
+  Future<String> getLastFlickrQuery() async {
+    return _settingsStorage.getLastFlickrQuery();
+  }
 }

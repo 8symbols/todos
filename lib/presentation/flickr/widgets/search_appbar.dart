@@ -7,6 +7,11 @@ class SearchAppBar extends StatelessWidget {
   /// Может быть равным null.
   final String hintText;
 
+  /// Начальное значение в поле ввода.
+  ///
+  /// Может быть равным null.
+  final String initialValue;
+
   /// Callback при нажатии на кнопку "назад".
   final VoidCallback onBackPressed;
 
@@ -17,6 +22,7 @@ class SearchAppBar extends StatelessWidget {
     @required this.onBackPressed,
     @required this.onSubmitted,
     this.hintText,
+    this.initialValue,
   });
 
   @override
@@ -26,9 +32,10 @@ class SearchAppBar extends StatelessWidget {
       automaticallyImplyLeading: false,
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: TextField(
+        child: TextFormField(
+          initialValue: initialValue,
           autofocus: true,
-          onSubmitted: onSubmitted,
+          onFieldSubmitted: onSubmitted,
           decoration: InputDecoration(
             hintText: hintText,
             isDense: true,

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/data/repositories/flickr_repository.dart';
 import 'package:todos/domain/models/branch_theme.dart';
+import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/flickr/flickr_images_bloc/flickr_images_bloc.dart';
 import 'package:todos/presentation/flickr/searchbar_cubit/search_bar_cubit.dart';
+import 'package:todos/presentation/flickr/searchbar_cubit/searchbar_state.dart';
 import 'package:todos/presentation/flickr/widgets/flickr_images_grid.dart';
 import 'package:todos/presentation/flickr/widgets/search_appbar.dart';
 
@@ -35,7 +37,8 @@ class _FlickrScreenState extends State<FlickrScreen> {
   @override
   void initState() {
     super.initState();
-    _searchBarCubit = SearchBarCubit();
+    final settingsStorage = context.read<ISettingsStorage>();
+    _searchBarCubit = SearchBarCubit(settingsStorage);
     _imagesBloc = FlickrImagesBloc(FlickrRepository(), _pageSize)
       ..add(RecentImagesLoadingRequestedEvent());
   }
@@ -70,13 +73,17 @@ class _FlickrScreenState extends State<FlickrScreen> {
   Widget _buildAppBar(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(56.0),
-      child: BlocBuilder<SearchBarCubit, bool>(
-        builder: (context, shouldShowSearchBar) => shouldShowSearchBar
+      child: BlocBuilder<SearchBarCubit, SearchBarState>(
+        builder: (context, state) => state.shouldShow
             ? SearchAppBar(
+                initialValue: state.lastQuery,
                 hintText: 'Найти изображения...',
-                onSubmitted: (query) => context.read<FlickrImagesBloc>().add(
-                      SearchImagesLoadingRequestedEvent(query),
-                    ),
+                onSubmitted: (query) {
+                  context.read<SearchBarCubit>().saveLastQuery(query);
+                  context.read<FlickrImagesBloc>().add(
+                        SearchImagesLoadingRequestedEvent(query),
+                      );
+                },
                 onBackPressed: () {
                   context.read<FlickrImagesBloc>().add(
                         const RecentImagesLoadingRequestedEvent(),

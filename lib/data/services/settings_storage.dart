@@ -8,6 +8,8 @@ import 'package:todos/domain/services/i_settings_storage.dart';
 class SettingsStorage implements ISettingsStorage {
   static const _todoListViewSettingsKey = 'todo_list_view_settings';
 
+  static const _lastFlickrQueryKey = 'last_flickr_query';
+
   Future<SharedPreferences> _futurePrefs = SharedPreferences.getInstance();
 
   @override
@@ -23,5 +25,17 @@ class SettingsStorage implements ISettingsStorage {
     return json != null
         ? TodoListViewSettings.fromJson(jsonDecode(json))
         : TodoListViewSettings();
+  }
+
+  @override
+  Future<void> saveLastFlickrQuery(String query) async {
+    final prefs = await _futurePrefs;
+    prefs.setString(_lastFlickrQueryKey, query);
+  }
+
+  @override
+  Future<String> getLastFlickrQuery() async {
+    final prefs = await _futurePrefs;
+    return prefs.getString(_lastFlickrQueryKey) ?? '';
   }
 }

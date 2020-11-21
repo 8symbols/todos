@@ -7,4 +7,10 @@ abstract class ISettingsStorage {
 
   /// Загружает настройки отображения списка задач.
   Future<TodoListViewSettings> getTodoListViewSettings();
+
+  /// Сохраняет последний поисковый запрос во Flickr.
+  Future<void> saveLastFlickrQuery(String query);
+
+  /// Загружает последний поисковый запрос во Flickr.
+  Future<String> getLastFlickrQuery();
 }
