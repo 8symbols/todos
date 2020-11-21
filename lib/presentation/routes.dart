@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/branch_theme.dart';
-import 'package:todos/presentation/branches/widgets/branches_screen.dart';
-import 'package:todos/presentation/flickr/widgets/flickr_screen.dart';
-import 'package:todos/presentation/todo/models/todo_screen_arguments.dart';
-import 'package:todos/presentation/todo/widgets/todo_screen.dart';
-import 'package:todos/presentation/todos_list/widgets/todo_list_screen.dart';
+import 'package:todos/presentation/screens/branches/widgets/branches_screen.dart';
+import 'package:todos/presentation/screens/flickr/widgets/flickr_screen.dart';
+import 'package:todos/presentation/screens/todo/models/todo_screen_arguments.dart';
+import 'package:todos/presentation/screens/todo/widgets/todo_screen.dart';
+import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
 
 const initialRoute = BranchesScreen.routeName;
 

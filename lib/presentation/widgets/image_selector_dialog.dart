@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:todos/domain/models/branch_theme.dart';
-import 'package:todos/presentation/flickr/widgets/flickr_screen.dart';
+import 'package:todos/presentation/screens/flickr/widgets/flickr_screen.dart';
 
 /// Диалог для выбора изображения.
 ///
