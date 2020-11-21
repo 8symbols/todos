@@ -4,7 +4,7 @@ import 'package:todos/presentation/constants/branch_themes.dart';
 /// Тема приложения.
 final theme = ThemeData(
   primaryColor: BranchThemes.defaultBranchTheme.primaryColor,
-  scaffoldBackgroundColor: BranchThemes.defaultBranchTheme.primaryColor,
+  scaffoldBackgroundColor: BranchThemes.defaultBranchTheme.secondaryColor,
   floatingActionButtonTheme: FloatingActionButtonThemeData(
     backgroundColor: const Color(0xFF01A39D),
   ),

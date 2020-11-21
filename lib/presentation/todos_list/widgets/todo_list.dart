@@ -5,7 +5,7 @@ import 'package:todos/presentation/todo/models/todo_screen_arguments.dart';
 import 'package:todos/presentation/todo/widgets/todo_screen.dart';
 import 'package:todos/presentation/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
-import 'package:todos/presentation/todos_list/models/todo_card_data.dart';
+import 'package:todos/presentation/todos_list/models/todo_view_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/empty_todo_list.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_card.dart';
