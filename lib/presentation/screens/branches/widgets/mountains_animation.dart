@@ -4,6 +4,8 @@ import 'package:rive/rive.dart';
 import 'package:todos/presentation/constants/assets_paths.dart';
 
 class MountainsAnimation extends StatefulWidget {
+  MountainsAnimation() : super();
+
   @override
   _MountainsAnimationState createState() => _MountainsAnimationState();
 }
@@ -65,6 +67,7 @@ class _MountainsAnimationState extends State<MountainsAnimation> {
       child: _riveArtboard == null
           ? null
           : GestureDetector(
+              key: UniqueKey(),
               onTap: changeDayTime,
               child: Rive(artboard: _riveArtboard),
             ),
