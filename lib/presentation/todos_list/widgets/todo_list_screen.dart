@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marquee_widget/marquee_widget.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -10,6 +9,7 @@ import 'package:todos/presentation/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/todos_list/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list.dart';
 import 'package:todos/presentation/todos_list/widgets/todo_list_screen_menu_options.dart';
+import 'package:todos/presentation/widgets/marquee.dart';
 import 'package:todos/presentation/widgets/todo_editor_dialog.dart';
 
 /// Экран списка задач.
@@ -76,8 +76,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
           child: Scaffold(
             appBar: AppBar(
               title: Marquee(
-                directionMarguee: DirectionMarguee.oneDirection,
-                animationDuration: const Duration(seconds: 4),
                 child: Text(
                   areTodosFromSameBranch ? state.title : 'Все задачи',
                 ),
