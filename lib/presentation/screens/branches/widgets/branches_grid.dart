@@ -43,30 +43,38 @@ class BranchesGrid extends StatelessWidget {
                 onDelete: () =>
                     onBranchDeleted(branchesStatistics[index].branch),
               )
-            : _buildAddButton(context),
+            : _buildAddButton(context, index.isEven),
         childCount: branchesStatistics.length + 1,
       ),
     );
   }
 
-  Widget _buildAddButton(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: RawMaterialButton(
-            onPressed: onAddBranch,
-            elevation: 8.0,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16.0)),
-            ),
-            fillColor:
-                Theme.of(context).floatingActionButtonTheme.backgroundColor,
-            child: const Icon(Icons.add, color: Colors.white),
+  Widget _buildAddButton(BuildContext context, bool isVertical) {
+    final button = Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints.tightFor(width: 80.0, height: 80.0),
+        child: RawMaterialButton(
+          onPressed: onAddBranch,
+          elevation: 8.0,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
+          fillColor:
+              Theme.of(context).floatingActionButtonTheme.backgroundColor,
+          child: const Icon(Icons.add, color: Colors.white),
         ),
-      ],
+      ),
     );
+
+    return isVertical
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [button],
+          )
+        : Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [button],
+          );
   }
 }
