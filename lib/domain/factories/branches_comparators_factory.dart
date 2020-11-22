@@ -4,9 +4,21 @@ import 'package:todos/domain/models/branches_sort_order.dart';
 /// Фабрика для получения компараторов по порядку сортировки [BranchesSortOrder].
 abstract class BranchesComparatorsFactory {
   static final _comparators = <BranchesSortOrder, Comparator<Branch>>{
+    BranchesSortOrder.creation: (a, b) {
+      return b.creationTime.millisecondsSinceEpoch -
+          a.creationTime.millisecondsSinceEpoch;
+    },
+    BranchesSortOrder.creationAsc: (a, b) {
+      return a.creationTime.millisecondsSinceEpoch -
+          b.creationTime.millisecondsSinceEpoch;
+    },
     BranchesSortOrder.usage: (a, b) {
       return b.lastUsageTime.millisecondsSinceEpoch -
           a.lastUsageTime.millisecondsSinceEpoch;
+    },
+    BranchesSortOrder.usageAsc: (a, b) {
+      return a.lastUsageTime.millisecondsSinceEpoch -
+          b.lastUsageTime.millisecondsSinceEpoch;
     },
   };
 

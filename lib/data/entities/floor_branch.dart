@@ -22,5 +22,15 @@ class FloorBranch {
   @ColumnInfo(name: 'last_usage_time', nullable: false)
   final DateTime lastUsageTime;
 
-  const FloorBranch(this.title, this.theme, {this.id, this.lastUsageTime});
+  /// Представление [Branch.creationTime].
+  @ColumnInfo(name: 'creation_time', nullable: false)
+  final DateTime creationTime;
+
+  const FloorBranch(
+    this.title,
+    this.theme, {
+    this.id,
+    this.lastUsageTime,
+    this.creationTime,
+  });
 }

@@ -2,7 +2,7 @@ import 'package:enum_to_string/enum_to_string.dart';
 import 'package:todos/domain/models/todos_sort_order.dart';
 
 /// Настройки отображения списка задач.
-class TodoListViewSettings {
+class TodosViewSettings {
   /// Показывать ли выполненные задачи.
   final bool areCompletedTodosVisible;
 
@@ -12,18 +12,18 @@ class TodoListViewSettings {
   /// Порядок сортировки.
   final TodosSortOrder sortOrder;
 
-  const TodoListViewSettings({
+  const TodosViewSettings({
     this.areCompletedTodosVisible = true,
     this.areNonFavoriteTodosVisible = true,
     this.sortOrder = TodosSortOrder.creation,
   });
 
-  TodoListViewSettings copyWith({
+  TodosViewSettings copyWith({
     bool areCompletedTodosVisible,
     bool areNonFavoriteTodosVisible,
     TodosSortOrder sortOrder,
   }) {
-    return TodoListViewSettings(
+    return TodosViewSettings(
       areCompletedTodosVisible:
           areCompletedTodosVisible ?? this.areCompletedTodosVisible,
       areNonFavoriteTodosVisible:
@@ -32,17 +32,17 @@ class TodoListViewSettings {
     );
   }
 
-  factory TodoListViewSettings.fromJson(Map<String, dynamic> json) =>
-      TodoListViewSettings(
-        areCompletedTodosVisible: json['areCompletedTodosVisible'],
-        areNonFavoriteTodosVisible: json['areNonFavoriteTodosVisible'],
+  factory TodosViewSettings.fromJson(Map<String, dynamic> json) =>
+      TodosViewSettings(
+        areCompletedTodosVisible: json['are_completed_todos_visible'],
+        areNonFavoriteTodosVisible: json['are_non_favorite_todos_visible'],
         sortOrder:
-            EnumToString.fromString(TodosSortOrder.values, json['sortOrder']),
+            EnumToString.fromString(TodosSortOrder.values, json['sort_order']),
       );
 
   Map<String, dynamic> toJson() => {
-        'areCompletedTodosVisible': areCompletedTodosVisible,
-        'areNonFavoriteTodosVisible': areNonFavoriteTodosVisible,
-        'sortOrder': EnumToString.convertToString(sortOrder),
+        'are_completed_todos_visible': areCompletedTodosVisible,
+        'are_non_favorite_todos_visible': areNonFavoriteTodosVisible,
+        'sort_order': EnumToString.convertToString(sortOrder),
       };
 }

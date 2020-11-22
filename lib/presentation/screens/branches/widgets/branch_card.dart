@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todos/presentation/screens/branches/models/branch_statistics.dart';
 import 'package:todos/presentation/widgets/deletable_item.dart';
-import 'package:todos/presentation/widgets/radial_progress_painter.dart';
+import 'package:todos/presentation/widgets/tween_radial_progress.dart';
 
 /// Карта со статистикой по ветке задач.
 class BranchCard extends StatelessWidget {
@@ -38,7 +38,10 @@ class BranchCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildProgress(context),
+                  TweenRadialProgress(
+                    branchStatistics.completionProgress,
+                    branchStatistics.branch.theme.primaryColor,
+                  ),
                   Spacer(),
                   Text(
                     branchStatistics.branch.title,
@@ -63,36 +66,6 @@ class BranchCard extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProgress(BuildContext context) {
-    final percent = (branchStatistics.completionProgress * 100.0).round();
-
-    return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 500),
-      tween: Tween(begin: 0.0, end: branchStatistics.completionProgress),
-      builder: (context, value, child) => SizedBox(
-        width: 52.0,
-        height: 52.0,
-        child: CustomPaint(
-          child: child,
-          painter: RadialProgressPainter(
-            value,
-            branchStatistics.branch.theme.primaryColor,
-          ),
-        ),
-      ),
-      child: Center(
-        child: Text(
-          '$percent%',
-          style: TextStyle(
-            color: branchStatistics.branch.theme.primaryColor,
-            fontSize: 15.0,
-            fontWeight: FontWeight.bold,
           ),
         ),
       ),

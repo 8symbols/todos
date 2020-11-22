@@ -9,6 +9,7 @@ abstract class BranchMapper {
         floorBranch.theme,
         id: floorBranch.id,
         lastUsageTime: floorBranch.lastUsageTime,
+        creationTime: floorBranch.creationTime,
       );
 
   /// Создает [FloorBranch] на основе [Branch].
@@ -17,5 +18,6 @@ abstract class BranchMapper {
         branch.theme,
         id: branch.id,
         lastUsageTime: branch.lastUsageTime,
+        creationTime: branch.creationTime,
       );
 }

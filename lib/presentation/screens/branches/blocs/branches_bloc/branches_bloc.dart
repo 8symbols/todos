@@ -2,42 +2,63 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:todos/domain/interactors/settings_interactor.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
-import 'package:todos/domain/models/branches_sort_order.dart';
+import 'package:todos/domain/models/branches_view_settings.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/screens/branches/models/branch_statistics.dart';
 import 'package:todos/presentation/screens/branches/models/todos_statistics.dart';
 
 part 'branches_event.dart';
 part 'branches_state.dart';
 
+/// BloC для управления списком веток.
 class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
   /// Интерактор для работы с ветками.
   final TodosInteractor _todosInteractor;
 
-  BranchesBloc(ITodosRepository todosRepository)
-      : _todosInteractor = TodosInteractor(todosRepository),
+  /// Интерактор для работы с настройками.
+  final SettingsInteractor _settingsInteractor;
+
+  List<Branch> _allBranches;
+
+  BranchesBloc(
+    ITodosRepository todosRepository,
+    ISettingsStorage settingsStorage,
+  )   : _todosInteractor = TodosInteractor(todosRepository),
+        _settingsInteractor = SettingsInteractor(settingsStorage),
         super(const BranchesLoadingState());
 
   @override
   Stream<BranchesState> mapEventToState(
     BranchesEvent event,
   ) async* {
-    if (event is BranchesLoadingRequestedEvent) {
-      yield* _mapBranchesLoadingRequestedEventToState(event);
+    if (event is InitializationRequestedEvent) {
+      yield* _mapInitializationRequestedEventToState(event);
     } else if (event is BranchAddedEvent) {
       yield* _mapBranchAddedEventToState(event);
     } else if (event is BranchDeletedEvent) {
       yield* _mapBranchDeletedEventToState(event);
+    } else if (event is ViewSettingsChangedEvent) {
+      yield* _mapViewSettingsChangedEventToState(event);
     }
   }
 
-  /// Загружает ветки.
-  Stream<BranchesState> _mapBranchesLoadingRequestedEventToState(
-    BranchesLoadingRequestedEvent event,
+  /// Загружает ветки и настройки отображения.
+  Stream<BranchesState> _mapInitializationRequestedEventToState(
+    InitializationRequestedEvent event,
   ) async* {
-    yield await _loadBranchesWithStatistics();
+    _allBranches = await _todosInteractor.getBranches();
+    final viewSettings = await _settingsInteractor.getBranchesViewSettings();
+    final branchesStatistics = await _mapBranchesToView(viewSettings);
+
+    yield BranchesContentState(
+      _getAllTodosStatistics(branchesStatistics),
+      branchesStatistics,
+      viewSettings,
+    );
   }
 
   /// Добавляет ветку.
@@ -45,7 +66,14 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     BranchAddedEvent event,
   ) async* {
     await _todosInteractor.addBranch(event.branch);
-    yield await _loadBranchesWithStatistics();
+    _allBranches = await _todosInteractor.getBranches();
+    final branchesStatistics = await _mapBranchesToView();
+
+    yield BranchesContentState(
+      _getAllTodosStatistics(branchesStatistics),
+      branchesStatistics,
+      state.viewSettings,
+    );
   }
 
   /// Удаляет ветку.
@@ -53,16 +81,28 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     BranchDeletedEvent event,
   ) async* {
     await _todosInteractor.deleteBranch(event.branch.id);
-    yield await _loadBranchesWithStatistics();
+    _allBranches = await _todosInteractor.getBranches();
+    final branchesStatistics = await _mapBranchesToView();
+
+    yield BranchesContentState(
+      _getAllTodosStatistics(branchesStatistics),
+      branchesStatistics,
+      state.viewSettings,
+    );
   }
 
-  /// Загружает ветки, сортирует их и формирует статистику.
-  Future<BranchesState> _loadBranchesWithStatistics() async {
-    final branches = await _todosInteractor.getBranches();
-    _todosInteractor.sortBranches(branches, BranchesSortOrder.usage);
-    final branchesStatistics = await _getBranchesStatistics(branches);
-    final todosStatistics = _getTodosStatistics(branchesStatistics);
-    return BranchesContentState(todosStatistics, branchesStatistics);
+  /// Сохраняет и применяет новые настройки отображения.
+  Stream<BranchesState> _mapViewSettingsChangedEventToState(
+    ViewSettingsChangedEvent event,
+  ) async* {
+    await _settingsInteractor.saveBranchesViewSettings(event.viewSettings);
+    final branchesStatistics = await _mapBranchesToView(event.viewSettings);
+
+    yield BranchesContentState(
+      _getAllTodosStatistics(branchesStatistics),
+      branchesStatistics,
+      event.viewSettings,
+    );
   }
 
   /// Загружает статистику по каждой ветке из [branches].
@@ -81,7 +121,7 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
 
   /// Формирует общую статистику на основе статистик веток
   /// [branchesStatistics].
-  TodosStatistics _getTodosStatistics(
+  TodosStatistics _getAllTodosStatistics(
     List<BranchStatistics> branchesStatistics,
   ) {
     final todosCount =
@@ -89,5 +129,18 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     final completedTodosCount = branchesStatistics.fold(
         0, (sum, branch) => sum + branch.completedTodosCount);
     return TodosStatistics(todosCount, completedTodosCount);
+  }
+
+  /// Создает список веток на основе [_allBranches], применяет к нему настройки
+  /// отображения [viewSettings] и формирует статистику.
+  ///
+  /// Если [viewSettings] не задан, использует [BranchesState.viewSettings].
+  Future<List<BranchStatistics>> _mapBranchesToView([
+    BranchesViewSettings viewSettings,
+  ]) async {
+    viewSettings ??= state.viewSettings;
+    final branches =
+        _todosInteractor.applyBranchesViewSettings(_allBranches, viewSettings);
+    return await _getBranchesStatistics(branches);
   }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/screens/branches/blocs/branches_bloc/branches_bloc.dart';
 import 'package:todos/presentation/screens/branches/widgets/all_todos_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/screens/branches/widgets/branches_grid.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
+import 'package:todos/presentation/screens/branches/widgets/branches_screen_menu_options.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/branch_editor_dialog.dart';
@@ -24,8 +26,10 @@ class _BranchesScreenState extends State<BranchesScreen> {
   void initState() {
     super.initState();
     final todosRepository = context.read<ITodosRepository>();
-    _branchesBloc = BranchesBloc(todosRepository)
-      ..add(const BranchesLoadingRequestedEvent());
+    final settingsStorage = context.read<ISettingsStorage>();
+
+    _branchesBloc = BranchesBloc(todosRepository, settingsStorage)
+      ..add(const InitializationRequestedEvent());
   }
 
   @override
@@ -38,12 +42,16 @@ class _BranchesScreenState extends State<BranchesScreen> {
   Widget build(BuildContext context) {
     return BlocProvider<BranchesBloc>.value(
       value: _branchesBloc,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Статистика'),
-        ),
-        body: BlocBuilder<BranchesBloc, BranchesState>(
-          builder: (context, state) => state is BranchesLoadingState
+      child: BlocBuilder<BranchesBloc, BranchesState>(
+        builder: (context, state) => Scaffold(
+          appBar: AppBar(
+            title: const Text('Статистика'),
+            actions: [
+              if (state is! BranchesLoadingState)
+                const BranchesScreenMenuOptions()
+            ],
+          ),
+          body: state is BranchesLoadingState
               ? const Center(child: CircularProgressIndicator())
               : _buildStatistics(context, state),
         ),
@@ -123,6 +131,6 @@ class _BranchesScreenState extends State<BranchesScreen> {
   Future<void> _openTodosScreen(BuildContext context, [Branch branch]) async {
     await Navigator.of(context)
         .pushNamed(TodoListScreen.routeName, arguments: branch);
-    context.read<BranchesBloc>().add(const BranchesLoadingRequestedEvent());
+    context.read<BranchesBloc>().add(const InitializationRequestedEvent());
   }
 }

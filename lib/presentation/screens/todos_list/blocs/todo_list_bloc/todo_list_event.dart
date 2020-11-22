@@ -46,9 +46,9 @@ class TodoRestoredEvent extends TodoListEvent {
 class CompletedTodosDeletedEvent extends TodoListEvent {}
 
 /// Событие изменения настроек отображения.
-class TodoListViewSettingsChangedEvent extends TodoListEvent {
+class ViewSettingsChangedEvent extends TodoListEvent {
   /// Настройки отображения.
-  final TodoListViewSettings viewSettings;
+  final TodosViewSettings viewSettings;
 
-  TodoListViewSettingsChangedEvent(this.viewSettings);
+  ViewSettingsChangedEvent(this.viewSettings);
 }

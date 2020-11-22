@@ -2,6 +2,7 @@ import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/factories/branches_comparators_factory.dart';
 import 'package:todos/domain/factories/todos_comparators_factory.dart';
 import 'package:todos/domain/models/branches_sort_order.dart';
+import 'package:todos/domain/models/branches_view_settings.dart';
 import 'package:todos/domain/models/todo_list_view_settings.dart';
 import 'package:todos/domain/utils/filesystem_utils.dart';
 import 'package:todos/domain/models/branch.dart';
@@ -223,10 +224,10 @@ class TodosInteractor {
   }
 
   /// Создает новый список на основе [todos] и применяет к нему
-  /// насройки отображения [viewSettings].
-  List<Todo> applyViewSettings(
+  /// настройки отображения [viewSettings].
+  List<Todo> applyTodosViewSettings(
     List<Todo> todos,
-    TodoListViewSettings viewSettings,
+    TodosViewSettings viewSettings,
   ) {
     final oldTodos = todos;
 
@@ -244,6 +245,17 @@ class TodosInteractor {
 
     sortTodos(todos, viewSettings.sortOrder);
     return todos;
+  }
+
+  /// Создает новый список на основе [branches] и применяет к нему
+  /// настройки отображения [viewSettings].
+  List<Branch> applyBranchesViewSettings(
+    List<Branch> branches,
+    BranchesViewSettings viewSettings,
+  ) {
+    branches = List.from(branches);
+    sortBranches(branches, viewSettings.sortOrder);
+    return branches;
   }
 
   /// Удаляет завершенные задачи в ветке с идентификатором [branchId].

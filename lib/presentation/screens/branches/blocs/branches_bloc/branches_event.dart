@@ -5,9 +5,18 @@ abstract class BranchesEvent {
   const BranchesEvent();
 }
 
-/// Запрос загрузки веток.
-class BranchesLoadingRequestedEvent extends BranchesEvent {
-  const BranchesLoadingRequestedEvent();
+/// Событие запроса загрузки настроек отображения списка веток
+/// и самого списка веток.
+class InitializationRequestedEvent extends BranchesEvent {
+  const InitializationRequestedEvent();
+}
+
+/// Изменились настройки отображения.
+class ViewSettingsChangedEvent extends BranchesEvent {
+  /// Новые настройки отображения.
+  final BranchesViewSettings viewSettings;
+
+  const ViewSettingsChangedEvent(this.viewSettings);
 }
 
 /// Событие добавления ветки.

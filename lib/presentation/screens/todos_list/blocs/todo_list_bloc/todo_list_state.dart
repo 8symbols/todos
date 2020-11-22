@@ -10,7 +10,7 @@ abstract class TodoListState {
   /// Настройки отображения.
   ///
   /// Равены null до инициализации.
-  final TodoListViewSettings viewSettings;
+  final TodosViewSettings viewSettings;
 
   const TodoListState(this.todos, this.viewSettings);
 }
@@ -24,7 +24,7 @@ class TodoListLoadingState extends TodoListState {
 class TodoListContentState extends TodoListState {
   TodoListContentState(
     List<TodoStatistics> todos,
-    TodoListViewSettings viewSettings,
+    TodosViewSettings viewSettings,
   ) : super(todos, viewSettings);
 }
 
@@ -40,6 +40,6 @@ class TodoListDeletedTodoState extends TodoListState {
     this.branchId,
     this.todo,
     List<TodoStatistics> todos,
-    TodoListViewSettings viewSettings,
+    TodosViewSettings viewSettings,
   ) : super(todos, viewSettings);
 }

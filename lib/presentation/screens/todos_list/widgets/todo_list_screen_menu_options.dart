@@ -23,35 +23,52 @@ class TodoListScreenMenuOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hideCompletedTodosOption = PopupMenuItemData(
-        Icons.visibility_off_outlined, 'Скрыть выполненные',
-        onSelected: _hideCompletedTodos);
+      Icons.visibility_off_outlined,
+      'Скрыть выполненные',
+      onSelected: _hideCompletedTodos,
+    );
 
     final showCompletedTodosOption = PopupMenuItemData(
-        Icons.visibility_outlined, 'Показать выполненные',
-        onSelected: _showCompletedTodos);
+      Icons.visibility_outlined,
+      'Показать выполненные',
+      onSelected: _showCompletedTodos,
+    );
 
     final hideNonFavoriteTodosOption = PopupMenuItemData(
-        Icons.star, 'Только избранные',
-        onSelected: _hideNonFavoriteTodos);
+      Icons.star,
+      'Только избранные',
+      onSelected: _hideNonFavoriteTodos,
+    );
 
     final showNonFavoriteTodosOption = PopupMenuItemData(
-        Icons.star_outline, 'Все задачи',
-        onSelected: _showNonFavoriteTodos);
+      Icons.star_outline,
+      'Все задачи',
+      onSelected: _showNonFavoriteTodos,
+    );
 
     final deleteCompletedTodosOption = PopupMenuItemData(
-        Icons.delete_outline, 'Удалить выполненные',
-        onSelected: _deleteCompletedTodos);
+      Icons.delete_outline,
+      'Удалить выполненные',
+      onSelected: _deleteCompletedTodos,
+    );
 
-    final chooseSortOrderOption = PopupMenuItemData(Icons.sort, 'Сортировать',
-        onSelected: _chooseSortOrder);
+    final chooseSortOrderOption = PopupMenuItemData(
+      Icons.sort,
+      'Сортировать',
+      onSelected: _chooseSortOrder,
+    );
 
     final chooseThemeOption = PopupMenuItemData(
-        Icons.style_outlined, 'Выбрать тему',
-        onSelected: _chooseBranchTheme);
+      Icons.style_outlined,
+      'Выбрать тему',
+      onSelected: _chooseBranchTheme,
+    );
 
     final editBranchOption = PopupMenuItemData(
-        Icons.edit_outlined, 'Редактировать ветку',
-        onSelected: _editBranch);
+      Icons.edit_outlined,
+      'Редактировать ветку',
+      onSelected: _editBranch,
+    );
 
     return BlocBuilder<TodoListBloc, TodoListState>(
       buildWhen: (previous, current) =>
@@ -122,7 +139,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
           .copyWith(sortOrder: chosenSortOrder);
       context
           .read<TodoListBloc>()
-          .add(TodoListViewSettingsChangedEvent(newViewSettings));
+          .add(ViewSettingsChangedEvent(newViewSettings));
     }
   }
 
@@ -179,9 +196,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
         .state
         .viewSettings
         .copyWith(areCompletedTodosVisible: areVisible);
-    context
-        .read<TodoListBloc>()
-        .add(TodoListViewSettingsChangedEvent(newViewSettings));
+    context.read<TodoListBloc>().add(ViewSettingsChangedEvent(newViewSettings));
   }
 
   void _setNonFavoriteVisibility(BuildContext context, bool areVisible) {
@@ -190,8 +205,6 @@ class TodoListScreenMenuOptions extends StatelessWidget {
         .state
         .viewSettings
         .copyWith(areNonFavoriteTodosVisible: areVisible);
-    context
-        .read<TodoListBloc>()
-        .add(TodoListViewSettingsChangedEvent(newViewSettings));
+    context.read<TodoListBloc>().add(ViewSettingsChangedEvent(newViewSettings));
   }
 }

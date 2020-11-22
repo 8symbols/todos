@@ -52,8 +52,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       yield* _mapTodoRestoredEventToState(event);
     } else if (event is CompletedTodosDeletedEvent) {
       yield* _mapCompletedTodosDeletedEventToState(event);
-    } else if (event is TodoListViewSettingsChangedEvent) {
-      yield* _mapTodoListViewSettingsChangedEventToState(event);
+    } else if (event is ViewSettingsChangedEvent) {
+      yield* _mapViewSettingsChangedEventToState(event);
     }
   }
 
@@ -61,7 +61,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapInitializationRequestedEventToState(
     InitializationRequestedEvent event,
   ) async* {
-    final settings = await _settingsInteractor.getTodoListViewSettings();
+    final settings = await _settingsInteractor.getTodosViewSettings();
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
     yield TodoListContentState(
       await _mapTodosToView(viewSettings: settings),
@@ -124,10 +124,10 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   }
 
   /// Сохраняет и применяет новые настройки отображения.
-  Stream<TodoListState> _mapTodoListViewSettingsChangedEventToState(
-    TodoListViewSettingsChangedEvent event,
+  Stream<TodoListState> _mapViewSettingsChangedEventToState(
+    ViewSettingsChangedEvent event,
   ) async* {
-    await _settingsInteractor.saveTodoListViewSettings(event.viewSettings);
+    await _settingsInteractor.saveTodosViewSettings(event.viewSettings);
     yield TodoListContentState(
       await _mapTodosToView(viewSettings: event.viewSettings),
       event.viewSettings,
@@ -152,11 +152,11 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   /// Если [viewSettings] не задано, берет настройки из
   /// [TodoListState.viewSettings].
   Future<List<TodoStatistics>> _mapTodosToView({
-    TodoListViewSettings viewSettings,
+    TodosViewSettings viewSettings,
   }) async {
     viewSettings ??= state.viewSettings;
     final todosWithAppliedSettings =
-        _todosInteractor.applyViewSettings(_allTodos, viewSettings);
+        _todosInteractor.applyTodosViewSettings(_allTodos, viewSettings);
     return await _loadStatistics(todosWithAppliedSettings);
   }
 }
