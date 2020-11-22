@@ -18,16 +18,19 @@ final RouteFactory onGenerateRoute = (settings) {
     case TodoListScreen.routeName:
       final Branch branch = settings.arguments;
       return MaterialPageRoute(
+        settings: settings,
         builder: (context) => TodoListScreen(branch: branch),
       );
     case TodoScreen.routeName:
       final TodoScreenArguments arguments = settings.arguments;
       return MaterialPageRoute(
+        settings: settings,
         builder: (context) => TodoScreen(arguments.branchTheme, arguments.todo),
       );
     case FlickrScreen.routeName:
       final BranchTheme branchTheme = settings.arguments;
       return MaterialPageRoute(
+        settings: settings,
         builder: (context) => FlickrScreen(branchTheme),
       );
     default:

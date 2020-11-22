@@ -6,6 +6,7 @@ import 'package:todos/presentation/models/popup_menu_item_data.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/domain/models/todos_sort_order.dart';
+import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/branch_editor_dialog.dart';
 import 'package:todos/presentation/widgets/branch_theme_selector.dart';
@@ -144,6 +145,8 @@ class TodoListScreenMenuOptions extends StatelessWidget {
   }
 
   void _chooseBranchTheme(BuildContext context) {
+    Navigator.popUntil(context, ModalRoute.withName(TodoListScreen.routeName));
+
     showBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
