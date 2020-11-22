@@ -51,6 +51,7 @@ class TodoStepsCard extends StatelessWidget {
                     for (final step in state.steps)
                       TodoStepItem(
                         step,
+                        state is StepAddedState && step == state.steps.last,
                         onDelete: () => _deleteStep(context, step),
                         onEdit: (editedStep) => _editStep(context, editedStep),
                       ),

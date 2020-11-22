@@ -69,6 +69,6 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   ) async* {
     await _todosInteractor.addTodoStep(_todo.id, event.step);
     final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
-    yield StepsContentState(steps);
+    yield StepAddedState(steps);
   }
 }

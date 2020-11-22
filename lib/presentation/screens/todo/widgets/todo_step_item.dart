@@ -15,7 +15,15 @@ class TodoStepItem extends StatelessWidget {
   /// Callback, вызывающийся при изменении пункта задачи.
   final StepEditedCallback onEdit;
 
-  TodoStepItem(this.step, {@required this.onDelete, @required this.onEdit});
+  /// Устанавливать ли автофокус.
+  final bool autofocus;
+
+  TodoStepItem(
+    this.step,
+    this.autofocus, {
+    @required this.onDelete,
+    @required this.onEdit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +45,7 @@ class TodoStepItem extends StatelessWidget {
               maxLines: null,
               initialValue: step.title,
               onFieldSubmitted: (value) => onEdit(step.copyWith(title: value)),
-              autofocus: step.title.isEmpty,
+              autofocus: autofocus,
             ),
           ),
         ),

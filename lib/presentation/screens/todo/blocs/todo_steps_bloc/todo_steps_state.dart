@@ -7,17 +7,20 @@ abstract class TodoStepsState {
   /// Может быть равен null.
   final List<TodoStep> steps;
 
-  TodoStepsState(this.steps);
+  const TodoStepsState(this.steps);
 }
 
 /// Состояние загрузки пунктов задачи.
 class StepsLoadingState extends TodoStepsState {
-  /// Создает состояние и устанавливает null в [steps].
-  StepsLoadingState() : super(null);
+  const StepsLoadingState() : super(null);
 }
 
 /// Состояние работы со списком пунктов.
 class StepsContentState extends TodoStepsState {
-  /// Создает состояние с пунктами [steps].
-  StepsContentState(List<TodoStep> steps) : super(steps);
+  const StepsContentState(List<TodoStep> steps) : super(steps);
+}
+
+/// Состояние после добавления нового пункта.
+class StepAddedState extends TodoStepsState {
+  const StepAddedState(List<TodoStep> steps) : super(steps);
 }
