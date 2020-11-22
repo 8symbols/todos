@@ -61,11 +61,17 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
               children: [
                 if (_hasBackgroundImage)
                   InkWell(
-                    onDoubleTap: () =>
-                        ImageUtils.openImageFullScreen(context, imageProvider),
-                    child: Image(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
+                    onDoubleTap: () => ImageUtils.openImageFullScreen(
+                      context,
+                      imageProvider,
+                      _todo.mainImagePath,
+                    ),
+                    child: Hero(
+                      tag: _todo.mainImagePath,
+                      child: Image(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 Padding(

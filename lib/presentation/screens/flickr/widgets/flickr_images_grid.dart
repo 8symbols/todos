@@ -127,11 +127,17 @@ class _FlickrImagesGridState extends State<FlickrImagesGrid> {
           ),
           imageBuilder: (context, imageProvider) => InkWell(
             onTap: () => _selectImage(context, state.urls[index]),
-            onDoubleTap: () =>
-                ImageUtils.openImageFullScreen(context, imageProvider),
-            child: Image(
-              image: imageProvider,
-              fit: BoxFit.cover,
+            onDoubleTap: () => ImageUtils.openImageFullScreen(
+              context,
+              imageProvider,
+              state.urls[index],
+            ),
+            child: Hero(
+              tag: state.urls[index],
+              child: Image(
+                image: imageProvider,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
