@@ -66,7 +66,7 @@ class AllTodosCard extends StatelessWidget {
 
   Widget _buildProgress(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.0, end: todosStatistics.completionProgress),
       builder: (context, value, child) => CustomPaint(
         size: const Size.fromHeight(16.0),

@@ -73,7 +73,7 @@ class BranchCard extends StatelessWidget {
     final percent = (branchStatistics.completionProgress * 100.0).round();
 
     return TweenAnimationBuilder<double>(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.0, end: branchStatistics.completionProgress),
       builder: (context, value, child) => SizedBox(
         width: 48.0,
