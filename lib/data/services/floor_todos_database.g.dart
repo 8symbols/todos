@@ -86,7 +86,7 @@ class _$FloorTodosDatabase extends FloorTodosDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `branches` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `branch_theme` BLOB NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `branches` (`id` TEXT NOT NULL, `title` TEXT NOT NULL, `branch_theme` BLOB NOT NULL, `last_usage_time` INTEGER NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `todos` (`id` TEXT NOT NULL, `is_favorite` INTEGER NOT NULL, `was_completed` INTEGER NOT NULL, `title` TEXT NOT NULL, `note` TEXT, `deadline_time` INTEGER, `notification_time` INTEGER, `creation_time` INTEGER NOT NULL, `main_image_path` TEXT, `branch_id` TEXT NOT NULL, FOREIGN KEY (`branch_id`) REFERENCES `branches` (`id`) ON UPDATE CASCADE ON DELETE CASCADE, PRIMARY KEY (`id`))');
         await database.execute(
@@ -138,7 +138,9 @@ class _$FloorBranchDao extends FloorBranchDao {
             (FloorBranch item) => <String, dynamic>{
                   'id': item.id,
                   'title': item.title,
-                  'branch_theme': _branchThemeConverter.encode(item.theme)
+                  'branch_theme': _branchThemeConverter.encode(item.theme),
+                  'last_usage_time':
+                      _dateTimeConverter.encode(item.lastUsageTime)
                 }),
         _floorBranchUpdateAdapter = UpdateAdapter(
             database,
@@ -147,7 +149,9 @@ class _$FloorBranchDao extends FloorBranchDao {
             (FloorBranch item) => <String, dynamic>{
                   'id': item.id,
                   'title': item.title,
-                  'branch_theme': _branchThemeConverter.encode(item.theme)
+                  'branch_theme': _branchThemeConverter.encode(item.theme),
+                  'last_usage_time':
+                      _dateTimeConverter.encode(item.lastUsageTime)
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -166,7 +170,9 @@ class _$FloorBranchDao extends FloorBranchDao {
         mapper: (Map<String, dynamic> row) => FloorBranch(
             row['title'] as String,
             _branchThemeConverter.decode(row['branch_theme'] as Uint8List),
-            id: row['id'] as String));
+            id: row['id'] as String,
+            lastUsageTime:
+                _dateTimeConverter.decode(row['last_usage_time'] as int)));
   }
 
   @override
@@ -176,7 +182,9 @@ class _$FloorBranchDao extends FloorBranchDao {
         mapper: (Map<String, dynamic> row) => FloorBranch(
             row['title'] as String,
             _branchThemeConverter.decode(row['branch_theme'] as Uint8List),
-            id: row['id'] as String));
+            id: row['id'] as String,
+            lastUsageTime:
+                _dateTimeConverter.decode(row['last_usage_time'] as int)));
   }
 
   @override
@@ -288,7 +296,9 @@ class _$FloorTodoDao extends FloorTodoDao {
         mapper: (Map<String, dynamic> row) => FloorBranch(
             row['title'] as String,
             _branchThemeConverter.decode(row['branch_theme'] as Uint8List),
-            id: row['id'] as String));
+            id: row['id'] as String,
+            lastUsageTime:
+                _dateTimeConverter.decode(row['last_usage_time'] as int)));
   }
 
   @override

@@ -34,7 +34,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   TodoListBloc _todoListBloc;
 
-  BranchCubit _themeCubit;
+  BranchCubit _branchCubit;
 
   @override
   void initState() {
@@ -48,13 +48,17 @@ class _TodoListScreenState extends State<TodoListScreen> {
       branchId: widget.branch?.id,
     )..add(InitializationRequestedEvent());
 
-    _themeCubit = BranchCubit(todosRepository, branch: widget.branch);
+    _branchCubit = BranchCubit(todosRepository, branch: widget.branch);
+    if (widget.branch != null) {
+      _branchCubit
+          .editBranch(widget.branch.copyWith(lastUsageTime: DateTime.now()));
+    }
   }
 
   @override
   void dispose() {
     _todoListBloc.close();
-    _themeCubit.close();
+    _branchCubit.close();
     super.dispose();
   }
 
@@ -63,7 +67,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<TodoListBloc>.value(value: _todoListBloc),
-        BlocProvider<BranchCubit>.value(value: _themeCubit),
+        BlocProvider<BranchCubit>.value(value: _branchCubit),
       ],
       child: BlocBuilder<BranchCubit, Branch>(
         builder: (context, state) => Theme(

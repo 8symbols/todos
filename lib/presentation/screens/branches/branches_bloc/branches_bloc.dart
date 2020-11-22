@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
+import 'package:todos/domain/models/branches_sort_order.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/screens/branches/models/branch_statistics.dart';
 import 'package:todos/presentation/screens/branches/models/todos_statistics.dart';
@@ -55,9 +56,10 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     yield await _loadBranchesWithStatistics();
   }
 
-  /// Загружает ветки и формирует статистику по ним.
+  /// Загружает ветки, сортирует их и формирует статистику.
   Future<BranchesState> _loadBranchesWithStatistics() async {
     final branches = await _todosInteractor.getBranches();
+    _todosInteractor.sortBranches(branches, BranchesSortOrder.usage);
     final branchesStatistics = await _getBranchesStatistics(branches);
     final todosStatistics = _getTodosStatistics(branchesStatistics);
     return BranchesContentState(todosStatistics, branchesStatistics);

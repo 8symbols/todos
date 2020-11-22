@@ -1,5 +1,7 @@
 import 'package:todos/data/services/notifications_service.dart';
+import 'package:todos/domain/factories/branches_comparators_factory.dart';
 import 'package:todos/domain/factories/todos_comparators_factory.dart';
+import 'package:todos/domain/models/branches_sort_order.dart';
 import 'package:todos/domain/models/todo_list_view_settings.dart';
 import 'package:todos/domain/utils/filesystem_utils.dart';
 import 'package:todos/domain/models/branch.dart';
@@ -208,9 +210,16 @@ class TodosInteractor {
     return repository.getTodoOfStep(stepId);
   }
 
-  /// Сортирует задачи [todos] в соответствии с порядком сортировки [sortOrder].
+  /// Сортирует задачи [todos] в соответствии с порядком сортировки
+  /// [sortOrder].
   void sortTodos(List<Todo> todos, TodosSortOrder sortOrder) {
     todos.sort(TodosComparatorsFactory.getComparator(sortOrder));
+  }
+
+  /// Сортирует ветки [branches] в соответствии с порядком сортировки
+  /// [sortOrder].
+  void sortBranches(List<Branch> branches, BranchesSortOrder sortOrder) {
+    branches.sort(BranchesComparatorsFactory.getComparator(sortOrder));
   }
 
   /// Создает новый список на основе [todos] и применяет к нему
