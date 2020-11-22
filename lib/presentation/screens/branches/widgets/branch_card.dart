@@ -106,7 +106,7 @@ class BranchCard extends StatelessWidget {
           context,
           '${branchStatistics.completedTodosCount} сделано',
           branchStatistics.branch.theme.primaryColor,
-          branchStatistics.branch.theme.secondaryColor,
+          branchStatistics.branch.theme.secondaryColor.withOpacity(0.5),
         ),
         _buildCountContainer(
           context,
