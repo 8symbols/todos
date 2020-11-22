@@ -76,7 +76,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     TodoDeletedEvent event,
   ) async* {
     final todoBranchId =
-        branchId ?? (await _todosInteractor.getTodoBranch(event.todo)).id;
+        branchId ?? (await _todosInteractor.getBranchOfTodo(event.todo.id)).id;
 
     await _todosInteractor.deleteTodo(event.todo.id);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
@@ -139,7 +139,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   /// Загружает информацию о каждой задаче.
   Future<List<TodoViewData>> _loadViewData(List<Todo> todos) async {
     final futureTodos = todos.map((todo) async {
-      final steps = await _todosInteractor.getSteps(todo.id);
+      final steps = await _todosInteractor.getStepsOfTodo(todo.id);
       final completedStepsCount =
           steps.where((step) => step.wasCompleted).length;
       return TodoViewData(todo, steps.length, completedStepsCount);

@@ -54,15 +54,15 @@ class TodosInteractor {
   /// Добавляет задачу [todo] в ветку c идентификатором [branchId].
   ///
   /// Устанавливает уведомление, если задано [todo.notificationTime].
-  /// Если задано [todo.themeImagePath], копирует картинку в локальную
-  /// директорию и устанавливает в [todo.themeImagePath] путь на копию.
+  /// Если задано [todo.mainImagePath], копирует картинку в локальную
+  /// директорию и устанавливает в [todo.mainImagePath] путь на копию.
   Future<void> addTodo(String branchId, Todo todo) async {
     if (todo.notificationTime != null) {
       await _notificationsService.scheduleNotification(todo);
     }
-    if (todo.themeImagePath != null) {
-      final newPath = await FileSystemUtils.copyToLocal(todo.themeImagePath);
-      todo = todo.copyWith(themeImagePath: Nullable(newPath));
+    if (todo.mainImagePath != null) {
+      final newPath = await FileSystemUtils.copyToLocal(todo.mainImagePath);
+      todo = todo.copyWith(mainImagePath: Nullable(newPath));
     }
     return _repository.addTodo(branchId, todo);
   }
@@ -72,13 +72,13 @@ class TodosInteractor {
   ///
   /// В случае изменения [todo.notificationTime] удаляет предыдущее уведомление
   /// и устанавливает новое.
-  /// В случае изменения [todo.themeImagePath] удаляет предыдущее изображение,
+  /// В случае изменения [todo.mainImagePath] удаляет предыдущее изображение,
   /// копирует новое в локальную директорию и устанавливает в
-  /// [todo.themeImagePath] путь на копию.
+  /// [todo.mainImagePath] путь на копию.
   Future<void> editTodo(Todo todo) async {
     final oldTodo = await getTodo(todo.id);
     await _handleNotifications(oldTodo, todo);
-    todo = await _handleThemeImages(oldTodo, todo);
+    todo = await _handleMainImages(oldTodo, todo);
     return _repository.editTodo(todo);
   }
 
@@ -102,16 +102,16 @@ class TodosInteractor {
   /// Удаляет предыдущее изображение и копирует новое, если необходимо.
   ///
   /// Возвращает [newTodo]. Если копирует новое изображение, то устанавливает
-  /// в [newTodo.themeImagePath] путь к нему.
-  Future<Todo> _handleThemeImages(Todo oldTodo, Todo newTodo) async {
-    if (oldTodo.themeImagePath != newTodo.themeImagePath) {
-      if (oldTodo.themeImagePath != null) {
-        await FileSystemUtils.deleteFile(oldTodo.themeImagePath);
+  /// в [newTodo.mainImagePath] путь к нему.
+  Future<Todo> _handleMainImages(Todo oldTodo, Todo newTodo) async {
+    if (oldTodo.mainImagePath != newTodo.mainImagePath) {
+      if (oldTodo.mainImagePath != null) {
+        await FileSystemUtils.deleteFile(oldTodo.mainImagePath);
       }
-      if (newTodo.themeImagePath != null) {
+      if (newTodo.mainImagePath != null) {
         final newPath =
-            await FileSystemUtils.copyToLocal(newTodo.themeImagePath);
-        newTodo = newTodo.copyWith(themeImagePath: Nullable(newPath));
+            await FileSystemUtils.copyToLocal(newTodo.mainImagePath);
+        newTodo = newTodo.copyWith(mainImagePath: Nullable(newPath));
       }
     }
     return newTodo;
@@ -125,12 +125,12 @@ class TodosInteractor {
     if (todo.notificationTime != null) {
       await _notificationsService.cancelNotification(todo);
     }
-    if (todo.themeImagePath != null) {
-      await FileSystemUtils.deleteFile(todo.themeImagePath);
+    if (todo.mainImagePath != null) {
+      await FileSystemUtils.deleteFile(todo.mainImagePath);
     }
-    final imagesPaths = await getImagesPaths(todoId);
+    final imagesPaths = await getImagesOfTodo(todoId);
     for (final imagePath in imagesPaths) {
-      await deleteImagePath(todoId, imagePath);
+      await deleteTodoImage(todoId, imagePath);
     }
     return _repository.deleteTodo(todoId);
   }
@@ -148,53 +148,60 @@ class TodosInteractor {
   }
 
   /// Добавляет пункт [step] в задачу c идентификатором [todoId].
-  Future<void> addStep(String todoId, TodoStep step) async {
-    return _repository.addStep(todoId, step);
+  Future<void> addTodoStep(String todoId, TodoStep step) async {
+    return _repository.addTodoStep(todoId, step);
   }
 
   /// Устанавливает пункту с идентификатором [step.id] значения
   /// остальных полей [step].
-  Future<void> editStep(TodoStep step) async {
-    return _repository.editStep(step);
+  Future<void> editTodoStep(TodoStep step) async {
+    return _repository.editTodoStep(step);
   }
 
   /// Удаляет пункт с идентификатором [stepId].
-  Future<void> deleteStep(String stepId) async {
-    return _repository.deleteStep(stepId);
+  Future<void> deleteTodoStep(String stepId) async {
+    return _repository.deleteTodoStep(stepId);
   }
 
   /// Получает пункт с идентификатором [stepId].
-  Future<TodoStep> getStep(String stepId) async {
-    return _repository.getStep(stepId);
+  Future<TodoStep> getTodoStep(String stepId) async {
+    return _repository.getTodoStep(stepId);
   }
 
   /// Получает все пункты задачи с идентификатором [todoId].
-  Future<List<TodoStep>> getSteps(String todoId) async {
-    return _repository.getSteps(todoId);
+  Future<List<TodoStep>> getStepsOfTodo(String todoId) async {
+    return _repository.getStepsOfTodo(todoId);
   }
 
   /// Копирует картинку по пути [tmpImagePath] в локальную директорию и
   /// и добавляет путь к копии в задачу c идентификатором [todoId].
-  Future<void> addImagePath(String todoId, String tmpImagePath) async {
+  Future<void> addTodoImage(String todoId, String tmpImagePath) async {
     final imagePath = await FileSystemUtils.copyToLocal(tmpImagePath);
-    return _repository.addImagePath(todoId, imagePath);
+    return _repository.addTodoImage(todoId, imagePath);
   }
 
   /// Удаляет путь к изображению [imagePath] из задачи
   /// c идентификатором [todoId], а также само изображение.
-  Future<void> deleteImagePath(String todoId, String imagePath) async {
+  Future<void> deleteTodoImage(String todoId, String imagePath) async {
     await FileSystemUtils.deleteFile(imagePath);
-    return _repository.deleteImagePath(todoId, imagePath);
+    return _repository.deleteTodoImage(todoId, imagePath);
   }
 
   /// Получает все пути к изображениям задачи с идентификатором [todoId].
-  Future<List<String>> getImagesPaths(String todoId) async {
-    return _repository.getImagesPaths(todoId);
+  Future<List<String>> getImagesOfTodo(String todoId) async {
+    return _repository.getImagesOfTodo(todoId);
   }
 
-  /// Возвращает ветку, которой принадлжеит задача [todo].
-  Future<Branch> getTodoBranch(Todo todo) async {
-    return _repository.getTodoBranch(todo);
+  /// Возвращает ветку, которой принадлжеит задача с идентификатором
+  /// [todoId].
+  Future<Branch> getBranchOfTodo(String todoId) async {
+    return _repository.getBranchOfTodo(todoId);
+  }
+
+  /// Возвращает задачу, которой принадлежит шаг с идентификатором
+  /// [stepId].
+  Future<Todo> getTodoOfStep(String stepId) async {
+    return _repository.getTodoOfStep(stepId);
   }
 
   /// Сортирует задачи [todos] в соответствии с порядком сортировки [sortOrder].

@@ -40,7 +40,7 @@ class TodoImagesBloc extends Bloc<TodoImagesEvent, TodoImagesState> {
   Stream<TodoImagesState> _mapImagesLoadingRequestedEventToState(
     ImagesLoadingRequestedEvent event,
   ) async* {
-    final imagesPaths = await _todosInteractor.getImagesPaths(_todo.id);
+    final imagesPaths = await _todosInteractor.getImagesOfTodo(_todo.id);
     yield TodoImagesContentState(imagesPaths);
   }
 
@@ -48,8 +48,8 @@ class TodoImagesBloc extends Bloc<TodoImagesEvent, TodoImagesState> {
     ImageAddedEvent event,
   ) async* {
     try {
-      await _todosInteractor.addImagePath(_todo.id, event.tmpPath);
-      final imagesPaths = await _todosInteractor.getImagesPaths(_todo.id);
+      await _todosInteractor.addTodoImage(_todo.id, event.tmpPath);
+      final imagesPaths = await _todosInteractor.getImagesOfTodo(_todo.id);
       yield TodoImagesContentState(imagesPaths);
     } catch (_) {
       yield FailedToAddImageState(state.imagesPaths);
@@ -59,8 +59,8 @@ class TodoImagesBloc extends Bloc<TodoImagesEvent, TodoImagesState> {
   Stream<TodoImagesState> _mapImageDeletedEventToState(
     ImageDeletedEvent event,
   ) async* {
-    await _todosInteractor.deleteImagePath(_todo.id, event.path);
-    final imagesPaths = await _todosInteractor.getImagesPaths(_todo.id);
+    await _todosInteractor.deleteTodoImage(_todo.id, event.path);
+    final imagesPaths = await _todosInteractor.getImagesOfTodo(_todo.id);
     yield TodoImagesContentState(imagesPaths);
   }
 }

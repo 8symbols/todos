@@ -28,10 +28,13 @@ dependencies:
   shared_preferences: ^0.5.12+4
   enum_to_string: ^1.0.13
   rive: ^0.6.3
+  floor: ^0.17.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  floor_generator: ^0.17.0
+  build_runner: ^1.10.6
 
 flutter:
   uses-material-design: true

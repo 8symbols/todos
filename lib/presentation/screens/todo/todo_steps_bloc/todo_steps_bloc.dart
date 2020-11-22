@@ -43,7 +43,7 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   Stream<TodoStepsState> _mapStepsLoadingRequestedEventToState(
     StepsLoadingRequestedEvent event,
   ) async* {
-    final steps = await _todosInteractor.getSteps(_todo.id);
+    final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
     yield StepsContentState(steps);
   }
 
@@ -51,8 +51,8 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   Stream<TodoStepsState> _mapStepDeletedEventToState(
     StepDeletedEvent event,
   ) async* {
-    await _todosInteractor.deleteStep(event.stepId);
-    final steps = await _todosInteractor.getSteps(_todo.id);
+    await _todosInteractor.deleteTodoStep(event.stepId);
+    final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
     yield StepsContentState(steps);
   }
 
@@ -60,8 +60,8 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   Stream<TodoStepsState> _mapStepEditedEventToState(
     StepEditedEvent event,
   ) async* {
-    await _todosInteractor.editStep(event.step);
-    final steps = await _todosInteractor.getSteps(_todo.id);
+    await _todosInteractor.editTodoStep(event.step);
+    final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
     yield StepsContentState(steps);
   }
 
@@ -69,8 +69,8 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   Stream<TodoStepsState> _mapStepAddedEventToState(
     StepAddedEvent event,
   ) async* {
-    await _todosInteractor.addStep(_todo.id, event.step);
-    final steps = await _todosInteractor.getSteps(_todo.id);
+    await _todosInteractor.addTodoStep(_todo.id, event.step);
+    final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
     yield StepsContentState(steps);
   }
 }

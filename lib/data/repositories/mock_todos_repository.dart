@@ -50,7 +50,7 @@ class MockTodosRepository implements ITodosRepository {
     for (var i = 0; i < 50; ++i) {
       final id = Uuid().v4();
       final step = TodoStep(id, id: id);
-      addStep(todosIds[i % todosIds.length], step);
+      addTodoStep(todosIds[i % todosIds.length], step);
     }
   }
 
@@ -61,12 +61,12 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> addImagePath(String todoId, String imagePath) async {
+  Future<void> addTodoImage(String todoId, String imagePath) async {
     _todosImages[todoId].add(imagePath);
   }
 
   @override
-  Future<void> addStep(String todoId, TodoStep step) async {
+  Future<void> addTodoStep(String todoId, TodoStep step) async {
     _steps[step.id] = step;
     _todosSteps[todoId].add(step.id);
   }
@@ -90,12 +90,12 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> deleteImagePath(String todoId, String imagePath) async {
+  Future<void> deleteTodoImage(String todoId, String imagePath) async {
     _todosImages[todoId].remove(imagePath);
   }
 
   @override
-  Future<void> deleteStep(String stepId) async {
+  Future<void> deleteTodoStep(String stepId) async {
     _steps.remove(stepId);
     for (final steps in _todosSteps.values) {
       steps.remove(stepId);
@@ -123,7 +123,7 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<void> editStep(TodoStep step) async {
+  Future<void> editTodoStep(TodoStep step) async {
     _steps[step.id] = step;
   }
 
@@ -143,17 +143,17 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<List<String>> getImagesPaths(String todoId) async {
+  Future<List<String>> getImagesOfTodo(String todoId) async {
     return _todosImages[todoId].toList();
   }
 
   @override
-  Future<TodoStep> getStep(String stepId) async {
+  Future<TodoStep> getTodoStep(String stepId) async {
     return _steps[stepId];
   }
 
   @override
-  Future<List<TodoStep>> getSteps(String todoId) async {
+  Future<List<TodoStep>> getStepsOfTodo(String todoId) async {
     return _todosSteps[todoId].map((e) => _steps[e]).toList();
   }
 
@@ -171,10 +171,20 @@ class MockTodosRepository implements ITodosRepository {
   }
 
   @override
-  Future<Branch> getTodoBranch(Todo todo) async {
+  Future<Branch> getBranchOfTodo(String todoId) async {
     for (final branchTodos in _branchesTodos.entries) {
-      if (branchTodos.value.contains(todo.id)) {
+      if (branchTodos.value.contains(todoId)) {
         return _branches[branchTodos.key];
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<Todo> getTodoOfStep(String stepId) async {
+    for (final todoSteps in _todosSteps.entries) {
+      if (todoSteps.value.contains(stepId)) {
+        return _todos[todoSteps.key];
       }
     }
     return null;

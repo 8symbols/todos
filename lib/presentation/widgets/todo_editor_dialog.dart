@@ -125,7 +125,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
   }
 
   Widget _buildSelectPhotoButton(BuildContext context) {
-    return _todo.themeImagePath == null
+    return _todo.mainImagePath == null
         ? TextButton.icon(
             icon: const Icon(Icons.add),
             label: const Text('Добавить главное фото'),
@@ -136,7 +136,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
               );
               if (imagePath != null) {
                 setState(() {
-                  _todo = _todo.copyWith(themeImagePath: Nullable(imagePath));
+                  _todo = _todo.copyWith(mainImagePath: Nullable(imagePath));
                 });
               }
             },
@@ -145,7 +145,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
             icon: const Icon(Icons.close),
             label: const Text('Удалить главное фото'),
             onPressed: () => setState(() {
-              _todo = _todo.copyWith(themeImagePath: Nullable(null));
+              _todo = _todo.copyWith(mainImagePath: Nullable(null));
             }),
           );
   }

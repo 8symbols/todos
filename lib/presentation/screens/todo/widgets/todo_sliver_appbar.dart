@@ -31,7 +31,7 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
   final double _unsafeAreaHeight;
 
   /// Есть ли фотография на заднем плане.
-  bool get _hasBackgroundImage => _todo.themeImagePath != null;
+  bool get _hasBackgroundImage => _todo.mainImagePath != null;
 
   TodoSliverAppBar(
     this._maxExtent,
@@ -47,7 +47,7 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     final imageProvider =
-        _hasBackgroundImage ? FileImage(File(_todo.themeImagePath)) : null;
+        _hasBackgroundImage ? FileImage(File(_todo.mainImagePath)) : null;
 
     return Stack(
       fit: StackFit.expand,

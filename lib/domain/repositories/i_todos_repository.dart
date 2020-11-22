@@ -43,32 +43,37 @@ abstract class ITodosRepository {
   Future<List<Todo>> getTodos({String branchId});
 
   /// Добавляет пункт [step] в задачу c идентификатором [todoId].
-  Future<void> addStep(String todoId, TodoStep step);
+  Future<void> addTodoStep(String todoId, TodoStep step);
 
   /// Устанавливает пункту с идентификатором [step.id] значения
   /// остальных полей [step].
-  Future<void> editStep(TodoStep step);
+  Future<void> editTodoStep(TodoStep step);
 
   /// Удаляет пункт с идентификатором [stepId].
-  Future<void> deleteStep(String stepId);
+  Future<void> deleteTodoStep(String stepId);
 
   /// Получает пункт с идентификатором [stepId].
-  Future<TodoStep> getStep(String stepId);
+  Future<TodoStep> getTodoStep(String stepId);
 
   /// Получает все пункты задачи с идентификатором [todoId].
-  Future<List<TodoStep>> getSteps(String todoId);
+  Future<List<TodoStep>> getStepsOfTodo(String todoId);
 
   /// Добавляет путь к изображению [imagePath] в задачу
   /// c идентификатором [todoId].
-  Future<void> addImagePath(String todoId, String imagePath);
+  Future<void> addTodoImage(String todoId, String imagePath);
 
   /// Удаляет путь к изображению [imagePath] из задачи
   /// c идентификатором [todoId].
-  Future<void> deleteImagePath(String todoId, String imagePath);
+  Future<void> deleteTodoImage(String todoId, String imagePath);
 
   /// Получает все пути к изображениям задачи с идентификатором [todoId].
-  Future<List<String>> getImagesPaths(String todoId);
+  Future<List<String>> getImagesOfTodo(String todoId);
 
-  /// Возвращает ветку, которой принадлжеит задача [todo].
-  Future<Branch> getTodoBranch(Todo todo);
+  /// Возвращает ветку, которой принадлежит задача с идентификатором
+  /// [todoId].
+  Future<Branch> getBranchOfTodo(String todoId);
+
+  /// Возвращает задачу, которой принадлежит шаг с идентификатором
+  /// [stepId].
+  Future<Todo> getTodoOfStep(String stepId);
 }

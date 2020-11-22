@@ -38,7 +38,7 @@ class Todo {
   ///
   /// Может быть равным null. В этом случае [AppBar] окрашивается в цвет ветки
   /// [Branch], которой принадлежит задача.
-  final String themeImagePath;
+  final String mainImagePath;
 
   /// Создает задачу.
   ///
@@ -50,7 +50,7 @@ class Todo {
     DateTime creationTime,
     this.isFavorite = false,
     this.wasCompleted = false,
-    this.themeImagePath,
+    this.mainImagePath,
     this.note,
     this.deadlineTime,
     this.notificationTime,
@@ -65,7 +65,7 @@ class Todo {
     bool isFavorite,
     bool wasCompleted,
     DateTime creationTime,
-    Nullable<String> themeImagePath,
+    Nullable<String> mainImagePath,
     Nullable<String> note,
     Nullable<DateTime> deadlineTime,
     Nullable<DateTime> notificationTime,
@@ -77,8 +77,8 @@ class Todo {
       isFavorite: isFavorite ?? this.isFavorite,
       wasCompleted: wasCompleted ?? this.wasCompleted,
       creationTime: creationTime ?? this.creationTime,
-      themeImagePath:
-          themeImagePath != null ? themeImagePath.value : this.themeImagePath,
+      mainImagePath:
+          mainImagePath != null ? mainImagePath.value : this.mainImagePath,
       note: note != null ? note.value : this.note,
       deadlineTime:
           deadlineTime != null ? deadlineTime.value : this.deadlineTime,
