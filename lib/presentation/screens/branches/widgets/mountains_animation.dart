@@ -3,33 +3,41 @@ import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:todos/presentation/constants/assets_paths.dart';
 
+/// Изображение гор с анимациями.
 class MountainsAnimation extends StatefulWidget {
-  MountainsAnimation() : super();
-
   @override
   _MountainsAnimationState createState() => _MountainsAnimationState();
 }
 
 class _MountainsAnimationState extends State<MountainsAnimation> {
-  bool _isDayNow;
+  /// Изображается сейчас день или ночь.
+  bool _isDayTime;
 
+  /// Изображение.
   Artboard _riveArtboard;
 
+  /// Controller анимации облаков.
   RiveAnimationController _cloudsController;
+
+  /// Controller анимации дня.
   RiveAnimationController _dayController;
+
+  /// Controller анимации ночи.
   RiveAnimationController _nightController;
 
+  /// Controller анимации перехода дня в ночь.
+  RiveAnimationController _dayToNightController;
+
+  /// Controller анимации перехода ночи в день.
+  RiveAnimationController _nightToDayController;
+
+  /// Анимируется ли сейчас смена времени суток.
   bool get _isDayTimeChanging =>
-      _dayController.isActive || _nightController.isActive;
+      _dayToNightController.isActive || _nightToDayController.isActive;
 
   _MountainsAnimationState() {
     final hourNow = DateTime.now().hour;
-    _isDayNow = 6 <= hourNow && hourNow < 18;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+    _isDayTime = 6 <= hourNow && hourNow < 18;
   }
 
   @override
@@ -39,24 +47,15 @@ class _MountainsAnimationState extends State<MountainsAnimation> {
       (data) async {
         final file = RiveFile();
         if (file.import(data)) {
-          _cloudsController = SimpleAnimation('clouds');
-          _dayController = SimpleAnimation('day');
-          _nightController = SimpleAnimation('night');
+          _initializeControllers();
           setState(() {
-            _riveArtboard = file.mainArtboard..addController(_cloudsController);
-            setInitialDayTime();
+            _riveArtboard = file.mainArtboard
+              ..addController(_cloudsController)
+              ..addController(_isDayTime ? _dayController : _nightController);
           });
         }
       },
     );
-  }
-
-  @override
-  void dispose() {
-    _cloudsController?.dispose();
-    _dayController?.dispose();
-    _nightController?.dispose();
-    super.dispose();
   }
 
   @override
@@ -67,33 +66,52 @@ class _MountainsAnimationState extends State<MountainsAnimation> {
       child: _riveArtboard == null
           ? null
           : GestureDetector(
-              key: UniqueKey(),
-              onTap: changeDayTime,
+              onTap: _changeDayTime,
               child: Rive(artboard: _riveArtboard),
             ),
     );
   }
 
-  void setInitialDayTime() {
-    final initialAnimation = _isDayNow ? _dayController : _nightController;
-    _riveArtboard.addController(initialAnimation);
+  void _initializeControllers() {
+    _cloudsController = SimpleAnimation('clouds');
+    _dayController = SimpleAnimation('day');
+    _nightController = SimpleAnimation('night');
+
+    _dayToNightController = SimpleAnimation('day_to_night')
+      ..isActiveChanged.addListener(
+        () => _replaceOnFinish(_dayToNightController, _nightController),
+      );
+
+    _nightToDayController = SimpleAnimation('night_to_day')
+      ..isActiveChanged.addListener(
+        () => _replaceOnFinish(_nightToDayController, _dayController),
+      );
   }
 
-  void changeDayTime() {
+  void _replaceOnFinish(
+    RiveAnimationController startAnimation,
+    RiveAnimationController finishAnimation,
+  ) {
+    if (!startAnimation.isActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _riveArtboard
+          ..removeController(startAnimation)
+          ..addController(finishAnimation);
+      });
+    }
+  }
+
+  void _changeDayTime() {
     if (_isDayTimeChanging) {
       return;
     }
 
-    _isDayNow = !_isDayNow;
+    _riveArtboard
+      ..removeController(_isDayTime ? _dayController : _nightController)
+      ..addController(
+        _isDayTime ? _dayToNightController : _nightToDayController,
+      );
 
-    if (_isDayNow) {
-      _riveArtboard
-        ..removeController(_nightController)
-        ..addController(_dayController);
-    } else {
-      _riveArtboard
-        ..removeController(_dayController)
-        ..addController(_nightController);
-    }
+    _isDayTime = !_isDayTime;
   }
 }
