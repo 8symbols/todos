@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
@@ -20,8 +19,7 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   final TodosInteractor _todosInteractor;
 
   TodoStepsBloc(ITodosRepository todosRepository, this._todo)
-      : _todosInteractor =
-            TodosInteractor(todosRepository, NotificationsService()),
+      : _todosInteractor = TodosInteractor(todosRepository),
         super(StepsLoadingState());
 
   @override

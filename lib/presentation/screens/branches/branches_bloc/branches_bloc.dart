@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -17,8 +16,7 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
   final TodosInteractor _todosInteractor;
 
   BranchesBloc(ITodosRepository todosRepository)
-      : _todosInteractor =
-            TodosInteractor(todosRepository, NotificationsService()),
+      : _todosInteractor = TodosInteractor(todosRepository),
         super(const BranchesLoadingState());
 
   @override
