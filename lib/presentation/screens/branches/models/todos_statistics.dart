@@ -11,7 +11,7 @@ class TodosStatistics {
 
   /// Отношение числа выполненных задач к общему числу задач.
   double get completionProgress =>
-      todosCount == 0 ? 1.0 : completedTodosCount / todosCount;
+      todosCount == 0 ? 0.0 : completedTodosCount / todosCount;
 
   const TodosStatistics(this.todosCount, this.completedTodosCount);
 }
