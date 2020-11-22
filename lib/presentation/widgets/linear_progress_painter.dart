@@ -22,7 +22,7 @@ class LinearProgressPainter extends CustomPainter {
   })  : _strokePaint = Paint()
           ..color = color
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.0,
+          ..strokeWidth = 1.0,
         _backgroundPaint = Paint()..color = backgroundColor,
         _progressPaint = Paint()..color = color;
 

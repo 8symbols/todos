@@ -76,8 +76,8 @@ class BranchCard extends StatelessWidget {
       duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.0, end: branchStatistics.completionProgress),
       builder: (context, value, child) => SizedBox(
-        width: 48.0,
-        height: 48.0,
+        width: 52.0,
+        height: 52.0,
         child: CustomPaint(
           child: child,
           painter: RadialProgressPainter(
@@ -125,7 +125,7 @@ class BranchCard extends StatelessWidget {
     Color backgroundColor,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(top: 2.0, right: 2.0),
+      padding: const EdgeInsets.only(top: 2.0, right: 4.0),
       child: Container(
         decoration: BoxDecoration(
           color: backgroundColor,
@@ -137,7 +137,7 @@ class BranchCard extends StatelessWidget {
             text,
             style: TextStyle(
               color: textColor,
-              fontSize: 11.0,
+              fontSize: 10.0,
               fontWeight: FontWeight.bold,
             ),
           ),
