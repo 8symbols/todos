@@ -8,7 +8,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_list_view_settings.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
-import 'package:todos/presentation/screens/todos_list/models/todo_view_data.dart';
+import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
 
 part 'todo_list_event.dart';
 part 'todo_list_state.dart';
@@ -134,31 +134,29 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     );
   }
 
-  /// Загружает информацию о каждой задаче.
-  Future<List<TodoViewData>> _loadViewData(List<Todo> todos) async {
+  /// Загружает статистику каждой задачи.
+  Future<List<TodoStatistics>> _loadStatistics(List<Todo> todos) async {
     final futureTodos = todos.map((todo) async {
       final steps = await _todosInteractor.getStepsOfTodo(todo.id);
       final completedStepsCount =
           steps.where((step) => step.wasCompleted).length;
-      return TodoViewData(todo, steps.length, completedStepsCount);
+      return TodoStatistics(todo, steps.length, completedStepsCount);
     });
 
     return Future.wait(futureTodos);
   }
 
   /// Создает новый список на основе [_allTodos], применяет к нему настройки
-  /// отображения [viewSettings] и загружает информацию о каждой задаче.
+  /// отображения [viewSettings] и загружает статистику каждой задачи.
   ///
   /// Если [viewSettings] не задано, берет настройки из
   /// [TodoListState.viewSettings].
-  Future<List<TodoViewData>> _mapTodosToView({
+  Future<List<TodoStatistics>> _mapTodosToView({
     TodoListViewSettings viewSettings,
   }) async {
     viewSettings ??= state.viewSettings;
-    final filteredTodos = _todosInteractor.applyViewSettings(
-      _allTodos,
-      viewSettings,
-    );
-    return await _loadViewData(filteredTodos);
+    final todosWithAppliedSettings =
+        _todosInteractor.applyViewSettings(_allTodos, viewSettings);
+    return await _loadStatistics(todosWithAppliedSettings);
   }
 }

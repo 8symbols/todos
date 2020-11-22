@@ -5,7 +5,7 @@ import 'package:todos/presentation/screens/todo/models/todo_screen_arguments.dar
 import 'package:todos/presentation/screens/todo/widgets/todo_screen.dart';
 import 'package:todos/presentation/screens/todos_list/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/screens/todos_list/todo_list_bloc/todo_list_bloc.dart';
-import 'package:todos/presentation/screens/todos_list/models/todo_view_data.dart';
+import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/empty_todo_list.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/todo_card.dart';
@@ -13,7 +13,7 @@ import 'package:todos/presentation/screens/todos_list/widgets/todo_card.dart';
 /// Виджет для отображения списка задач.
 class TodoList extends StatelessWidget {
   /// Список задач.
-  final List<TodoViewData> todosData;
+  final List<TodoStatistics> todosData;
 
   TodoList(this.todosData);
 

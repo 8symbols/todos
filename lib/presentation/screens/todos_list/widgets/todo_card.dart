@@ -2,14 +2,14 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/presentation/screens/todos_list/models/todo_view_data.dart';
+import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
 
 typedef void TodoEditedCallback(Todo editedTodo);
 
 /// Виджет для отображения задачи в списке задач.
 class TodoCard extends StatelessWidget {
   /// Задача.
-  final TodoViewData todoData;
+  final TodoStatistics todoData;
 
   /// Callback, вызывающийся при удалении задачи.
   final VoidCallback onDelete;

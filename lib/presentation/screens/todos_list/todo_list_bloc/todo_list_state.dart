@@ -5,7 +5,7 @@ abstract class TodoListState {
   /// Список задач.
   ///
   /// Равен null до инициализации.
-  final List<TodoViewData> todos;
+  final List<TodoStatistics> todos;
 
   /// Настройки отображения.
   ///
@@ -23,7 +23,7 @@ class TodoListLoadingState extends TodoListState {
 /// Состояние работы со списком задач.
 class TodoListContentState extends TodoListState {
   TodoListContentState(
-    List<TodoViewData> todos,
+    List<TodoStatistics> todos,
     TodoListViewSettings viewSettings,
   ) : super(todos, viewSettings);
 }
@@ -39,7 +39,7 @@ class TodoListDeletedTodoState extends TodoListState {
   TodoListDeletedTodoState(
     this.branchId,
     this.todo,
-    List<TodoViewData> todos,
+    List<TodoStatistics> todos,
     TodoListViewSettings viewSettings,
   ) : super(todos, viewSettings);
 }
