@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:todos/presentation/constants/assets_paths.dart';
-import 'package:todos/presentation/screens/flickr/flickr_images_bloc/flickr_images_bloc.dart';
+import 'package:todos/presentation/screens/flickr/blocs/flickr_images_bloc/flickr_images_bloc.dart';
 import 'package:todos/presentation/utils/image_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:visibility_detector/visibility_detector.dart';

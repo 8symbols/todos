@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/domain/wrappers/nullable.dart';
-import 'package:todos/presentation/screens/todo/todo_bloc/todo_bloc.dart';
-import 'package:todos/presentation/screens/todo/todo_steps_bloc/todo_steps_bloc.dart';
+import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
+import 'package:todos/presentation/screens/todo/blocs/todo_steps_bloc/todo_steps_bloc.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_step_item.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 

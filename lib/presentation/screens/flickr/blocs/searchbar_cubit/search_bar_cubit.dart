@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:todos/domain/interactors/settings_interactor.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
-import 'package:todos/presentation/screens/flickr/searchbar_cubit/searchbar_state.dart';
+import 'package:todos/presentation/screens/flickr/blocs/searchbar_cubit/searchbar_state.dart';
 
 /// Cubit, определяющий, нужно ли показывать строку поиска.
 class SearchBarCubit extends Cubit<SearchBarState> {

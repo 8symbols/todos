@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
-import 'package:todos/presentation/screens/todo/todo_images_bloc/todo_images_bloc.dart';
+import 'package:todos/presentation/screens/todo/blocs/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/utils/image_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/deletable_item.dart';

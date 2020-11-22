@@ -5,7 +5,7 @@ import 'package:bordered_text/bordered_text.dart';
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/presentation/screens/todo/todo_bloc/todo_bloc.dart';
+import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_screen_menu_options.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/utils/image_utils.dart';

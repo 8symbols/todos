@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
-import 'package:todos/presentation/screens/branches/branches_bloc/branches_bloc.dart';
+import 'package:todos/presentation/screens/branches/blocs/branches_bloc/branches_bloc.dart';
 import 'package:todos/presentation/screens/branches/widgets/all_todos_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/screens/branches/widgets/branches_grid.dart';

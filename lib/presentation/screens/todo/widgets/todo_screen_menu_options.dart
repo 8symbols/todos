@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/models/popup_menu_item_data.dart';
-import 'package:todos/presentation/screens/todo/todo_bloc/todo_bloc.dart';
+import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/popup_menu.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
