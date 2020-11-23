@@ -81,10 +81,11 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
       maxLength: TodoEditorDialog.maxTitleLength,
       maxLengthEnforced: false,
       keyboardType: TextInputType.text,
-      onChanged: (value) => _todo = _todo.copyWith(title: value),
+      onChanged: (value) => _todo = _todo.copyWith(title: value.trim()),
       textInputAction: TextInputAction.done,
       maxLines: null,
       validator: (value) {
+        value = value.trim();
         if (value.isEmpty) {
           return 'Название не может быть пустым';
         }
