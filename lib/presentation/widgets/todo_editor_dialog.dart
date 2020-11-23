@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/wrappers/nullable.dart';
-import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:todos/presentation/widgets/select_datetime_button.dart';
 
@@ -14,9 +12,6 @@ class TodoEditorDialog extends StatefulWidget {
   /// Задача.
   final Todo todo;
 
-  /// Тема ветки.
-  final BranchTheme branchTheme;
-
   /// Флаг, сигнализирующий о том, создается сейчас задача или редактируется.
   ///
   /// Если установлен, то дает возможность отредактировать название,
@@ -24,7 +19,7 @@ class TodoEditorDialog extends StatefulWidget {
   /// возможность отредактировать название и фотографию темы.
   final bool isNewTodo;
 
-  TodoEditorDialog(this.todo, this.branchTheme, {this.isNewTodo = false});
+  TodoEditorDialog(this.todo, {this.isNewTodo = false});
 
   @override
   _TodoEditorDialogState createState() => _TodoEditorDialogState(todo);
@@ -105,7 +100,6 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
         SelectDateTimeButton(
           const Icon(Icons.notifications_active_outlined),
           'Напомнить',
-          color: BranchThemes.defaultBranchTheme.secondaryColor,
           dateTime: _todo.notificationTime,
           onSelected: (dateTime) => setState(() {
             _todo = _todo.copyWith(notificationTime: Nullable(dateTime));
@@ -114,8 +108,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
         const SizedBox(height: 4.0),
         SelectDateTimeButton(
           const Icon(Icons.event),
-          'Добавить дату выполнения',
-          color: BranchThemes.defaultBranchTheme.secondaryColor,
+          'Дата выполнения',
           dateTime: _todo.deadlineTime,
           onSelected: (dateTime) => setState(() {
             _todo = _todo.copyWith(deadlineTime: Nullable(dateTime));
@@ -133,7 +126,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
             onPressed: () async {
               final imagePath = await showDialog<String>(
                 context: context,
-                child: ImageSelectorDialog(widget.branchTheme),
+                child: ImageSelectorDialog(),
               );
               if (imagePath != null) {
                 setState(() {

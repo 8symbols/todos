@@ -3,6 +3,7 @@ import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
+import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/screens/branches/blocs/branches_bloc/branches_bloc.dart';
 import 'package:todos/presentation/screens/branches/widgets/all_todos_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:todos/presentation/screens/branches/widgets/branches_grid.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/screens/branches/widgets/branches_screen_menu_options.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
+import 'package:todos/presentation/utils/branch_theme_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/branch_editor_dialog.dart';
 import 'package:todos/presentation/widgets/deletion_mode_will_pop_scope.dart';
@@ -103,10 +105,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
             state.branchesStatistics,
             onBranchTap: (branch) => _openTodosScreen(context, branch),
             onBranchDeleted: (branch) => _deleteBranch(context, branch),
-            onAddBranch: () {
-              context.read<DeletionModeCubit>().disableDeletionMode();
-              _addBranch(context);
-            },
+            onAddBranch: () => _addBranch(context),
           ),
         ),
       ],
@@ -114,6 +113,8 @@ class _BranchesScreenState extends State<BranchesScreen> {
   }
 
   Future<void> _addBranch(BuildContext context) async {
+    context.read<DeletionModeCubit>().disableDeletionMode();
+
     final branch = Branch('', BranchThemes.defaultBranchTheme);
 
     final createdBranch = await showDialog<Branch>(
@@ -144,8 +145,21 @@ class _BranchesScreenState extends State<BranchesScreen> {
 
   Future<void> _openTodosScreen(BuildContext context, [Branch branch]) async {
     context.read<DeletionModeCubit>().disableDeletionMode();
+
+    final currentTheme = context.read<ThemeCubit>().state;
+    if (branch != null) {
+      context
+          .read<ThemeCubit>()
+          .setTheme(BranchThemeUtils.createTheme(branch.theme));
+    }
+
     await Navigator.of(context)
         .pushNamed(TodoListScreen.routeName, arguments: branch);
+
+    if (branch != null) {
+      context.read<ThemeCubit>().setTheme(currentTheme);
+    }
+
     context.read<BranchesBloc>().add(const InitializationRequestedEvent());
   }
 }

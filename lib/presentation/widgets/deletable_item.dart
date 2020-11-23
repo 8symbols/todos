@@ -47,8 +47,6 @@ class _DeletableItemState extends State<DeletableItem> {
               child: RaisedButton(
                 padding: const EdgeInsets.all(2.0),
                 shape: CircleBorder(),
-                color:
-                    Theme.of(context).floatingActionButtonTheme.backgroundColor,
                 child: const FittedBox(
                   child: Icon(Icons.close, color: Colors.white),
                 ),

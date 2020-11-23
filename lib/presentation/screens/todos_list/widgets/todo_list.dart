@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/presentation/constants/branch_themes.dart';
-import 'package:todos/presentation/screens/todo/models/todo_screen_arguments.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_screen.dart';
-import 'package:todos/presentation/screens/todos_list/blocs/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,11 +76,8 @@ class TodoList extends StatelessWidget {
   }
 
   void _openTodoScreen(BuildContext context, Todo todo) async {
-    final branchTheme = context.read<BranchCubit>().state?.theme ??
-        BranchThemes.defaultBranchTheme;
-    final arguments = TodoScreenArguments(branchTheme, todo);
     await Navigator.of(context)
-        .pushNamed(TodoScreen.routeName, arguments: arguments);
+        .pushNamed(TodoScreen.routeName, arguments: todo);
     context.read<TodoListBloc>().add(InitializationRequestedEvent());
   }
 }

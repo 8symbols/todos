@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:todos/data/services/notifications_service.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
@@ -18,13 +17,10 @@ import 'package:todos/presentation/widgets/deletion_mode_will_pop_scope.dart';
 class TodoScreen extends StatefulWidget {
   static const routeName = '/todo';
 
-  /// Тема ветки.
-  final BranchTheme _branchTheme;
-
   /// Задача.
   final Todo _todo;
 
-  TodoScreen(this._branchTheme, this._todo);
+  TodoScreen(this._todo);
 
   @override
   _TodoScreenState createState() => _TodoScreenState();
@@ -71,51 +67,43 @@ class _TodoScreenState extends State<TodoScreen> {
         BlocProvider<TodoBloc>.value(value: _todoBloc),
         BlocProvider<DeletionModeCubit>.value(value: _deletionModeCubit),
       ],
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          primaryColor: widget._branchTheme.primaryColor,
-          accentColor: widget._branchTheme.primaryColor,
-          scaffoldBackgroundColor: widget._branchTheme.secondaryColor,
-        ),
-        child: BlocConsumer<TodoBloc, TodoState>(
-          listener: (context, state) {
-            if (state is TodoDeletedState) {
-              Navigator.of(context).pop();
-            }
-          },
-          buildWhen: (previous, current) => current is! TodoDeletedState,
-          builder: (context, state) => DeletionModeWillPopScope(
-            child: Scaffold(
-              body: CustomScrollView(
-                slivers: <Widget>[
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: TodoSliverAppBar(
-                      appBarMaxExtent,
-                      MediaQuery.of(context).padding.top,
-                      widget._branchTheme,
-                      state.todo,
+      child: BlocConsumer<TodoBloc, TodoState>(
+        listener: (context, state) {
+          if (state is TodoDeletedState) {
+            Navigator.of(context).pop();
+          }
+        },
+        buildWhen: (previous, current) => current is! TodoDeletedState,
+        builder: (context, state) => DeletionModeWillPopScope(
+          child: Scaffold(
+            body: CustomScrollView(
+              slivers: <Widget>[
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: TodoSliverAppBar(
+                    appBarMaxExtent,
+                    MediaQuery.of(context).padding.top,
+                    state.todo,
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    const SizedBox(height: 4.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TodoStepsCard(state.todo),
                     ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildListDelegate([
-                      const SizedBox(height: 4.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: TodoStepsCard(state.todo),
-                      ),
-                      const SizedBox(height: 20.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: TodoTimeSettingsCard(state.todo),
-                      ),
-                      const SizedBox(height: 20.0),
-                      TodoImagesCard(widget._branchTheme),
-                      const SizedBox(height: 20.0),
-                    ]),
-                  ),
-                ],
-              ),
+                    const SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TodoTimeSettingsCard(state.todo),
+                    ),
+                    const SizedBox(height: 20.0),
+                    TodoImagesCard(),
+                    const SizedBox(height: 20.0),
+                  ]),
+                ),
+              ],
             ),
           ),
         ),

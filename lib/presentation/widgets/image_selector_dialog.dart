@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/presentation/screens/flickr/widgets/flickr_screen.dart';
 
 /// Диалог для выбора изображения.
 ///
 /// Возвращает путь [String] к расположению файла в кеше.
 class ImageSelectorDialog extends StatelessWidget {
-  /// Тема ветки.
-  final BranchTheme _branchTheme;
-
   final _imagePicker = ImagePicker();
-
-  ImageSelectorDialog(this._branchTheme);
 
   Widget build(BuildContext context) {
     return SimpleDialog(
@@ -60,8 +54,7 @@ class ImageSelectorDialog extends StatelessWidget {
   }
 
   Future<String> _getImageFromFlickr(BuildContext context) async {
-    final path = await Navigator.of(context)
-        .pushNamed(FlickrScreen.routeName, arguments: _branchTheme);
+    final path = await Navigator.of(context).pushNamed(FlickrScreen.routeName);
     return path;
   }
 }

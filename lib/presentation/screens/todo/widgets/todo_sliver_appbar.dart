@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:bordered_text/bordered_text.dart';
 import 'package:flutter/material.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_screen_menu_options.dart';
@@ -15,9 +14,6 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
   static const _fabSize = 56.0;
 
   static const _minExtent = 56.0;
-
-  /// Тема ветки.
-  final BranchTheme _branchTheme;
 
   /// Задача.
   final Todo _todo;
@@ -33,12 +29,7 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
   /// Есть ли фотография на заднем плане.
   bool get _hasBackgroundImage => _todo.mainImagePath != null;
 
-  TodoSliverAppBar(
-    this._maxExtent,
-    this._unsafeAreaHeight,
-    this._branchTheme,
-    this._todo,
-  );
+  TodoSliverAppBar(this._maxExtent, this._unsafeAreaHeight, this._todo);
 
   @override
   Widget build(
@@ -109,21 +100,20 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
 
   Widget _buildAppBarContent(BuildContext context, double shrinkOffset) {
     final currentExtent = max(minExtent, maxExtent - shrinkOffset);
-    final buttonsColor = _hasBackgroundImage
-        ? Theme.of(context).floatingActionButtonTheme.backgroundColor
-        : null;
+    final backgroundColor =
+        _hasBackgroundImage ? Theme.of(context).buttonColor : null;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildButtonWithBackground(
           _minExtent,
-          buttonsColor,
           IconButton(
             padding: EdgeInsets.zero,
             icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
           ),
+          backgroundColor,
         ),
         const SizedBox(width: 20.0),
         Expanded(
@@ -137,7 +127,7 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
                   const EdgeInsets.only(top: 4.0, bottom: 8.0, left: 4.0),
               title: _hasBackgroundImage
                   ? BorderedText(
-                      strokeColor: buttonsColor,
+                      strokeColor: backgroundColor,
                       strokeWidth: 4.0,
                       child: Text(
                         _todo.title,
@@ -150,11 +140,11 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
         ),
         _buildButtonWithBackground(
           48.0,
-          buttonsColor,
           IconTheme(
             data: const IconThemeData(color: Colors.white),
-            child: TodoScreenMenuOptions(_todo, _branchTheme),
+            child: TodoScreenMenuOptions(_todo),
           ),
+          backgroundColor,
         ),
       ],
     );
@@ -162,9 +152,9 @@ class TodoSliverAppBar extends SliverPersistentHeaderDelegate {
 
   Widget _buildButtonWithBackground(
     double width,
+    Widget button, [
     Color backgroundColor,
-    Widget button,
-  ) {
+  ]) {
     return SizedBox(
       width: width,
       height: _minExtent,

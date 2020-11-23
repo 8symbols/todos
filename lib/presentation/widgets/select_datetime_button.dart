@@ -24,17 +24,11 @@ class SelectDateTimeButton extends StatelessWidget {
   /// Callback при выборе времени.
   final OnDateTimeSelected onSelected;
 
-  /// Цвет кнопки.
-  ///
-  /// Может быть равным null.
-  final Color color;
-
   SelectDateTimeButton(
     this.icon,
     this.title, {
     @required this.onSelected,
     this.dateTime,
-    this.color,
   });
 
   @override
@@ -44,9 +38,11 @@ class SelectDateTimeButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(40.0),
       ),
       icon: icon,
-      color: color,
+      color: Theme.of(context).scaffoldBackgroundColor,
       label: Expanded(
-        child: Text(dateTime == null ? title : _dateFormat.format(dateTime)),
+        child: Center(
+          child: Text(dateTime == null ? title : _dateFormat.format(dateTime)),
+        ),
       ),
       onPressed: () async {
         final dateTime = await showDialog<DateTime>(

@@ -4,11 +4,12 @@ import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
-import 'package:todos/presentation/constants/branch_themes.dart';
+import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/todo_list.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen_menu_options.dart';
+import 'package:todos/presentation/utils/branch_theme_utils.dart';
 import 'package:todos/presentation/widgets/marquee.dart';
 import 'package:todos/presentation/widgets/todo_editor_dialog.dart';
 
@@ -69,40 +70,34 @@ class _TodoListScreenState extends State<TodoListScreen> {
         BlocProvider<TodoListBloc>.value(value: _todoListBloc),
         BlocProvider<BranchCubit>.value(value: _branchCubit),
       ],
-      child: BlocBuilder<BranchCubit, Branch>(
-        builder: (context, branch) => Theme(
-          data: Theme.of(context).copyWith(
-            primaryColor: branch?.theme?.primaryColor ??
-                BranchThemes.defaultBranchTheme.primaryColor,
-            accentColor: branch?.theme?.primaryColor ??
-                BranchThemes.defaultBranchTheme.primaryColor,
-            scaffoldBackgroundColor: branch?.theme?.secondaryColor ??
-                BranchThemes.defaultBranchTheme.secondaryColor,
-          ),
-          child: BlocBuilder<TodoListBloc, TodoListState>(
-            builder: (context, state) => Scaffold(
-              appBar: AppBar(
-                title: Marquee(
-                  child: Text(
-                    areTodosFromSameBranch ? branch.title : 'Все задачи',
-                  ),
+      child: BlocConsumer<BranchCubit, Branch>(
+        listenWhen: (previous, current) => previous?.theme != current?.theme,
+        listener: (context, state) => context
+            .read<ThemeCubit>()
+            .setTheme(BranchThemeUtils.createTheme(state.theme)),
+        builder: (context, branch) => BlocBuilder<TodoListBloc, TodoListState>(
+          builder: (context, state) => Scaffold(
+            appBar: AppBar(
+              title: Marquee(
+                child: Text(
+                  areTodosFromSameBranch ? branch.title : 'Все задачи',
                 ),
-                actions: [
-                  TodoListScreenMenuOptions(areTodosFromSameBranch, state),
-                ],
               ),
-              floatingActionButton:
-                  areTodosFromSameBranch ? _buildFab(context, state) : null,
-              body: BlocListener<TodoListBloc, TodoListState>(
-                listener: (context, state) {
-                  if (state is TodoListDeletedTodoState) {
-                    _showUndoSnackBar(context, state.branchId, state.todo);
-                  }
-                },
-                child: state is TodoListLoadingState
-                    ? const Center(child: CircularProgressIndicator())
-                    : TodoList(state.todos),
-              ),
+              actions: [
+                TodoListScreenMenuOptions(areTodosFromSameBranch, state),
+              ],
+            ),
+            floatingActionButton:
+                areTodosFromSameBranch ? _buildFab(context, state) : null,
+            body: BlocListener<TodoListBloc, TodoListState>(
+              listener: (context, state) {
+                if (state is TodoListDeletedTodoState) {
+                  _showUndoSnackBar(context, state.branchId, state.todo);
+                }
+              },
+              child: state is TodoListLoadingState
+                  ? const Center(child: CircularProgressIndicator())
+                  : TodoList(state.todos),
             ),
           ),
         ),
@@ -122,12 +117,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
   /// Создает диалог с созданием новой задачи.
   void _addTodo(BuildContext context) async {
     final newTodo = Todo('');
-    final branchTheme = context.read<BranchCubit>().state?.theme ??
-        BranchThemes.defaultBranchTheme;
     final editedTodo = await showDialog<Todo>(
       context: context,
-      builder: (context) =>
-          TodoEditorDialog(newTodo, branchTheme, isNewTodo: true),
+      builder: (context) => TodoEditorDialog(newTodo, isNewTodo: true),
     );
 
     if (editedTodo != null) {

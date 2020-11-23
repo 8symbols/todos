@@ -5,8 +5,10 @@ import 'package:todos/data/services/floor_todos_database.dart';
 import 'package:todos/data/services/settings_storage.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
-import 'package:todos/presentation/theme.dart';
+import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
+import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/routes.dart';
+import 'package:todos/presentation/utils/branch_theme_utils.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,11 +32,16 @@ class _AppState extends State<App> {
 
   ISettingsStorage _settingsStorage;
 
+  ThemeCubit _themeCubit;
+
   @override
   void initState() {
     super.initState();
     _todosRepository = TodosRepository(widget._floorTodosDatabase);
     _settingsStorage = SettingsStorage();
+
+    final theme = BranchThemeUtils.createTheme(BranchThemes.defaultBranchTheme);
+    _themeCubit = ThemeCubit(theme);
   }
 
   @override
@@ -44,12 +51,17 @@ class _AppState extends State<App> {
         RepositoryProvider<ITodosRepository>.value(value: _todosRepository),
         RepositoryProvider<ISettingsStorage>.value(value: _settingsStorage),
       ],
-      child: MaterialApp(
-        title: 'Todos',
-        theme: theme,
-        initialRoute: initialRoute,
-        routes: routes,
-        onGenerateRoute: onGenerateRoute,
+      child: BlocProvider<ThemeCubit>.value(
+        value: _themeCubit,
+        child: BlocBuilder<ThemeCubit, ThemeData>(
+          builder: (context, theme) => MaterialApp(
+            title: 'Todos',
+            theme: theme,
+            initialRoute: initialRoute,
+            routes: routes,
+            onGenerateRoute: onGenerateRoute,
+          ),
+        ),
       ),
     );
   }

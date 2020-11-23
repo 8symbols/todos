@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/data/repositories/flickr_repository.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/screens/flickr/blocs/flickr_images_bloc/flickr_images_bloc.dart';
 import 'package:todos/presentation/screens/flickr/blocs/searchbar_cubit/search_bar_cubit.dart';
@@ -14,11 +13,6 @@ import 'package:todos/presentation/screens/flickr/widgets/search_appbar.dart';
 /// Возвращает строку с путем к картинке в кеше или null.
 class FlickrScreen extends StatefulWidget {
   static const routeName = '/flickr';
-
-  /// Тема ветки.
-  final BranchTheme _branchTheme;
-
-  FlickrScreen(this._branchTheme);
 
   @override
   _FlickrScreenState createState() => _FlickrScreenState();
@@ -57,16 +51,9 @@ class _FlickrScreenState extends State<FlickrScreen> {
         BlocProvider<SearchBarCubit>.value(value: _searchBarCubit),
         BlocProvider<FlickrImagesBloc>.value(value: _imagesBloc),
       ],
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          primaryColor: widget._branchTheme.primaryColor,
-          accentColor: widget._branchTheme.primaryColor,
-          scaffoldBackgroundColor: widget._branchTheme.secondaryColor,
-        ),
-        child: Scaffold(
-          appBar: _buildAppBar(context),
-          body: FlickrImagesGrid(),
-        ),
+      child: Scaffold(
+        appBar: _buildAppBar(context),
+        body: FlickrImagesGrid(),
       ),
     );
   }

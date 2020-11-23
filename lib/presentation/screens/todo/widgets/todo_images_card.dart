@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/utils/image_utils.dart';
@@ -14,11 +13,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Карта с изображениями задачи.
 class TodoImagesCard extends StatelessWidget {
   static const _imageSize = 100.0;
-
-  /// Тема ветки.
-  final BranchTheme branchTheme;
-
-  const TodoImagesCard(this.branchTheme);
 
   @override
   Widget build(BuildContext context) {
@@ -59,12 +53,8 @@ class TodoImagesCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18.0),
           ),
-          color: Theme.of(context).floatingActionButtonTheme.backgroundColor,
           child: const Icon(Icons.attachment, color: Colors.white),
-          onPressed: () {
-            context.read<DeletionModeCubit>().disableDeletionMode();
-            addImage(context);
-          },
+          onPressed: () => addImage(context),
         ),
       ),
     );
@@ -107,9 +97,11 @@ class TodoImagesCard extends StatelessWidget {
   }
 
   Future<void> addImage(BuildContext context) async {
+    context.read<DeletionModeCubit>().disableDeletionMode();
+
     final tmpPath = await showDialog(
       context: context,
-      child: ImageSelectorDialog(branchTheme),
+      child: ImageSelectorDialog(),
     );
 
     if (tmpPath != null) {

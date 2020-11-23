@@ -72,14 +72,12 @@ class BranchesGrid extends StatelessWidget {
       padding: const EdgeInsets.all(4.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints.tightFor(width: 80.0, height: 80.0),
-        child: RawMaterialButton(
+        child: RaisedButton(
           onPressed: onAddBranch,
           elevation: 8.0,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
-          fillColor:
-              Theme.of(context).floatingActionButtonTheme.backgroundColor,
           child: const Icon(Icons.add, color: Colors.white),
         ),
       ),

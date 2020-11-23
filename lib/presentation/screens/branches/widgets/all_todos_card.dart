@@ -71,10 +71,7 @@ class AllTodosCard extends StatelessWidget {
       tween: Tween(begin: 0.0, end: todosStatistics.completionProgress),
       builder: (context, value, child) => CustomPaint(
         size: const Size.fromHeight(16.0),
-        painter: LinearProgressPainter(
-          value,
-          Theme.of(context).floatingActionButtonTheme.backgroundColor,
-        ),
+        painter: LinearProgressPainter(value, Theme.of(context).buttonColor),
       ),
     );
   }
