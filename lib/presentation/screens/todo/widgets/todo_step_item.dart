@@ -41,6 +41,9 @@ class TodoStepItem extends StatelessWidget {
               decoration: const InputDecoration.collapsed(
                 hintText: 'Введите шаг',
               ),
+              style: step.wasCompleted
+                  ? const TextStyle(decoration: TextDecoration.lineThrough)
+                  : null,
               textInputAction: TextInputAction.done,
               maxLines: null,
               initialValue: step.title,
