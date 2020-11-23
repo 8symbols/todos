@@ -119,6 +119,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
   }
 
   void _showUndoSnackBar(BuildContext context, String branchId, Todo todo) {
+    Navigator.popUntil(context, ModalRoute.withName(TodoListScreen.routeName));
+
     Scaffold.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
