@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
@@ -43,7 +42,7 @@ class _TodoScreenState extends State<TodoScreen> {
       ..add(StepsLoadingRequestedEvent());
     _imagesBloc = TodoImagesBloc(todosRepository, widget._todo)
       ..add(ImagesLoadingRequestedEvent());
-    _todoBloc = TodoBloc(todosRepository, NotificationsService(), widget._todo);
+    _todoBloc = TodoBloc(todosRepository, widget._todo);
     _deletionModeCubit = DeletionModeCubit();
   }
 

@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/interactors/settings_interactor.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/branches_view_settings.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/domain/services/i_notifications_service.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/screens/branches/models/branch_statistics.dart';
 import 'package:todos/presentation/screens/branches/models/todos_statistics.dart';
@@ -26,8 +28,12 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
 
   BranchesBloc(
     ITodosRepository todosRepository,
-    ISettingsStorage settingsStorage,
-  )   : _todosInteractor = TodosInteractor(todosRepository),
+    ISettingsStorage settingsStorage, {
+    INotificationsService notificationsService = const NotificationsService(),
+  })  : _todosInteractor = TodosInteractor(
+          todosRepository,
+          notificationsService: notificationsService,
+        ),
         _settingsInteractor = SettingsInteractor(settingsStorage),
         super(const BranchesLoadingState());
 

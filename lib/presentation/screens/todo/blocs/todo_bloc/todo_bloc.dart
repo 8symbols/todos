@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -10,12 +11,19 @@ import 'package:todos/domain/services/i_notifications_service.dart';
 part 'todo_event.dart';
 part 'todo_state.dart';
 
+/// BloC для управления задачей.
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
+  /// Интерактор для работы с задачей.
   final TodosInteractor _todosInteractor;
 
-  TodoBloc(ITodosRepository todosRepository,
-      INotificationsService notificationsService, Todo todo)
-      : _todosInteractor = TodosInteractor(todosRepository),
+  TodoBloc(
+    ITodosRepository todosRepository,
+    Todo todo, {
+    INotificationsService notificationsService = const NotificationsService(),
+  })  : _todosInteractor = TodosInteractor(
+          todosRepository,
+          notificationsService: notificationsService,
+        ),
         super(TodoContentState(todo));
 
   @override
