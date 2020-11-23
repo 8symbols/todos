@@ -12,6 +12,7 @@ abstract class BranchThemeUtils {
         scaffoldBackgroundColor: branchTheme.secondaryColor,
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: Color(0xFF01A39D),
+          foregroundColor: Colors.white,
         ),
         appBarTheme: AppBarTheme(
           iconTheme: IconThemeData.fallback().copyWith(color: Colors.white),
