@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
+import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
 import 'package:todos/presentation/screens/branches/blocs/branches_bloc/branches_bloc.dart';
 import 'package:todos/presentation/screens/branches/widgets/all_todos_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:todos/presentation/screens/branches/widgets/branches_screen_menu
 import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/branch_editor_dialog.dart';
+import 'package:todos/presentation/widgets/deletion_mode_will_pop_scope.dart';
 
 class BranchesScreen extends StatefulWidget {
   static const routeName = '/branches';
@@ -22,6 +24,8 @@ class BranchesScreen extends StatefulWidget {
 class _BranchesScreenState extends State<BranchesScreen> {
   BranchesBloc _branchesBloc;
 
+  DeletionModeCubit _deletionModeCubit;
+
   @override
   void initState() {
     super.initState();
@@ -30,30 +34,37 @@ class _BranchesScreenState extends State<BranchesScreen> {
 
     _branchesBloc = BranchesBloc(todosRepository, settingsStorage)
       ..add(const InitializationRequestedEvent());
+    _deletionModeCubit = DeletionModeCubit();
   }
 
   @override
   void dispose() {
     _branchesBloc.close();
+    _deletionModeCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<BranchesBloc>.value(
-      value: _branchesBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<BranchesBloc>.value(value: _branchesBloc),
+        BlocProvider<DeletionModeCubit>.value(value: _deletionModeCubit),
+      ],
       child: BlocBuilder<BranchesBloc, BranchesState>(
-        builder: (context, state) => Scaffold(
-          appBar: AppBar(
-            title: const Text('Статистика'),
-            actions: [
-              if (state is! BranchesLoadingState)
-                const BranchesScreenMenuOptions()
-            ],
+        builder: (context, state) => DeletionModeWillPopScope(
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Статистика'),
+              actions: [
+                if (state is! BranchesLoadingState)
+                  const BranchesScreenMenuOptions()
+              ],
+            ),
+            body: state is BranchesLoadingState
+                ? const Center(child: CircularProgressIndicator())
+                : _buildStatistics(context, state),
           ),
-          body: state is BranchesLoadingState
-              ? const Center(child: CircularProgressIndicator())
-              : _buildStatistics(context, state),
         ),
       ),
     );
@@ -92,7 +103,10 @@ class _BranchesScreenState extends State<BranchesScreen> {
             state.branchesStatistics,
             onBranchTap: (branch) => _openTodosScreen(context, branch),
             onBranchDeleted: (branch) => _deleteBranch(context, branch),
-            onAddBranch: () => _addBranch(context),
+            onAddBranch: () {
+              context.read<DeletionModeCubit>().disableDeletionMode();
+              _addBranch(context);
+            },
           ),
         ),
       ],
@@ -129,6 +143,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
   }
 
   Future<void> _openTodosScreen(BuildContext context, [Branch branch]) async {
+    context.read<DeletionModeCubit>().disableDeletionMode();
     await Navigator.of(context)
         .pushNamed(TodoListScreen.routeName, arguments: branch);
     context.read<BranchesBloc>().add(const InitializationRequestedEvent());

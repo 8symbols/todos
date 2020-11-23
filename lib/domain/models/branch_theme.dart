@@ -22,5 +22,5 @@ class BranchTheme {
   }
 
   @override
-  int get hashCode => primaryColor.hashCode ^ secondaryColor.hashCode;
+  int get hashCode => hashValues(primaryColor, secondaryColor);
 }

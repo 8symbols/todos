@@ -15,14 +15,15 @@ class AllTodosCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Card(
-        color: const Color(0xFF86A5F5),
-        elevation: 8.0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16.0)),
-        ),
+    const borderRadius = BorderRadius.all(Radius.circular(16.0));
+
+    return Card(
+      color: const Color(0xFF86A5F5),
+      elevation: 8.0,
+      shape: const RoundedRectangleBorder(borderRadius: borderRadius),
+      child: InkWell(
+        borderRadius: borderRadius,
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: IntrinsicHeight(

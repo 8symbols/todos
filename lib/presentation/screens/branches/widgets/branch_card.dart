@@ -14,26 +14,36 @@ class BranchCard extends StatelessWidget {
   /// Callback при удалении.
   final VoidCallback onDelete;
 
+  /// Callback при зажатии карты.
+  final VoidCallback onLongPress;
+
+  /// Можно ли удалить карту.
+  final bool isDeletionPossible;
+
   const BranchCard(
-    this.branchStatistics, {
+    this.branchStatistics,
+    this.isDeletionPossible, {
     @required this.onTap,
     @required this.onDelete,
+    @required this.onLongPress,
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    const borderRadius = BorderRadius.all(Radius.circular(16.0));
+
     return DeletableItem(
-      closePosition: 0.0,
+      isDeletionPossible: isDeletionPossible,
       onDelete: onDelete,
       child: SizedBox.expand(
-        child: InkWell(
-          onTap: onTap,
-          child: Card(
-            elevation: 8.0,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16.0)),
-            ),
+        child: Card(
+          elevation: 8.0,
+          shape: const RoundedRectangleBorder(borderRadius: borderRadius),
+          child: InkWell(
+            borderRadius: borderRadius,
+            onTap: onTap,
+            onLongPress: onLongPress,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(

@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
+import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/utils/image_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/deletable_item.dart';
+import 'package:todos/presentation/widgets/deletion_mode_cubit_consumer.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,18 +25,23 @@ class TodoImagesCard extends StatelessWidget {
     return BlocBuilder<TodoImagesBloc, TodoImagesState>(
       builder: (context, state) => state is TodoImagesLoadingState
           ? const Center(child: CircularProgressIndicator())
-          : Card(
-              margin: const EdgeInsets.symmetric(vertical: 4.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Row(
-                    children: [
-                      ...state.imagesPaths
-                          .map((path) => _buildImage(context, path)),
-                      _buildAddImageButton(context),
-                    ],
+          : DeletionModeCubitConsumer(
+              builder: (context, isDeletionModeOn) => Card(
+                margin: const EdgeInsets.symmetric(vertical: 4.0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Row(
+                      children: [
+                        ...state.imagesPaths.map((path) => _buildImage(
+                              context,
+                              path,
+                              isDeletionModeOn,
+                            )),
+                        _buildAddImageButton(context),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -54,17 +61,28 @@ class TodoImagesCard extends StatelessWidget {
           ),
           color: Theme.of(context).floatingActionButtonTheme.backgroundColor,
           child: const Icon(Icons.attachment, color: Colors.white),
-          onPressed: () => addImage(context),
+          onPressed: () {
+            context.read<DeletionModeCubit>().disableDeletionMode();
+            addImage(context);
+          },
         ),
       ),
     );
   }
 
-  Widget _buildImage(BuildContext context, String path) {
+  Widget _buildImage(
+    BuildContext context,
+    String path,
+    bool isDeletionPossible,
+  ) {
     return DeletableItem(
+      isDeletionPossible: isDeletionPossible,
+      closeOffset: 4.0,
       child: Padding(
         padding: const EdgeInsets.only(top: 12.0, bottom: 12.0, right: 12.0),
         child: InkWell(
+          onLongPress: () =>
+              context.read<DeletionModeCubit>().toggleDeletionMode(),
           onDoubleTap: () => ImageUtils.openImageFullScreen(
             context,
             FileImage(File(path)),
@@ -78,6 +96,7 @@ class TodoImagesCard extends StatelessWidget {
               child: Image.file(
                 File(path),
                 fit: BoxFit.cover,
+                isAntiAlias: true,
               ),
             ),
           ),

@@ -3,6 +3,7 @@ import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
+import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_steps_bloc/todo_steps_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:todos/presentation/screens/todo/widgets/todo_images_card.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_sliver_appbar.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_steps_card.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_time_setting_card.dart';
+import 'package:todos/presentation/widgets/deletion_mode_will_pop_scope.dart';
 
 /// Экран задачи.
 class TodoScreen extends StatefulWidget {
@@ -35,6 +37,8 @@ class _TodoScreenState extends State<TodoScreen> {
 
   TodoBloc _todoBloc;
 
+  DeletionModeCubit _deletionModeCubit;
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +48,7 @@ class _TodoScreenState extends State<TodoScreen> {
     _imagesBloc = TodoImagesBloc(todosRepository, widget._todo)
       ..add(ImagesLoadingRequestedEvent());
     _todoBloc = TodoBloc(todosRepository, NotificationsService(), widget._todo);
+    _deletionModeCubit = DeletionModeCubit();
   }
 
   @override
@@ -51,6 +56,7 @@ class _TodoScreenState extends State<TodoScreen> {
     _stepsBloc.close();
     _todoBloc.close();
     _imagesBloc.close();
+    _deletionModeCubit.close();
     super.dispose();
   }
 
@@ -63,6 +69,7 @@ class _TodoScreenState extends State<TodoScreen> {
         BlocProvider<TodoStepsBloc>.value(value: _stepsBloc),
         BlocProvider<TodoImagesBloc>.value(value: _imagesBloc),
         BlocProvider<TodoBloc>.value(value: _todoBloc),
+        BlocProvider<DeletionModeCubit>.value(value: _deletionModeCubit),
       ],
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -76,36 +83,38 @@ class _TodoScreenState extends State<TodoScreen> {
             }
           },
           buildWhen: (previous, current) => current is! TodoDeletedState,
-          builder: (context, state) => Scaffold(
-            body: CustomScrollView(
-              slivers: <Widget>[
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: TodoSliverAppBar(
-                    appBarMaxExtent,
-                    MediaQuery.of(context).padding.top,
-                    widget._branchTheme,
-                    state.todo,
+          builder: (context, state) => DeletionModeWillPopScope(
+            child: Scaffold(
+              body: CustomScrollView(
+                slivers: <Widget>[
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: TodoSliverAppBar(
+                      appBarMaxExtent,
+                      MediaQuery.of(context).padding.top,
+                      widget._branchTheme,
+                      state.todo,
+                    ),
                   ),
-                ),
-                SliverList(
-                  delegate: SliverChildListDelegate([
-                    const SizedBox(height: 4.0),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: TodoStepsCard(state.todo),
-                    ),
-                    const SizedBox(height: 20.0),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: TodoTimeSettingsCard(state.todo),
-                    ),
-                    const SizedBox(height: 20.0),
-                    TodoImagesCard(widget._branchTheme),
-                    const SizedBox(height: 20.0),
-                  ]),
-                ),
-              ],
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      const SizedBox(height: 4.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: TodoStepsCard(state.todo),
+                      ),
+                      const SizedBox(height: 20.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: TodoTimeSettingsCard(state.todo),
+                      ),
+                      const SizedBox(height: 20.0),
+                      TodoImagesCard(widget._branchTheme),
+                      const SizedBox(height: 20.0),
+                    ]),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

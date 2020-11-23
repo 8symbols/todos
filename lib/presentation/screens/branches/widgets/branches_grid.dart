@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/domain/models/branch.dart';
+import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
 import 'package:todos/presentation/screens/branches/models/branch_statistics.dart';
 import 'package:todos/presentation/screens/branches/widgets/branch_card.dart';
+import 'package:todos/presentation/widgets/deletion_mode_cubit_consumer.dart';
 
 typedef void OnBranchActionCallback(Branch branch);
 
@@ -29,32 +32,37 @@ class BranchesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverGrid(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 4.0,
-        mainAxisSpacing: 4.0,
-      ),
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => index < branchesStatistics.length
-            ? BranchCard(
-                branchesStatistics[index],
-                onTap: () => onBranchTap(branchesStatistics[index].branch),
-                onDelete: () =>
-                    onBranchDeleted(branchesStatistics[index].branch),
-                key: ValueKey(branchesStatistics[index].branch.id),
-              )
-            : _buildAddButton(context, index.isEven),
-        childCount: branchesStatistics.length + 1,
-        findChildIndexCallback: (key) {
-          final id = (key as ValueKey).value;
-          for (var i = 0; i < branchesStatistics.length; ++i) {
-            if (id == branchesStatistics[i].branch.id) {
-              return i;
+    return DeletionModeCubitConsumer(
+      builder: (context, isDeletionModeOn) => SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 4.0,
+          mainAxisSpacing: 4.0,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => index < branchesStatistics.length
+              ? BranchCard(
+                  branchesStatistics[index],
+                  isDeletionModeOn,
+                  onTap: () => onBranchTap(branchesStatistics[index].branch),
+                  onDelete: () =>
+                      onBranchDeleted(branchesStatistics[index].branch),
+                  key: ValueKey(branchesStatistics[index].branch.id),
+                  onLongPress: () =>
+                      context.read<DeletionModeCubit>().toggleDeletionMode(),
+                )
+              : _buildAddButton(context, index.isEven),
+          childCount: branchesStatistics.length + 1,
+          findChildIndexCallback: (key) {
+            final id = (key as ValueKey).value;
+            for (var i = 0; i < branchesStatistics.length; ++i) {
+              if (id == branchesStatistics[i].branch.id) {
+                return i;
+              }
             }
-          }
-          return null;
-        },
+            return null;
+          },
+        ),
       ),
     );
   }

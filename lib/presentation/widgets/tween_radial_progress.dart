@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todos/presentation/widgets/radial_progress_painter.dart';
 
-/// Анимированный круговой индикатор прогресса.
+/// Анимированная круговая полоса прогресса.
 class TweenRadialProgress extends StatelessWidget {
   /// Прогресс.
   ///
