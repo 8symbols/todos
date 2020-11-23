@@ -29,10 +29,6 @@ class TodoListScreen extends StatefulWidget {
 }
 
 class _TodoListScreenState extends State<TodoListScreen> {
-  /// Флаг, сигнализирующий о том, все ли задачи из списка принадлежат
-  /// одной ветке.
-  bool get areTodosFromSameBranch => widget.branch != null;
-
   TodoListBloc _todoListBloc;
 
   BranchCubit _branchCubit;
@@ -78,17 +74,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
         builder: (context, branch) => BlocBuilder<TodoListBloc, TodoListState>(
           builder: (context, state) => Scaffold(
             appBar: AppBar(
-              title: Marquee(
-                child: Text(
-                  areTodosFromSameBranch ? branch.title : 'Все задачи',
-                ),
-              ),
+              title: Marquee(child: Text(branch?.title ?? 'Все задачи')),
               actions: [
-                TodoListScreenMenuOptions(areTodosFromSameBranch, state),
+                TodoListScreenMenuOptions(branch, state),
               ],
             ),
-            floatingActionButton:
-                areTodosFromSameBranch ? _buildFab(context, state) : null,
+            floatingActionButton: _buildFab(context, state, branch),
             body: BlocListener<TodoListBloc, TodoListState>(
               listener: (context, state) {
                 if (state is TodoListDeletedTodoState) {
@@ -105,9 +96,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
     );
   }
 
-  Widget _buildFab(BuildContext context, TodoListState state) {
-    return state is TodoListLoadingState
-        ? SizedBox.shrink()
+  Widget _buildFab(BuildContext context, TodoListState state, Branch branch) {
+    return state is TodoListLoadingState || branch == null
+        ? null
         : FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () => _addTodo(context),

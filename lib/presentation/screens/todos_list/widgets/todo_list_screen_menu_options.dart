@@ -15,14 +15,15 @@ import 'package:todos/presentation/widgets/todos_sort_order_selector.dart';
 
 /// Виджет выпадающего списка в меню [AppBar] экрана списка задач.
 class TodoListScreenMenuOptions extends StatelessWidget {
-  /// Флаг, сигнализирующий о том, все ли задачи из списка принадлежат
-  /// одной ветке.
-  final bool areTodosFromSameBranch;
+  /// Ветка задач.
+  ///
+  /// Может быть равным null.
+  final Branch branch;
 
   /// Состояние списка задач.
   final TodoListState todoListState;
 
-  TodoListScreenMenuOptions(this.areTodosFromSameBranch, this.todoListState);
+  TodoListScreenMenuOptions(this.branch, this.todoListState);
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +86,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
         chooseSortOrderOption,
         deleteCompletedTodosOption,
       ],
-      if (areTodosFromSameBranch) ...[
+      if (branch != null) ...[
         chooseThemeOption,
         editBranchOption,
       ],
@@ -148,34 +149,32 @@ class TodoListScreenMenuOptions extends StatelessWidget {
 
     showBottomSheet<void>(
       context: context,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Выбор темы',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),
+      builder: (BuildContext context) => Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Выбор темы',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 12.0),
-              BlocBuilder<BranchCubit, Branch>(
-                builder: (context, state) => BranchThemeSelector(
-                  BranchThemes.branchThemes,
-                  state.theme,
-                  onSelect: (selectedTheme) => context
-                      .read<BranchCubit>()
-                      .editBranch(state.copyWith(theme: selectedTheme)),
-                ),
-              )
-            ],
-          ),
-        );
-      },
+            ),
+            const SizedBox(height: 12.0),
+            BlocBuilder<BranchCubit, Branch>(
+              builder: (context, state) => BranchThemeSelector(
+                BranchThemes.branchThemes,
+                state.theme,
+                onSelect: (selectedTheme) => context
+                    .read<BranchCubit>()
+                    .editBranch(state.copyWith(theme: selectedTheme)),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
