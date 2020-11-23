@@ -27,6 +27,14 @@ class BranchesSortOrderSelector extends StatelessWidget {
           child: const Text('Дата использования (сначала давние)'),
           onPressed: () => Navigator.pop(context, BranchesSortOrder.usageAsc),
         ),
+        SimpleDialogOption(
+          child: const Text('Название (убывание)'),
+          onPressed: () => Navigator.pop(context, BranchesSortOrder.title),
+        ),
+        SimpleDialogOption(
+          child: const Text('Название (возрастание)'),
+          onPressed: () => Navigator.pop(context, BranchesSortOrder.titleAsc),
+        ),
       ],
     );
   }

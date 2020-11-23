@@ -20,6 +20,12 @@ abstract class BranchesComparatorsFactory {
       return a.lastUsageTime.millisecondsSinceEpoch -
           b.lastUsageTime.millisecondsSinceEpoch;
     },
+    BranchesSortOrder.title: (a, b) {
+      return b.title.compareTo(a.title);
+    },
+    BranchesSortOrder.titleAsc: (a, b) {
+      return a.title.compareTo(b.title);
+    },
   };
 
   /// Возвращает компаратор для порядка сортировки [BranchesSortOrder].

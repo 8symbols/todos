@@ -7,7 +7,7 @@ class BranchesViewSettings {
   final BranchesSortOrder sortOrder;
 
   const BranchesViewSettings({
-    this.sortOrder = BranchesSortOrder.usage,
+    this.sortOrder = BranchesSortOrder.creation,
   });
 
   BranchesViewSettings copyWith({
