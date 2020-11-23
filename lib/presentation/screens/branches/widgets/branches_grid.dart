@@ -42,9 +42,19 @@ class BranchesGrid extends StatelessWidget {
                 onTap: () => onBranchTap(branchesStatistics[index].branch),
                 onDelete: () =>
                     onBranchDeleted(branchesStatistics[index].branch),
+                key: ValueKey(branchesStatistics[index].branch.id),
               )
             : _buildAddButton(context, index.isEven),
         childCount: branchesStatistics.length + 1,
+        findChildIndexCallback: (key) {
+          final id = (key as ValueKey).value;
+          for (var i = 0; i < branchesStatistics.length; ++i) {
+            if (id == branchesStatistics[i].branch.id) {
+              return i;
+            }
+          }
+          return null;
+        },
       ),
     );
   }

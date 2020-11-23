@@ -18,7 +18,8 @@ class BranchCard extends StatelessWidget {
     this.branchStatistics, {
     @required this.onTap,
     @required this.onDelete,
-  });
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
