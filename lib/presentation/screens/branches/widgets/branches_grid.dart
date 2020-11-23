@@ -55,12 +55,10 @@ class BranchesGrid extends StatelessWidget {
           childCount: branchesStatistics.length + 1,
           findChildIndexCallback: (key) {
             final id = (key as ValueKey).value;
-            for (var i = 0; i < branchesStatistics.length; ++i) {
-              if (id == branchesStatistics[i].branch.id) {
-                return i;
-              }
-            }
-            return null;
+            final index = branchesStatistics.indexWhere(
+              (branchStatistics) => branchStatistics.branch.id == id,
+            );
+            return index == -1 ? null : index;
           },
         ),
       ),
