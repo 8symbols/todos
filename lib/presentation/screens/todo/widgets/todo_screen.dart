@@ -74,6 +74,7 @@ class _TodoScreenState extends State<TodoScreen> {
       child: Theme(
         data: Theme.of(context).copyWith(
           primaryColor: widget._branchTheme.primaryColor,
+          accentColor: widget._branchTheme.primaryColor,
           scaffoldBackgroundColor: widget._branchTheme.secondaryColor,
         ),
         child: BlocConsumer<TodoBloc, TodoState>(

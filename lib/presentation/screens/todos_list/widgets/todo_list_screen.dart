@@ -74,6 +74,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
           data: Theme.of(context).copyWith(
             primaryColor: state?.theme?.primaryColor ??
                 BranchThemes.defaultBranchTheme.primaryColor,
+            accentColor: state?.theme?.primaryColor ??
+                BranchThemes.defaultBranchTheme.primaryColor,
             scaffoldBackgroundColor: state?.theme?.secondaryColor ??
                 BranchThemes.defaultBranchTheme.secondaryColor,
           ),

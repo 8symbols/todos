@@ -60,6 +60,7 @@ class _FlickrScreenState extends State<FlickrScreen> {
       child: Theme(
         data: Theme.of(context).copyWith(
           primaryColor: widget._branchTheme.primaryColor,
+          accentColor: widget._branchTheme.primaryColor,
           scaffoldBackgroundColor: widget._branchTheme.secondaryColor,
         ),
         child: Scaffold(
