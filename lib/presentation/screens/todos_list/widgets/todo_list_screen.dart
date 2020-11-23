@@ -16,9 +16,9 @@ import 'package:todos/presentation/widgets/todo_editor_dialog.dart';
 class TodoListScreen extends StatefulWidget {
   static const routeName = '/todos_list';
 
-  /// Ветка задача.
+  /// Ветка задач.
   ///
-  /// Может быть равна null.
+  /// Может быть равна null. В этом случае экран содержит все задачи.
   final Branch branch;
 
   TodoListScreen({this.branch});
@@ -70,34 +70,39 @@ class _TodoListScreenState extends State<TodoListScreen> {
         BlocProvider<BranchCubit>.value(value: _branchCubit),
       ],
       child: BlocBuilder<BranchCubit, Branch>(
-        builder: (context, state) => Theme(
+        builder: (context, branch) => Theme(
           data: Theme.of(context).copyWith(
-            primaryColor: state?.theme?.primaryColor ??
+            primaryColor: branch?.theme?.primaryColor ??
                 BranchThemes.defaultBranchTheme.primaryColor,
-            accentColor: state?.theme?.primaryColor ??
+            accentColor: branch?.theme?.primaryColor ??
                 BranchThemes.defaultBranchTheme.primaryColor,
-            scaffoldBackgroundColor: state?.theme?.secondaryColor ??
+            scaffoldBackgroundColor: branch?.theme?.secondaryColor ??
                 BranchThemes.defaultBranchTheme.secondaryColor,
           ),
-          child: Scaffold(
-            appBar: AppBar(
-              title: Marquee(
-                child: Text(
-                  areTodosFromSameBranch ? state.title : 'Все задачи',
+          child: BlocBuilder<TodoListBloc, TodoListState>(
+            builder: (context, state) => Scaffold(
+              appBar: AppBar(
+                title: Marquee(
+                  child: Text(
+                    areTodosFromSameBranch ? branch.title : 'Все задачи',
+                  ),
                 ),
+                actions: [
+                  TodoListScreenMenuOptions(areTodosFromSameBranch, state),
+                ],
               ),
-              actions: [TodoListScreenMenuOptions(areTodosFromSameBranch)],
-            ),
-            floatingActionButton: areTodosFromSameBranch ? _buildFab() : null,
-            body: BlocConsumer<TodoListBloc, TodoListState>(
-              listener: (context, state) {
-                if (state is TodoListDeletedTodoState) {
-                  _showUndoSnackBar(context, state.branchId, state.todo);
-                }
-              },
-              builder: (context, state) => state is TodoListLoadingState
-                  ? const Center(child: CircularProgressIndicator())
-                  : TodoList(state.todos),
+              floatingActionButton:
+                  areTodosFromSameBranch ? _buildFab(context, state) : null,
+              body: BlocListener<TodoListBloc, TodoListState>(
+                listener: (context, state) {
+                  if (state is TodoListDeletedTodoState) {
+                    _showUndoSnackBar(context, state.branchId, state.todo);
+                  }
+                },
+                child: state is TodoListLoadingState
+                    ? const Center(child: CircularProgressIndicator())
+                    : TodoList(state.todos),
+              ),
             ),
           ),
         ),
@@ -105,17 +110,13 @@ class _TodoListScreenState extends State<TodoListScreen> {
     );
   }
 
-  Widget _buildFab() {
-    return BlocBuilder<TodoListBloc, TodoListState>(
-      buildWhen: (previous, current) =>
-          previous.runtimeType != current.runtimeType,
-      builder: (context, state) => state is TodoListContentState
-          ? FloatingActionButton(
-              child: const Icon(Icons.add),
-              onPressed: () => _addTodo(context),
-            )
-          : SizedBox.shrink(),
-    );
+  Widget _buildFab(BuildContext context, TodoListState state) {
+    return state is TodoListLoadingState
+        ? SizedBox.shrink()
+        : FloatingActionButton(
+            child: const Icon(Icons.add),
+            onPressed: () => _addTodo(context),
+          );
   }
 
   /// Создает диалог с созданием новой задачи.

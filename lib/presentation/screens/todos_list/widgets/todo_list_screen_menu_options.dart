@@ -19,7 +19,10 @@ class TodoListScreenMenuOptions extends StatelessWidget {
   /// одной ветке.
   final bool areTodosFromSameBranch;
 
-  TodoListScreenMenuOptions(this.areTodosFromSameBranch);
+  /// Состояние списка задач.
+  final TodoListState todoListState;
+
+  TodoListScreenMenuOptions(this.areTodosFromSameBranch, this.todoListState);
 
   @override
   Widget build(BuildContext context) {
@@ -71,26 +74,22 @@ class TodoListScreenMenuOptions extends StatelessWidget {
       onSelected: _editBranch,
     );
 
-    return BlocBuilder<TodoListBloc, TodoListState>(
-      buildWhen: (previous, current) =>
-          previous.viewSettings != current.viewSettings,
-      builder: (context, state) => PopupMenu([
-        if (state.todos != null) ...[
-          state.viewSettings.areCompletedTodosVisible
-              ? hideCompletedTodosOption
-              : showCompletedTodosOption,
-          state.viewSettings.areNonFavoriteTodosVisible
-              ? hideNonFavoriteTodosOption
-              : showNonFavoriteTodosOption,
-          chooseSortOrderOption,
-          deleteCompletedTodosOption,
-        ],
-        if (areTodosFromSameBranch) ...[
-          chooseThemeOption,
-          editBranchOption,
-        ],
-      ]),
-    );
+    return PopupMenu([
+      if (todoListState.todos != null) ...[
+        todoListState.viewSettings.areCompletedTodosVisible
+            ? hideCompletedTodosOption
+            : showCompletedTodosOption,
+        todoListState.viewSettings.areNonFavoriteTodosVisible
+            ? hideNonFavoriteTodosOption
+            : showNonFavoriteTodosOption,
+        chooseSortOrderOption,
+        deleteCompletedTodosOption,
+      ],
+      if (areTodosFromSameBranch) ...[
+        chooseThemeOption,
+        editBranchOption,
+      ],
+    ]);
   }
 
   void _hideCompletedTodos(BuildContext context) {
