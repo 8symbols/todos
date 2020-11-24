@@ -5,6 +5,13 @@ import 'package:todos/presentation/constants/assets_paths.dart';
 
 /// Изображение гор с анимациями.
 class MountainsAnimation extends StatefulWidget {
+  /// Размер изображения.
+  final double size;
+
+  const MountainsAnimation({
+    this.size = 113.0,
+  });
+
   @override
   _MountainsAnimationState createState() => _MountainsAnimationState();
 }
@@ -61,11 +68,12 @@ class _MountainsAnimationState extends State<MountainsAnimation> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 113.0,
-      height: 113.0,
+      width: widget.size,
+      height: widget.size,
       child: _riveArtboard == null
           ? null
-          : GestureDetector(
+          : InkWell(
+              borderRadius: BorderRadius.circular(widget.size / 2.0),
               onTap: _changeDayTime,
               child: Rive(artboard: _riveArtboard),
             ),
