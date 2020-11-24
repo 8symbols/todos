@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/presentation/widgets/datetime_selector_dialog.dart';
 
-typedef void OnDateTimeSelected(DateTime selectedDateTime);
+typedef OnDateTimeSelected = void Function(DateTime selectedDateTime);
 
 /// Виджет для установки даты и времени.
 class SelectTimeItem extends StatelessWidget {

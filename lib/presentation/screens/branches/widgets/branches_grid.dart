@@ -7,7 +7,7 @@ import 'package:todos/presentation/screens/branches/models/branch_statistics.dar
 import 'package:todos/presentation/screens/branches/widgets/branch_card.dart';
 import 'package:todos/presentation/widgets/deletion_mode_cubit_consumer.dart';
 
-typedef void OnBranchActionCallback(Branch branch);
+typedef OnBranchActionCallback = void Function(Branch branch);
 
 /// Сетка из карт веток.
 class BranchesGrid extends StatelessWidget {

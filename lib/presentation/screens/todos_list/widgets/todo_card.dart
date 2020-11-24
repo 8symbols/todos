@@ -5,7 +5,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
 import 'package:todos/presentation/widgets/favorite_button.dart';
 
-typedef void TodoEditedCallback(Todo editedTodo);
+typedef TodoEditedCallback = void Function(Todo editedTodo);
 
 /// Виджет для отображения задачи в списке задач.
 class TodoCard extends StatelessWidget {

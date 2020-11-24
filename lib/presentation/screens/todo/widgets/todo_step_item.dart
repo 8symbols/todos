@@ -2,7 +2,7 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo_step.dart';
 
-typedef void StepEditedCallback(TodoStep editedStep);
+typedef StepEditedCallback = void Function(TodoStep editedStep);
 
 /// Виджет для отображения пункта задачи.
 class TodoStepItem extends StatelessWidget {

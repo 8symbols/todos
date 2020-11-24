@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch_theme.dart';
 
-typedef void OnThemeSelectedCallback(BranchTheme selectedTheme);
+typedef OnThemeSelectedCallback = void Function(BranchTheme selectedTheme);
 
 /// Виджет для выбора темы из [themes].
 class BranchThemeSelector extends StatelessWidget {
