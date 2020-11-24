@@ -79,13 +79,20 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodoDeletedEventToState(
     TodoDeletedEvent event,
   ) async* {
-    final todoBranchId =
-        branchId ?? (await _todosInteractor.getBranchOfTodo(event.todo.id)).id;
+    yield TodoDeletingState(
+      state.todosStatistics
+        ..removeWhere(
+          (todoStatistics) => todoStatistics.todo.id == event.todo.id,
+        ),
+      state.viewSettings,
+    );
 
     await _todosInteractor.deleteTodo(event.todo.id);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+    final todoBranchId =
+        branchId ?? (await _todosInteractor.getBranchOfTodo(event.todo.id)).id;
 
-    yield TodoListDeletedTodoState(
+    yield TodoDeletedState(
       todoBranchId,
       event.todo,
       await _mapTodosToView(),

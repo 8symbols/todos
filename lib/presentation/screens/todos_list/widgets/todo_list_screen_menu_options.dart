@@ -76,7 +76,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
     );
 
     return PopupMenu([
-      if (todoListState.todos != null) ...[
+      if (todoListState.todosStatistics != null) ...[
         todoListState.viewSettings.areCompletedTodosVisible
             ? hideCompletedTodosOption
             : showCompletedTodosOption,

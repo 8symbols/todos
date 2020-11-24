@@ -11,15 +11,15 @@ import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.d
 /// Виджет для отображения списка задач.
 class TodoList extends StatelessWidget {
   /// Список задач.
-  final List<TodoStatistics> todosData;
+  final List<TodoStatistics> todosStatistics;
 
-  TodoList(this.todosData);
+  TodoList(this.todosStatistics);
 
   @override
   Widget build(BuildContext context) {
     const emptySpaceForFabHeight = 88.0;
 
-    return todosData.isEmpty
+    return todosStatistics.isEmpty
         ? EmptyTodoList()
         : Stack(
             children: [
@@ -27,14 +27,15 @@ class TodoList extends StatelessWidget {
               ListView(
                 children: [
                   const SizedBox(height: 6.0),
-                  ...todosData
-                      .map((todoData) => TodoCard(
-                            todoData,
-                            onDelete: () => _deleteTodo(context, todoData.todo),
+                  ...todosStatistics
+                      .map((todoStatistics) => TodoCard(
+                            todoStatistics,
+                            onDelete: () =>
+                                _deleteTodo(context, todoStatistics.todo),
                             onEdit: (editedTodo) => _editTodo(
-                                context, todoData.todo.id, editedTodo),
+                                context, todoStatistics.todo.id, editedTodo),
                             onTap: () =>
-                                _openTodoScreen(context, todoData.todo),
+                                _openTodoScreen(context, todoStatistics.todo),
                           ))
                       .toList(),
                   const SizedBox(height: emptySpaceForFabHeight),

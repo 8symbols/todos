@@ -82,13 +82,13 @@ class _TodoListScreenState extends State<TodoListScreen> {
             floatingActionButton: _buildFab(context, state, branch),
             body: BlocListener<TodoListBloc, TodoListState>(
               listener: (context, state) {
-                if (state is TodoListDeletedTodoState) {
+                if (state is TodoDeletedState) {
                   _showUndoSnackBar(context, state.branchId, state.todo);
                 }
               },
               child: state is TodoListLoadingState
                   ? const Center(child: CircularProgressIndicator())
-                  : TodoList(state.todos),
+                  : TodoList(state.todosStatistics),
             ),
           ),
         ),
@@ -119,7 +119,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
   }
 
   void _showUndoSnackBar(BuildContext context, String branchId, Todo todo) {
-    Navigator.popUntil(context, ModalRoute.withName(TodoListScreen.routeName));
+    if (ModalRoute.of(context).isCurrent) {
+      _hideBottomSheet(context);
+    }
 
     Scaffold.of(context)
       ..hideCurrentSnackBar()
@@ -134,5 +136,9 @@ class _TodoListScreenState extends State<TodoListScreen> {
           ),
         ),
       );
+  }
+
+  void _hideBottomSheet(BuildContext context) {
+    Navigator.popUntil(context, ModalRoute.withName(TodoListScreen.routeName));
   }
 }

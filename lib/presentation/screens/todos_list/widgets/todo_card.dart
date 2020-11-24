@@ -53,6 +53,7 @@ class TodoCard extends StatelessWidget {
         key: Key(todoData.todo.id),
         direction: DismissDirection.endToStart,
         background: dismissibleBackground,
+        confirmDismiss: (direction) async => ModalRoute.of(context).isCurrent,
         onDismissed: (direction) => onDelete(),
         child: Card(
           margin: cardMargin,
