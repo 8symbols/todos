@@ -35,7 +35,10 @@ class TodoCard extends StatelessWidget {
 
     final dismissibleBackground = Container(
       margin: cardMargin,
-      color: Colors.red,
+      decoration: const BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: const [
