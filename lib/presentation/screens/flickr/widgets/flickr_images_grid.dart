@@ -12,12 +12,6 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 /// Таблица картинок из Flickr.
 class FlickrImagesGrid extends StatefulWidget {
-  /// Количества столбцов при разных ориентациях.
-  static const columnsCounts = <Orientation, int>{
-    Orientation.portrait: 2,
-    Orientation.landscape: 3,
-  };
-
   @override
   _FlickrImagesGridState createState() => _FlickrImagesGridState();
 }
@@ -64,53 +58,45 @@ class _FlickrImagesGridState extends State<FlickrImagesGrid> {
           context.read<FlickrImagesBloc>().add(const RefreshRequestedEvent());
           return _loadingCompleter.future;
         },
-        child: OrientationBuilder(
-          builder: (context, orientation) {
-            return NotificationListener<ScrollNotification>(
-              onNotification: (notification) {
-                const loadingDelta = 300.0;
-                if (notification.metrics.pixels >
-                    notification.metrics.maxScrollExtent - loadingDelta) {
-                  _loadNextPage(context);
-                }
-                return false;
-              },
-              child: CustomScrollView(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  if (state.urls.isNotEmpty)
-                    SliverPadding(
-                      padding: const EdgeInsets.only(
-                        top: _imageSpacing,
-                        left: _imageSpacing,
-                        right: _imageSpacing,
-                      ),
-                      sliver: _buildGrid(context, state, orientation),
-                    ),
-                  SliverPadding(
-                    padding: const EdgeInsets.all(_imageSpacing),
-                    sliver: SliverToBoxAdapter(
-                      child: _buildStatus(context, state),
-                    ),
-                  ),
-                ],
-              ),
-            );
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            const loadingDelta = 500.0;
+            if (notification.metrics.pixels >
+                notification.metrics.maxScrollExtent - loadingDelta) {
+              _loadNextPage(context);
+            }
+            return false;
           },
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              if (state.urls.isNotEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.only(
+                    top: _imageSpacing,
+                    left: _imageSpacing,
+                    right: _imageSpacing,
+                  ),
+                  sliver: _buildGrid(context, state),
+                ),
+              SliverPadding(
+                padding: const EdgeInsets.all(_imageSpacing),
+                sliver: SliverToBoxAdapter(
+                  child: _buildStatus(context, state),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildGrid(
-    BuildContext context,
-    ImagesState state,
-    Orientation orientation,
-  ) {
+  Widget _buildGrid(BuildContext context, ImagesState state) {
     return SliverGrid(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: FlickrImagesGrid.columnsCounts[orientation],
+        crossAxisCount: 2,
         crossAxisSpacing: _imageSpacing,
         mainAxisSpacing: _imageSpacing,
       ),

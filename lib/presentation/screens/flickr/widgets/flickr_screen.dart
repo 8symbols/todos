@@ -23,17 +23,12 @@ class _FlickrScreenState extends State<FlickrScreen> {
 
   FlickrImagesBloc _imagesBloc;
 
-  int get _pageSize =>
-      4 *
-      FlickrImagesGrid.columnsCounts.values
-          .fold(1, (previousValue, element) => previousValue * element);
-
   @override
   void initState() {
     super.initState();
     final settingsStorage = context.read<ISettingsStorage>();
     _searchBarCubit = SearchBarCubit(settingsStorage);
-    _imagesBloc = FlickrImagesBloc(FlickrRepository(), _pageSize)
+    _imagesBloc = FlickrImagesBloc(FlickrRepository(), 24)
       ..add(RecentImagesLoadingRequestedEvent());
   }
 
