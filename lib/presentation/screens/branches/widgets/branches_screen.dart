@@ -61,7 +61,14 @@ class _BranchesScreenState extends State<BranchesScreen> {
         BlocProvider<BranchesBloc>.value(value: _branchesBloc),
         BlocProvider<DeletionModeCubit>.value(value: _deletionModeCubit),
       ],
-      child: BlocBuilder<BranchesBloc, BranchesState>(
+      child: BlocConsumer<BranchesBloc, BranchesState>(
+        listenWhen: (previous, current) => current is! BranchesLoadingState,
+        listener: (context, state) {
+          final isVibrationMode = context.read<DeletionModeCubit>().state;
+          if (isVibrationMode && state.branchesStatistics.isEmpty) {
+            context.read<DeletionModeCubit>().disableDeletionMode();
+          }
+        },
         builder: (context, state) => DeletionModeWillPopScope(
           child: Scaffold(
             appBar: AppBar(

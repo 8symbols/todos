@@ -5,7 +5,7 @@ import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
 /// [WillPopScope], который при попытке закрытия деактивирует
 /// [DeletionModeCubit], если он активен.
 class DeletionModeWillPopScope extends StatelessWidget {
-  /// Дочерний видже.
+  /// Дочерний виджет.
   final Widget child;
 
   const DeletionModeWillPopScope({@required this.child});

@@ -16,7 +16,14 @@ class TodoImagesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TodoImagesBloc, TodoImagesState>(
+    return BlocConsumer<TodoImagesBloc, TodoImagesState>(
+      listenWhen: (previous, current) => current is! TodoImagesLoadingState,
+      listener: (context, state) {
+        final isVibrationMode = context.read<DeletionModeCubit>().state;
+        if (isVibrationMode && state.imagesPaths.isEmpty) {
+          context.read<DeletionModeCubit>().disableDeletionMode();
+        }
+      },
       builder: (context, state) => state is TodoImagesLoadingState
           ? const Center(child: CircularProgressIndicator())
           : DeletionModeCubitConsumer(
