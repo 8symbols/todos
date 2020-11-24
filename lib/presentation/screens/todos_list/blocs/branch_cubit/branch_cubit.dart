@@ -4,9 +4,12 @@ import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_notifications_service.dart';
+import 'package:meta/meta.dart';
+
+part 'branch_state.dart';
 
 /// Cubit для работы с веткой задач.
-class BranchCubit extends Cubit<Branch> {
+class BranchCubit extends Cubit<BranchState> {
   /// Ветка.
   ///
   /// Может быть равна null.
@@ -23,11 +26,11 @@ class BranchCubit extends Cubit<Branch> {
           todosRepository,
           notificationsService: notificationsService,
         ),
-        super(branch);
+        super(BranchContentState(branch));
 
   /// Редактирует ветку.
   void editBranch(Branch editedBranch) async {
     await _todosInteractor.editBranch(editedBranch);
-    emit(editedBranch);
+    emit(BranchEditedState(editedBranch));
   }
 }

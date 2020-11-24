@@ -7,15 +7,20 @@ abstract class TodoState {
   /// Может быть равна null.
   final Todo todo;
 
-  TodoState(this.todo);
+  const TodoState(this.todo);
 }
 
 /// Состояние использования задачи.
 class TodoContentState extends TodoState {
-  TodoContentState(Todo todo) : super(todo);
+  const TodoContentState(Todo todo) : super(todo);
 }
 
-/// Состояние удаленной задачи.
+/// Состояние после изменения задачи.
+class TodoEditedState extends TodoState {
+  const TodoEditedState(Todo todo) : super(todo);
+}
+
+/// Состояние после удаления задачи.
 class TodoDeletedState extends TodoState {
-  TodoDeletedState() : super(null);
+  const TodoDeletedState() : super(null);
 }

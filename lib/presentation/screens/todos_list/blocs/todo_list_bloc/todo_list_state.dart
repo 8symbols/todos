@@ -17,12 +17,12 @@ abstract class TodoListState {
 
 /// Состояние загрузки списка задач.
 class TodoListLoadingState extends TodoListState {
-  TodoListLoadingState() : super(null, null);
+  const TodoListLoadingState() : super(null, null);
 }
 
 /// Состояние работы со списком задач.
 class TodoListContentState extends TodoListState {
-  TodoListContentState(
+  const TodoListContentState(
     List<TodoStatistics> todosStatistics,
     TodosViewSettings viewSettings,
   ) : super(todosStatistics, viewSettings);
@@ -31,24 +31,48 @@ class TodoListContentState extends TodoListState {
 /// Состояние во время удаления задачи.
 ///
 /// Удаляемая задача не содержится в [TodoListState.todosStatistics].
-class TodoDeletingState extends TodoListState {
-  TodoDeletingState(
+class TodoListTodoDeletingState extends TodoListState {
+  const TodoListTodoDeletingState(
     List<TodoStatistics> todosStatistics,
     TodosViewSettings viewSettings,
   ) : super(todosStatistics, viewSettings);
 }
 
-/// Состояние работы со списком задач после удаления задачи.
-class TodoDeletedState extends TodoListState {
+/// Состояние после удаления задачи.
+class TodoListTodoDeletedState extends TodoListState {
   /// Ветка удаленной задачи.
   final String branchId;
 
   /// Удаленная задача.
   final Todo todo;
 
-  TodoDeletedState(
+  const TodoListTodoDeletedState(
     this.branchId,
     this.todo,
+    List<TodoStatistics> todosStatistics,
+    TodosViewSettings viewSettings,
+  ) : super(todosStatistics, viewSettings);
+}
+
+/// Состояние после удаления нескольких задач.
+class TodoListTodosDeletedState extends TodoListState {
+  const TodoListTodosDeletedState(
+    List<TodoStatistics> todosStatistics,
+    TodosViewSettings viewSettings,
+  ) : super(todosStatistics, viewSettings);
+}
+
+/// Состояние после добавления задачи.
+class TodoListTodoAddedState extends TodoListState {
+  const TodoListTodoAddedState(
+    List<TodoStatistics> todosStatistics,
+    TodosViewSettings viewSettings,
+  ) : super(todosStatistics, viewSettings);
+}
+
+/// Состояние после изменения задачи.
+class TodoListTodoEditedState extends TodoListState {
+  const TodoListTodoEditedState(
     List<TodoStatistics> todosStatistics,
     TodosViewSettings viewSettings,
   ) : super(todosStatistics, viewSettings);

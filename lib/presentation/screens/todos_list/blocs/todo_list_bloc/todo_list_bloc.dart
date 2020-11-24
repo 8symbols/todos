@@ -48,6 +48,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     if (event is InitializationRequestedEvent) {
       yield* _mapInitializationRequestedEventToState(event);
+    } else if (event is TodoListOutdatedEvent) {
+      yield* _mapTodoListOutdatedEventToState(event);
     } else if (event is TodoDeletedEvent) {
       yield* _mapTodoDeletedEventToState(event);
     } else if (event is TodoEditedEvent) {
@@ -69,17 +71,22 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     final settings = await _settingsInteractor.getTodosViewSettings();
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListContentState(
-      await _mapTodosToView(viewSettings: settings),
-      settings,
-    );
+    yield TodoListContentState(await _mapTodosToView(settings), settings);
+  }
+
+  /// Загружает список задач.
+  Stream<TodoListState> _mapTodoListOutdatedEventToState(
+    TodoListOutdatedEvent event,
+  ) async* {
+    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Удаляет задачу.
   Stream<TodoListState> _mapTodoDeletedEventToState(
     TodoDeletedEvent event,
   ) async* {
-    yield TodoDeletingState(
+    yield TodoListTodoDeletingState(
       state.todosStatistics
         ..removeWhere(
           (todoStatistics) => todoStatistics.todo.id == event.todo.id,
@@ -87,12 +94,12 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       state.viewSettings,
     );
 
-    await _todosInteractor.deleteTodo(event.todo.id);
-    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
     final todoBranchId =
         branchId ?? (await _todosInteractor.getBranchOfTodo(event.todo.id)).id;
+    await _todosInteractor.deleteTodo(event.todo.id);
+    _allTodos = await _todosInteractor.getTodos(branchId: branchId);
 
-    yield TodoDeletedState(
+    yield TodoListTodoDeletedState(
       todoBranchId,
       event.todo,
       await _mapTodosToView(),
@@ -106,7 +113,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     await _todosInteractor.editTodo(event.todo);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
+    yield TodoListTodoEditedState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Добавляет задачу.
@@ -115,7 +122,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     await _todosInteractor.addTodo(branchId, event.todo);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
+    yield TodoListTodoAddedState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Возвращает удаленную задачу.
@@ -124,7 +131,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     await _todosInteractor.addTodo(event.branchId, event.todo);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
+    yield TodoListTodoAddedState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Удаляет выполненные задачи.
@@ -133,7 +140,8 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     await _todosInteractor.deleteCompletedTodos(branchId: branchId);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
+    yield TodoListTodosDeletedState(
+        await _mapTodosToView(), state.viewSettings);
   }
 
   /// Сохраняет и применяет новые настройки отображения.
@@ -142,7 +150,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     await _settingsInteractor.saveTodosViewSettings(event.viewSettings);
     yield TodoListContentState(
-      await _mapTodosToView(viewSettings: event.viewSettings),
+      await _mapTodosToView(event.viewSettings),
       event.viewSettings,
     );
   }
@@ -164,9 +172,9 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ///
   /// Если [viewSettings] не задано, берет настройки из
   /// [TodoListState.viewSettings].
-  Future<List<TodoStatistics>> _mapTodosToView({
+  Future<List<TodoStatistics>> _mapTodosToView([
     TodosViewSettings viewSettings,
-  }) async {
+  ]) async {
     viewSettings ??= state.viewSettings;
     final todosWithAppliedSettings =
         _todosInteractor.applyTodosViewSettings(_allTodos, viewSettings);

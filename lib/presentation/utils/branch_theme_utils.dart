@@ -4,7 +4,7 @@ import 'package:todos/domain/models/branch_theme.dart';
 /// Функции для работы с темой ветки.
 abstract class BranchThemeUtils {
   /// Создает тему на основе темы ветки [branchTheme].
-  static ThemeData createTheme(BranchTheme branchTheme) =>
+  static ThemeData createThemeData(BranchTheme branchTheme) =>
       ThemeData.light().copyWith(
         primaryColor: branchTheme.primaryColor,
         accentColor: branchTheme.primaryColor,

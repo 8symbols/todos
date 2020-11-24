@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
+import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_steps_bloc/todo_steps_bloc.dart';
@@ -44,6 +45,10 @@ class _TodoScreenState extends State<TodoScreen> {
       ..add(ImagesLoadingRequestedEvent());
     _todoBloc = TodoBloc(todosRepository, widget._todo);
     _deletionModeCubit = DeletionModeCubit();
+
+    final resolver = context.read<TodoBlocsResolver>();
+    _todoBloc.listen((state) => resolver.resolveTodoStateChange(state));
+    _stepsBloc.listen((state) => resolver.resolveTodoStepsStateChange(state));
   }
 
   @override

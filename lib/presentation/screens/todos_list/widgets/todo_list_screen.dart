@@ -5,6 +5,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
+import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/todo_list.dart';
@@ -33,6 +34,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   BranchCubit _branchCubit;
 
+  TodoBlocsResolver _todosBlocsResolver;
+
   @override
   void initState() {
     super.initState();
@@ -50,10 +53,21 @@ class _TodoListScreenState extends State<TodoListScreen> {
       _branchCubit
           .editBranch(widget.branch.copyWith(lastUsageTime: DateTime.now()));
     }
+
+    _todosBlocsResolver = context.read<TodoBlocsResolver>();
+    _todosBlocsResolver.todoListBlocState.bloc = _todoListBloc;
+    _todoListBloc.listen(
+      (state) => _todosBlocsResolver.resolveTodoListStateChange(state),
+    );
+    _branchCubit.listen(
+      (state) => _todosBlocsResolver.resolveBranchStateChange(state),
+    );
   }
 
   @override
   void dispose() {
+    _todosBlocsResolver.todoListBlocState.bloc = null;
+
     _todoListBloc.close();
     _branchCubit.close();
     super.dispose();
@@ -66,32 +80,38 @@ class _TodoListScreenState extends State<TodoListScreen> {
         BlocProvider<TodoListBloc>.value(value: _todoListBloc),
         BlocProvider<BranchCubit>.value(value: _branchCubit),
       ],
-      child: BlocConsumer<BranchCubit, Branch>(
-        listenWhen: (previous, current) => previous?.theme != current?.theme,
+      child: BlocConsumer<BranchCubit, BranchState>(
+        listenWhen: (previous, current) =>
+            previous.branch?.theme != current.branch?.theme,
         listener: (context, state) => context
             .read<ThemeCubit>()
-            .setTheme(BranchThemeUtils.createTheme(state.theme)),
-        builder: (context, branch) => BlocBuilder<TodoListBloc, TodoListState>(
-          builder: (context, state) => Scaffold(
-            appBar: AppBar(
-              title: Marquee(child: Text(branch?.title ?? 'Все задачи')),
-              actions: [
-                TodoListScreenMenuOptions(branch, state),
-              ],
+            .setTheme(BranchThemeUtils.createThemeData(state.branch.theme)),
+        builder: (context, branchState) {
+          return BlocBuilder<TodoListBloc, TodoListState>(
+            builder: (context, todoListState) => Scaffold(
+              appBar: AppBar(
+                title: Marquee(
+                  child: Text(branchState.branch?.title ?? 'Все задачи'),
+                ),
+                actions: [
+                  TodoListScreenMenuOptions(branchState.branch, todoListState),
+                ],
+              ),
+              floatingActionButton:
+                  _buildFab(context, todoListState, branchState.branch),
+              body: BlocListener<TodoListBloc, TodoListState>(
+                listener: (context, state) {
+                  if (state is TodoListTodoDeletedState) {
+                    _showUndoSnackBar(context, state.branchId, state.todo);
+                  }
+                },
+                child: todoListState is TodoListLoadingState
+                    ? const Center(child: CircularProgressIndicator())
+                    : TodoList(todoListState.todosStatistics),
+              ),
             ),
-            floatingActionButton: _buildFab(context, state, branch),
-            body: BlocListener<TodoListBloc, TodoListState>(
-              listener: (context, state) {
-                if (state is TodoDeletedState) {
-                  _showUndoSnackBar(context, state.branchId, state.todo);
-                }
-              },
-              child: state is TodoListLoadingState
-                  ? const Center(child: CircularProgressIndicator())
-                  : TodoList(state.todosStatistics),
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

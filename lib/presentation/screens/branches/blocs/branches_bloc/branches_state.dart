@@ -37,3 +37,21 @@ class BranchesContentState extends BranchesState {
     BranchesViewSettings viewSettings,
   ) : super(todosStatistics, branchesStatistics, viewSettings);
 }
+
+/// Состояние после удаления ветки.
+class BranchDeletedState extends BranchesState {
+  const BranchDeletedState(
+    TodosStatistics todosStatistics,
+    List<BranchStatistics> branchesStatistics,
+    BranchesViewSettings viewSettings,
+  ) : super(todosStatistics, branchesStatistics, viewSettings);
+}
+
+/// Состояние после добавления ветки.
+class BranchAddedState extends BranchesState {
+  const BranchAddedState(
+    TodosStatistics todosStatistics,
+    List<BranchStatistics> branchesStatistics,
+    BranchesViewSettings viewSettings,
+  ) : super(todosStatistics, branchesStatistics, viewSettings);
+}

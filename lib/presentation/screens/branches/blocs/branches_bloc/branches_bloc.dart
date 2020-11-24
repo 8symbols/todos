@@ -43,6 +43,8 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
   ) async* {
     if (event is InitializationRequestedEvent) {
       yield* _mapInitializationRequestedEventToState(event);
+    } else if (event is BranchesOutdatedEvent) {
+      yield* _mapBranchesOutdatedEventToState(event);
     } else if (event is BranchAddedEvent) {
       yield* _mapBranchAddedEventToState(event);
     } else if (event is BranchDeletedEvent) {
@@ -67,6 +69,20 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     );
   }
 
+  /// Загружает ветки.
+  Stream<BranchesState> _mapBranchesOutdatedEventToState(
+    BranchesOutdatedEvent event,
+  ) async* {
+    _allBranches = await _todosInteractor.getBranches();
+    final branchesStatistics = await _mapBranchesToView();
+
+    yield BranchesContentState(
+      _getAllTodosStatistics(branchesStatistics),
+      branchesStatistics,
+      state.viewSettings,
+    );
+  }
+
   /// Добавляет ветку.
   Stream<BranchesState> _mapBranchAddedEventToState(
     BranchAddedEvent event,
@@ -75,7 +91,7 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     _allBranches = await _todosInteractor.getBranches();
     final branchesStatistics = await _mapBranchesToView();
 
-    yield BranchesContentState(
+    yield BranchAddedState(
       _getAllTodosStatistics(branchesStatistics),
       branchesStatistics,
       state.viewSettings,
@@ -90,7 +106,7 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     _allBranches = await _todosInteractor.getBranches();
     final branchesStatistics = await _mapBranchesToView();
 
-    yield BranchesContentState(
+    yield BranchDeletedState(
       _getAllTodosStatistics(branchesStatistics),
       branchesStatistics,
       state.viewSettings,

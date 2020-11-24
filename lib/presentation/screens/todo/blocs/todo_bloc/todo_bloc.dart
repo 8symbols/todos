@@ -43,7 +43,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   ) async* {
     await _todosInteractor.editTodo(event.todo);
     final editedTodo = await _todosInteractor.getTodo(event.todo.id);
-    yield TodoContentState(editedTodo);
+    yield TodoEditedState(editedTodo);
   }
 
   /// Удаляет задачу.

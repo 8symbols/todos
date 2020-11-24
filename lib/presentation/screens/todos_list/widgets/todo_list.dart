@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo.dart';
+import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_screen.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/empty_todo_list.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/todo_card.dart';
-import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
 
 /// Виджет для отображения списка задач.
 class TodoList extends StatelessWidget {
@@ -78,9 +78,11 @@ class TodoList extends StatelessWidget {
   }
 
   void _openTodoScreen(BuildContext context, Todo todo) async {
-    Navigator.popUntil(context, ModalRoute.withName(TodoListScreen.routeName));
+    final resolver = context.read<TodoBlocsResolver>();
+
+    resolver.todoListBlocState.isInstantResolving = false;
     await Navigator.of(context)
         .pushNamed(TodoScreen.routeName, arguments: todo);
-    context.read<TodoListBloc>().add(InitializationRequestedEvent());
+    resolver.todoListBlocState.isInstantResolving = true;
   }
 }

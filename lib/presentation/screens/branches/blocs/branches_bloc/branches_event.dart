@@ -11,6 +11,11 @@ class InitializationRequestedEvent extends BranchesEvent {
   const InitializationRequestedEvent();
 }
 
+/// Запрос обновления списка веток.
+class BranchesOutdatedEvent extends BranchesEvent {
+  const BranchesOutdatedEvent();
+}
+
 /// Изменились настройки отображения.
 class ViewSettingsChangedEvent extends BranchesEvent {
   /// Новые настройки отображения.

@@ -6,6 +6,7 @@ import 'package:todos/data/services/settings_storage.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
+import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/routes.dart';
 import 'package:todos/presentation/utils/branch_theme_utils.dart';
@@ -34,14 +35,23 @@ class _AppState extends State<App> {
 
   ThemeCubit _themeCubit;
 
+  TodoBlocsResolver _todoBlocsResolver;
+
   @override
   void initState() {
     super.initState();
     _todosRepository = TodosRepository(widget._floorTodosDatabase);
     _settingsStorage = SettingsStorage();
+    _themeCubit = ThemeCubit(
+      BranchThemeUtils.createThemeData(BranchThemes.defaultBranchTheme),
+    );
+    _todoBlocsResolver = TodoBlocsResolver();
+  }
 
-    final theme = BranchThemeUtils.createTheme(BranchThemes.defaultBranchTheme);
-    _themeCubit = ThemeCubit(theme);
+  @override
+  void dispose() {
+    _themeCubit.close();
+    super.dispose();
   }
 
   @override
@@ -50,6 +60,7 @@ class _AppState extends State<App> {
       providers: [
         RepositoryProvider<ITodosRepository>.value(value: _todosRepository),
         RepositoryProvider<ISettingsStorage>.value(value: _settingsStorage),
+        RepositoryProvider<TodoBlocsResolver>.value(value: _todoBlocsResolver),
       ],
       child: BlocProvider<ThemeCubit>.value(
         value: _themeCubit,
