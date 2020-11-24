@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
+import 'package:todos/presentation/widgets/favorite_button.dart';
 
 typedef void TodoEditedCallback(Todo editedTodo);
 
@@ -72,14 +73,10 @@ class TodoCard extends StatelessWidget {
                         onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
                   ),
                   Expanded(child: _buildTodoData()),
-                  IconButton(
-                    icon: Icon(
-                      todoData.todo.isFavorite ? Icons.star : Icons.star_border,
-                      color: Colors.orangeAccent,
-                      size: 32.0,
-                    ),
-                    onPressed: () => onEdit(todoData.todo
-                        .copyWith(isFavorite: !todoData.todo.isFavorite)),
+                  FavoriteButton(
+                    todoData.todo.isFavorite,
+                    onToggle: (isFavorite) =>
+                        onEdit(todoData.todo.copyWith(isFavorite: isFavorite)),
                   ),
                 ],
               ),

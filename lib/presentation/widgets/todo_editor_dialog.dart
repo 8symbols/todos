@@ -45,7 +45,10 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
             children: [
               _buildTitleTextField(context),
               if (widget.isNewTodo) _buildTimeButtons(context),
-              if (!widget.isNewTodo) _buildSelectPhotoButton(context),
+              if (!widget.isNewTodo) ...[
+                _buildIsFavoriteButton(context),
+                _buildSelectPhotoButton(context),
+              ],
             ],
           ),
         ),
@@ -115,6 +118,19 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
           }),
         ),
       ],
+    );
+  }
+
+  Widget _buildIsFavoriteButton(BuildContext context) {
+    return TextButton.icon(
+      icon: Icon(
+        _todo.isFavorite ? Icons.star : Icons.star_border,
+        color: Colors.orange,
+      ),
+      label: const Text('Избранное'),
+      onPressed: () => setState(() {
+        _todo = _todo.copyWith(isFavorite: !_todo.isFavorite);
+      }),
     );
   }
 
