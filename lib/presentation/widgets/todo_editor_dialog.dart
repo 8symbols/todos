@@ -19,7 +19,7 @@ class TodoEditorDialog extends StatefulWidget {
   /// возможность отредактировать название и фотографию темы.
   final bool isNewTodo;
 
-  TodoEditorDialog(this.todo, {this.isNewTodo = false});
+  const TodoEditorDialog(this.todo, {this.isNewTodo = false});
 
   @override
   _TodoEditorDialogState createState() => _TodoEditorDialogState(todo);
@@ -35,6 +35,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(widget.isNewTodo ? 'Создать задачу' : 'Редактировать задачу'),
       content: Form(
         key: _formKey,

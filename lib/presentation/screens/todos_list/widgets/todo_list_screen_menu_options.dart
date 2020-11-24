@@ -181,6 +181,7 @@ class TodoListScreenMenuOptions extends StatelessWidget {
   Future<void> _editBranch(BuildContext context) async {
     final editedBranch = await showDialog<Branch>(
       context: context,
+      barrierDismissible: false,
       child: BranchEditorDialog(branch),
     );
 

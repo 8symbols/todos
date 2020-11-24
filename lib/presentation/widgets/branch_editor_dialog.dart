@@ -18,7 +18,7 @@ class BranchEditorDialog extends StatefulWidget {
   /// Если установлен, то дает возможность выбрать тему.
   final bool isNewBranch;
 
-  BranchEditorDialog(this.branch, {this.isNewBranch = false});
+  const BranchEditorDialog(this.branch, {this.isNewBranch = false});
 
   @override
   _BranchEditorDialogState createState() => _BranchEditorDialogState(branch);
@@ -34,6 +34,7 @@ class _BranchEditorDialogState extends State<BranchEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(widget.isNewBranch ? 'Создать ветку' : 'Редактировать ветку'),
       content: Form(
         key: _formKey,

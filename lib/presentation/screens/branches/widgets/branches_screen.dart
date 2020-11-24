@@ -123,15 +123,17 @@ class _BranchesScreenState extends State<BranchesScreen> {
   Future<void> _addBranch(BuildContext context) async {
     context.read<DeletionModeCubit>().disableDeletionMode();
 
-    final branch = Branch('', BranchThemes.defaultBranchTheme);
-
-    final createdBranch = await showDialog<Branch>(
+    final newBranch = await showDialog<Branch>(
       context: context,
-      child: BranchEditorDialog(branch, isNewBranch: true),
+      barrierDismissible: false,
+      child: BranchEditorDialog(
+        Branch('', BranchThemes.defaultBranchTheme),
+        isNewBranch: true,
+      ),
     );
 
-    if (createdBranch != null) {
-      context.read<BranchesBloc>().add(BranchAddedEvent(createdBranch));
+    if (newBranch != null) {
+      context.read<BranchesBloc>().add(BranchAddedEvent(newBranch));
     }
   }
 

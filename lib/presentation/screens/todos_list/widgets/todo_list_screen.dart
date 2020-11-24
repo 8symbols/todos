@@ -127,14 +127,14 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   /// Создает диалог с созданием новой задачи.
   void _addTodo(BuildContext context) async {
-    final newTodo = Todo('');
-    final editedTodo = await showDialog<Todo>(
+    final newTodo = await showDialog<Todo>(
       context: context,
-      builder: (context) => TodoEditorDialog(newTodo, isNewTodo: true),
+      barrierDismissible: false,
+      builder: (context) => TodoEditorDialog(Todo(''), isNewTodo: true),
     );
 
-    if (editedTodo != null) {
-      context.read<TodoListBloc>().add(TodoAddedEvent(editedTodo));
+    if (newTodo != null) {
+      context.read<TodoListBloc>().add(TodoAddedEvent(newTodo));
     }
   }
 

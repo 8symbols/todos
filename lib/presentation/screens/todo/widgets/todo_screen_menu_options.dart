@@ -32,6 +32,7 @@ class TodoScreenMenuOptions extends StatelessWidget {
   void _editTodo(BuildContext context) async {
     final editedTodo = await showDialog<Todo>(
       context: context,
+      barrierDismissible: false,
       child: TodoEditorDialog(todo),
     );
 
