@@ -6,6 +6,7 @@ import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
+import 'package:todos/presentation/models/todo_data.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/screens/todos_list/widgets/todo_list.dart';
@@ -102,7 +103,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               body: BlocListener<TodoListBloc, TodoListState>(
                 listener: (context, state) {
                   if (state is TodoListTodoDeletedState) {
-                    _showUndoSnackBar(context, state.branchId, state.todo);
+                    _showUndoSnackBar(context, state.todoData);
                   }
                 },
                 child: todoListState is TodoListLoadingState
@@ -138,7 +139,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
     }
   }
 
-  void _showUndoSnackBar(BuildContext context, String branchId, Todo todo) {
+  void _showUndoSnackBar(BuildContext context, TodoData deletedTodoData) {
     if (ModalRoute.of(context).isCurrent) {
       _hideBottomSheet(context);
     }
@@ -147,12 +148,12 @@ class _TodoListScreenState extends State<TodoListScreen> {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text('Задача "${todo.title}" удалена.'),
+          content: Text('Задача "${deletedTodoData.todo.title}" удалена.'),
           action: SnackBarAction(
             label: "Отменить",
             onPressed: () => context
                 .read<TodoListBloc>()
-                .add(TodoRestoredEvent(branchId, todo)),
+                .add(TodoRestoredEvent(deletedTodoData)),
           ),
         ),
       );

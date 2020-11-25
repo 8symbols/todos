@@ -10,6 +10,7 @@ import 'package:todos/domain/models/todo_list_view_settings.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_notifications_service.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
+import 'package:todos/presentation/models/todo_data.dart';
 import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
 
 part 'todo_list_event.dart';
@@ -86,22 +87,27 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodoDeletedEventToState(
     TodoDeletedEvent event,
   ) async* {
+    final todoId = event.todo.id;
+
     yield TodoListTodoDeletingState(
       state.todosStatistics
-        ..removeWhere(
-          (todoStatistics) => todoStatistics.todo.id == event.todo.id,
-        ),
+        ..removeWhere((todoStatistics) => todoStatistics.todo.id == todoId),
       state.viewSettings,
     );
 
-    final todoBranchId =
-        branchId ?? (await _todosInteractor.getBranchOfTodo(event.todo.id)).id;
-    await _todosInteractor.deleteTodo(event.todo.id);
+    await _todosInteractor.makeTodoRestorable(todoId);
+    final deletedTodoData = TodoData(
+      branchId: branchId ?? (await _todosInteractor.getBranchOfTodo(todoId)).id,
+      todo: await _todosInteractor.getTodo(todoId),
+      todoSteps: await _todosInteractor.getStepsOfTodo(todoId),
+      todoImages: await _todosInteractor.getImagesOfTodo(todoId),
+    );
+
+    await _todosInteractor.deleteTodo(todoId, isRestorable: true);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
 
     yield TodoListTodoDeletedState(
-      todoBranchId,
-      event.todo,
+      deletedTodoData,
       await _mapTodosToView(),
       state.viewSettings,
     );
@@ -129,7 +135,15 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   Stream<TodoListState> _mapTodoRestoredEventToState(
     TodoRestoredEvent event,
   ) async* {
-    await _todosInteractor.addTodo(event.branchId, event.todo);
+    final todoData = event.todoData;
+    await _todosInteractor.addTodo(todoData.branchId, todoData.todo);
+    for (final step in todoData.todoSteps) {
+      await _todosInteractor.addTodoStep(todoData.todo.id, step);
+    }
+    for (final image in todoData.todoImages) {
+      await _todosInteractor.addTodoImage(todoData.todo.id, image);
+    }
+
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
     yield TodoListTodoAddedState(await _mapTodosToView(), state.viewSettings);
   }

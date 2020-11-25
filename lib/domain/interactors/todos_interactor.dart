@@ -84,13 +84,13 @@ class TodosInteractor {
   /// [todo.mainImagePath] путь на копию.
   Future<void> editTodo(Todo todo) async {
     final oldTodo = await getTodo(todo.id);
-    await _handleNotifications(oldTodo, todo);
-    todo = await _handleMainImages(oldTodo, todo);
+    await _handleNotificationChange(oldTodo, todo);
+    todo = await _handleMainImageChange(oldTodo, todo);
     return repository.editTodo(todo);
   }
 
   /// Удаляет предыдущее уведомление и устанавливает новое, если необходимо.
-  Future<void> _handleNotifications(Todo oldTodo, Todo newTodo) async {
+  Future<void> _handleNotificationChange(Todo oldTodo, Todo newTodo) async {
     if (oldTodo.notificationTime == null && newTodo.notificationTime != null) {
       await notificationsService.scheduleNotification(newTodo);
     } else if (oldTodo.notificationTime != null &&
@@ -110,7 +110,7 @@ class TodosInteractor {
   ///
   /// Возвращает [newTodo]. Если копирует новое изображение, то устанавливает
   /// в [newTodo.mainImagePath] путь к нему.
-  Future<Todo> _handleMainImages(Todo oldTodo, Todo newTodo) async {
+  Future<Todo> _handleMainImageChange(Todo oldTodo, Todo newTodo) async {
     if (oldTodo.mainImagePath != newTodo.mainImagePath) {
       if (oldTodo.mainImagePath != null) {
         await FileSystemUtils.deleteFile(oldTodo.mainImagePath);
@@ -124,20 +124,47 @@ class TodosInteractor {
     return newTodo;
   }
 
+  /// Подготавливает задачу к возможной отмене удаления.
+  ///
+  /// Переносит все связанные с задачей изображения в кеш.
+  Future<void> makeTodoRestorable(String todoId) async {
+    final todo = await getTodo(todoId);
+
+    if (todo.mainImagePath != null) {
+      final newPath = await FileSystemUtils.moveToCache(todo.mainImagePath);
+      await repository.editTodo(
+        todo.copyWith(mainImagePath: Nullable(newPath)),
+      );
+    }
+
+    final imagesPaths = await getImagesOfTodo(todoId);
+    final newImagePaths = await Future.wait(
+      imagesPaths.map((path) async => await FileSystemUtils.moveToCache(path)),
+    );
+    for (final oldImagePath in imagesPaths) {
+      await repository.deleteTodoImage(todoId, oldImagePath);
+    }
+    for (final newImagePath in newImagePaths) {
+      await repository.addTodoImage(todoId, newImagePath);
+    }
+  }
+
   /// Удаляет задачу с идентификатором [todoId].
   ///
   /// Связанные с ней пункты, уведомления и изображения также удаляются.
-  Future<void> deleteTodo(String todoId) async {
+  /// Если установлен [isRestorable], не удаляет файлы изображений. В этом
+  /// случае необходимо предварительно вызвать [makeTodoRestorable].
+  Future<void> deleteTodo(String todoId, {bool isRestorable = false}) async {
     final todo = await getTodo(todoId);
     if (todo.notificationTime != null) {
       await notificationsService.cancelNotification(todo);
     }
-    if (todo.mainImagePath != null) {
+    if (todo.mainImagePath != null && !isRestorable) {
       await FileSystemUtils.deleteFile(todo.mainImagePath);
     }
     final imagesPaths = await getImagesOfTodo(todoId);
     for (final imagePath in imagesPaths) {
-      await deleteTodoImage(todoId, imagePath);
+      await deleteTodoImage(todoId, imagePath, isRestorable: isRestorable);
     }
     return repository.deleteTodo(todoId);
   }
@@ -189,8 +216,17 @@ class TodosInteractor {
 
   /// Удаляет путь к изображению [imagePath] из задачи
   /// c идентификатором [todoId], а также само изображение.
-  Future<void> deleteTodoImage(String todoId, String imagePath) async {
-    await FileSystemUtils.deleteFile(imagePath);
+  ///
+  /// Если установлен [isRestorable], не удаляет файл изображения. В этом
+  /// случае необходимо предварительно вызвать [makeTodoRestorable].
+  Future<void> deleteTodoImage(
+    String todoId,
+    String imagePath, {
+    bool isRestorable = false,
+  }) async {
+    if (!isRestorable) {
+      await FileSystemUtils.deleteFile(imagePath);
+    }
     return repository.deleteTodoImage(todoId, imagePath);
   }
 

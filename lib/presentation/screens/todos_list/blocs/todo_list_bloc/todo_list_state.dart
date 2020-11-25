@@ -40,15 +40,11 @@ class TodoListTodoDeletingState extends TodoListState {
 
 /// Состояние после удаления задачи.
 class TodoListTodoDeletedState extends TodoListState {
-  /// Ветка удаленной задачи.
-  final String branchId;
-
-  /// Удаленная задача.
-  final Todo todo;
+  /// Информация о удаленной задаче.
+  final TodoData todoData;
 
   const TodoListTodoDeletedState(
-    this.branchId,
-    this.todo,
+    this.todoData,
     List<TodoStatistics> todosStatistics,
     TodosViewSettings viewSettings,
   ) : super(todosStatistics, viewSettings);
