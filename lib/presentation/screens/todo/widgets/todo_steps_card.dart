@@ -8,6 +8,7 @@ import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_steps_bloc/todo_steps_bloc.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_step_item.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
+import 'package:todos/presentation/widgets/focused_text_field.dart';
 
 /// Карта с пунктами задачи.
 ///
@@ -85,14 +86,14 @@ class TodoStepsCard extends StatelessWidget {
   Widget _buildNoteTextField(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
+      child: FocusedTextField(
         decoration: const InputDecoration.collapsed(
           hintText: 'Заметки по задаче...',
         ),
         textInputAction: TextInputAction.done,
         maxLines: null,
         initialValue: _todo.note,
-        onFieldSubmitted: (value) => _editTodoNote(context, value),
+        onSubmitted: (value) => _editTodoNote(context, value),
       ),
     );
   }
@@ -118,8 +119,8 @@ class TodoStepsCard extends StatelessWidget {
   }
 
   void _addStep(BuildContext context) {
-    final newStep = TodoStep('');
-    context.read<TodoStepsBloc>().add(StepAddedEvent(newStep));
+    FocusScope.of(context).focusedChild?.unfocus();
+    context.read<TodoStepsBloc>().add(StepAddedEvent(TodoStep('')));
   }
 
   void _editTodoNote(BuildContext context, String value) {

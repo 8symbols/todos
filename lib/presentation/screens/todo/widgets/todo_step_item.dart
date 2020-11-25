@@ -1,6 +1,7 @@
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo_step.dart';
+import 'package:todos/presentation/widgets/focused_text_field.dart';
 
 typedef StepEditedCallback = void Function(TodoStep editedStep);
 
@@ -37,7 +38,7 @@ class TodoStepItem extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 6.0),
-            child: TextFormField(
+            child: FocusedTextField(
               decoration: const InputDecoration.collapsed(
                 hintText: 'Введите шаг',
               ),
@@ -47,7 +48,7 @@ class TodoStepItem extends StatelessWidget {
               textInputAction: TextInputAction.done,
               maxLines: null,
               initialValue: step.title,
-              onFieldSubmitted: (value) => onEdit(step.copyWith(title: value)),
+              onSubmitted: (value) => onEdit(step.copyWith(title: value)),
               autofocus: autofocus,
             ),
           ),
