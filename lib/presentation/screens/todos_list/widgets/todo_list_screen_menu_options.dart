@@ -28,13 +28,13 @@ class TodoListScreenMenuOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hideCompletedTodosOption = PopupMenuItemData(
-      Icons.visibility_off_outlined,
+      Icons.check_circle,
       'Скрыть выполненные',
       onSelected: _hideCompletedTodos,
     );
 
     final showCompletedTodosOption = PopupMenuItemData(
-      Icons.visibility_outlined,
+      Icons.check_circle_outline,
       'Показать выполненные',
       onSelected: _showCompletedTodos,
     );

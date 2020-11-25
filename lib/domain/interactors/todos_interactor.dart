@@ -262,10 +262,20 @@ class TodosInteractor {
   ///
   /// Если идентификатор не указан, удаляет завершенные задачи из всех веток.
   Future<void> deleteCompletedTodos({String branchId}) async {
-    List<Todo> todos = await getTodos(branchId: branchId);
+    final todos = await getTodos(branchId: branchId);
     for (final todo in todos) {
       if (todo.wasCompleted) {
         await deleteTodo(todo.id);
+      }
+    }
+  }
+
+  /// Удаляет пункты задачи с идентификатором [todoId].
+  Future<void> deleteCompletedStepsOfTodo(String todoId) async {
+    final steps = await getStepsOfTodo(todoId);
+    for (final step in steps) {
+      if (step.wasCompleted) {
+        await deleteTodoStep(step.id);
       }
     }
   }

@@ -38,6 +38,8 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
       yield* _mapStepsLoadingRequestedEventToState(event);
     } else if (event is StepDeletedEvent) {
       yield* _mapStepDeletedEventToState(event);
+    } else if (event is CompletedStepsDeletedEvent) {
+      yield* _mapCompletedStepsDeletedEventToState(event);
     } else if (event is StepEditedEvent) {
       yield* _mapStepEditedEventToState(event);
     } else if (event is StepAddedEvent) {
@@ -53,7 +55,7 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
     yield StepsContentState(steps);
   }
 
-  /// Удаляет пункт задачи из состояния.
+  /// Удаляет пункт задачи.
   Stream<TodoStepsState> _mapStepDeletedEventToState(
     StepDeletedEvent event,
   ) async* {
@@ -62,7 +64,16 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
     yield StepDeletedState(steps);
   }
 
-  /// Изменяет пункт задачи в состояние.
+  /// Удаляет завершенные пункты задачи.
+  Stream<TodoStepsState> _mapCompletedStepsDeletedEventToState(
+    CompletedStepsDeletedEvent event,
+  ) async* {
+    await _todosInteractor.deleteCompletedStepsOfTodo(_todo.id);
+    final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
+    yield StepsDeletedState(steps);
+  }
+
+  /// Изменяет пункт задачи.
   Stream<TodoStepsState> _mapStepEditedEventToState(
     StepEditedEvent event,
   ) async* {
@@ -71,7 +82,7 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
     yield StepEditedState(steps);
   }
 
-  /// Добавляет пункт задачи в состояние.
+  /// Добавляет пункт задачи.
   Stream<TodoStepsState> _mapStepAddedEventToState(
     StepAddedEvent event,
   ) async* {

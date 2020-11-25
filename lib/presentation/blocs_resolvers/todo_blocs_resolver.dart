@@ -70,6 +70,7 @@ class TodoBlocsResolver {
     const meaningfulToTodoListBlocStates = <Type>[
       StepAddedState,
       StepDeletedState,
+      StepsDeletedState,
       StepEditedState,
     ];
 
