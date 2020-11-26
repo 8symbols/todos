@@ -6,7 +6,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
-import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
+import 'package:todos/presentation/blocs_resolvers/todos_blocs_resolver.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_images_bloc/todo_images_bloc.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_steps_bloc/todo_steps_bloc.dart';
@@ -40,6 +40,8 @@ class _TodoScreenState extends State<TodoScreen> {
 
   StreamSubscription<bool> _keyboardSubscription;
 
+  TodosBlocsResolver _todosBlocsResolver;
+
   @override
   void initState() {
     super.initState();
@@ -58,16 +60,22 @@ class _TodoScreenState extends State<TodoScreen> {
       }
     });
 
-    final resolver = context.read<TodoBlocsResolver>();
-    _todoBloc.listen((state) => resolver.resolveTodoStateChange(state));
-    _stepsBloc.listen((state) => resolver.resolveTodoStepsStateChange(state));
+    _todosBlocsResolver = context.read<TodosBlocsResolver>();
+
+    _todosBlocsResolver
+      ..registerObservable(_todoBloc, const [])
+      ..registerObservable(_stepsBloc, const [StepsLoadingState]);
   }
 
   @override
   void dispose() {
     _keyboardSubscription.cancel();
-    _stepsBloc.close();
-    _todoBloc.close();
+    _stepsBloc
+        .close()
+        .then((_) => _todosBlocsResolver.unregisterObservable(_stepsBloc));
+    _todoBloc
+        .close()
+        .then((_) => _todosBlocsResolver.unregisterObservable(_todoBloc));
     _imagesBloc.close();
     _deletionModeCubit.close();
     super.dispose();

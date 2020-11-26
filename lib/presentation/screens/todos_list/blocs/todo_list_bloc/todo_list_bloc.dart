@@ -80,7 +80,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     TodoListOutdatedEvent event,
   ) async* {
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
+    yield TodoListUpdatedState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Удаляет задачу.
@@ -119,7 +119,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     await _todosInteractor.editTodo(event.todo);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListTodoEditedState(await _mapTodosToView(), state.viewSettings);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Добавляет задачу.
@@ -128,7 +128,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     await _todosInteractor.addTodo(branchId, event.todo);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListTodoAddedState(await _mapTodosToView(), state.viewSettings);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Возвращает удаленную задачу.
@@ -145,7 +145,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     }
 
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListTodoAddedState(await _mapTodosToView(), state.viewSettings);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Удаляет выполненные задачи.
@@ -154,8 +154,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   ) async* {
     await _todosInteractor.deleteCompletedTodos(branchId: branchId);
     _allTodos = await _todosInteractor.getTodos(branchId: branchId);
-    yield TodoListTodosDeletedState(
-        await _mapTodosToView(), state.viewSettings);
+    yield TodoListContentState(await _mapTodosToView(), state.viewSettings);
   }
 
   /// Сохраняет и применяет новые настройки отображения.

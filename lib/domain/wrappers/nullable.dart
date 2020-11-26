@@ -1,9 +1,9 @@
-/// Обертка, которая позволяет устанавливать поля в null в методах copyWith.
+/// Обертка, которая позволяет отправлять в опциональные параметры [null].
 class Nullable<T> {
   /// Значение поля.
   ///
   /// Может быть равным null.
   final T value;
 
-  Nullable(this.value);
+  const Nullable(this.value);
 }

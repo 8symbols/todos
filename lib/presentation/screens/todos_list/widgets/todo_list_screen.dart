@@ -5,7 +5,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
-import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
+import 'package:todos/presentation/blocs_resolvers/todos_blocs_resolver.dart';
 import 'package:todos/presentation/models/todo_data.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/branch_cubit/branch_cubit.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
@@ -35,7 +35,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
 
   BranchCubit _branchCubit;
 
-  TodoBlocsResolver _todosBlocsResolver;
+  TodosBlocsResolver _todosBlocsResolver;
 
   @override
   void initState() {
@@ -55,22 +55,29 @@ class _TodoListScreenState extends State<TodoListScreen> {
           .editBranch(widget.branch.copyWith(lastUsageTime: DateTime.now()));
     }
 
-    _todosBlocsResolver = context.read<TodoBlocsResolver>();
-    _todosBlocsResolver.todoListBlocState.bloc = _todoListBloc;
-    _todoListBloc.listen(
-      (state) => _todosBlocsResolver.resolveTodoListStateChange(state),
-    );
-    _branchCubit.listen(
-      (state) => _todosBlocsResolver.resolveBranchStateChange(state),
-    );
+    _todosBlocsResolver = context.read<TodosBlocsResolver>();
+
+    _todosBlocsResolver
+      ..register(
+        _todoListBloc,
+        const [TodoListUpdatedState, TodoListLoadingState],
+        onUpdate: (bloc) => bloc.add(const TodoListOutdatedEvent()),
+      )
+      ..registerObservable(_branchCubit, const []);
   }
 
   @override
   void dispose() {
-    _todosBlocsResolver.todoListBlocState.bloc = null;
+    _todosBlocsResolver
+      ..unregisterObserver(_todoListBloc)
+      ..unregisterObserver(_branchCubit);
 
-    _todoListBloc.close();
-    _branchCubit.close();
+    _todoListBloc
+        .close()
+        .then((_) => _todosBlocsResolver.unregisterObservable(_todoListBloc));
+    _branchCubit
+        .close()
+        .then((_) => _todosBlocsResolver.unregisterObservable(_branchCubit));
     super.dispose();
   }
 
@@ -81,25 +88,23 @@ class _TodoListScreenState extends State<TodoListScreen> {
         BlocProvider<TodoListBloc>.value(value: _todoListBloc),
         BlocProvider<BranchCubit>.value(value: _branchCubit),
       ],
-      child: BlocConsumer<BranchCubit, BranchState>(
-        listenWhen: (previous, current) =>
-            previous.branch?.theme != current.branch?.theme,
-        listener: (context, state) => context
+      child: BlocConsumer<BranchCubit, Branch>(
+        listenWhen: (previous, current) => previous?.theme != current?.theme,
+        listener: (context, branch) => context
             .read<ThemeCubit>()
-            .setTheme(BranchThemeUtils.createThemeData(state.branch.theme)),
-        builder: (context, branchState) {
+            .setTheme(BranchThemeUtils.createThemeData(branch.theme)),
+        builder: (context, branch) {
           return BlocBuilder<TodoListBloc, TodoListState>(
             builder: (context, todoListState) => Scaffold(
               appBar: AppBar(
                 title: Marquee(
-                  child: Text(branchState.branch?.title ?? 'Все задачи'),
+                  child: Text(branch?.title ?? 'Все задачи'),
                 ),
                 actions: [
-                  TodoListScreenMenuOptions(branchState.branch, todoListState),
+                  TodoListScreenMenuOptions(branch, todoListState),
                 ],
               ),
-              floatingActionButton:
-                  _buildFab(context, todoListState, branchState.branch),
+              floatingActionButton: _buildFab(context, todoListState, branch),
               body: BlocListener<TodoListBloc, TodoListState>(
                 listener: (context, state) {
                   if (state is TodoListTodoDeletedState) {

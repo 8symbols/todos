@@ -15,11 +15,6 @@ class TodoContentState extends TodoState {
   const TodoContentState(Todo todo) : super(todo);
 }
 
-/// Состояние после изменения задачи.
-class TodoEditedState extends TodoState {
-  const TodoEditedState(Todo todo) : super(todo);
-}
-
 /// Состояние после удаления задачи.
 class TodoDeletedState extends TodoState {
   const TodoDeletedState() : super(null);

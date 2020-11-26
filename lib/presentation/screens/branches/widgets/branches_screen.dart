@@ -4,7 +4,7 @@ import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
 import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
-import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
+import 'package:todos/presentation/blocs_resolvers/todos_blocs_resolver.dart';
 import 'package:todos/presentation/screens/branches/blocs/branches_bloc/branches_bloc.dart';
 import 'package:todos/presentation/screens/branches/widgets/all_todos_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +29,7 @@ class _BranchesScreenState extends State<BranchesScreen> {
 
   DeletionModeCubit _deletionModeCubit;
 
-  TodoBlocsResolver _todosBlocsResolver;
+  TodosBlocsResolver _todosBlocsResolver;
 
   @override
   void initState() {
@@ -41,13 +41,16 @@ class _BranchesScreenState extends State<BranchesScreen> {
       ..add(const InitializationRequestedEvent());
     _deletionModeCubit = DeletionModeCubit();
 
-    _todosBlocsResolver = context.read<TodoBlocsResolver>();
-    _todosBlocsResolver.branchesBlocState.bloc = _branchesBloc;
+    _todosBlocsResolver = context.read<TodosBlocsResolver>();
+    _todosBlocsResolver.registerObserver(
+      _branchesBloc,
+      onUpdate: (bloc) => bloc.add(const BranchesOutdatedEvent()),
+    );
   }
 
   @override
   void dispose() {
-    _todosBlocsResolver.branchesBlocState.bloc = null;
+    _todosBlocsResolver.unregister(_branchesBloc);
 
     _branchesBloc.close();
     _deletionModeCubit.close();
@@ -170,10 +173,10 @@ class _BranchesScreenState extends State<BranchesScreen> {
           .setTheme(BranchThemeUtils.createThemeData(branch.theme));
     }
 
-    _todosBlocsResolver.branchesBlocState.isInstantResolving = false;
+    _todosBlocsResolver.pauseObserver(_branchesBloc);
     await Navigator.of(context)
         .pushNamed(TodoListScreen.routeName, arguments: branch);
-    _todosBlocsResolver.branchesBlocState.isInstantResolving = true;
+    _todosBlocsResolver.continueObserver(_branchesBloc);
 
     if (branch != null) {
       context.read<ThemeCubit>().setTheme(currentTheme);

@@ -28,6 +28,14 @@ class TodoListContentState extends TodoListState {
   ) : super(todosStatistics, viewSettings);
 }
 
+/// Состояние после обновления списка задач.
+class TodoListUpdatedState extends TodoListState {
+  const TodoListUpdatedState(
+    List<TodoStatistics> todosStatistics,
+    TodosViewSettings viewSettings,
+  ) : super(todosStatistics, viewSettings);
+}
+
 /// Состояние во время удаления задачи.
 ///
 /// Удаляемая задача не содержится в [TodoListState.todosStatistics].
@@ -45,30 +53,6 @@ class TodoListTodoDeletedState extends TodoListState {
 
   const TodoListTodoDeletedState(
     this.todoData,
-    List<TodoStatistics> todosStatistics,
-    TodosViewSettings viewSettings,
-  ) : super(todosStatistics, viewSettings);
-}
-
-/// Состояние после удаления нескольких задач.
-class TodoListTodosDeletedState extends TodoListState {
-  const TodoListTodosDeletedState(
-    List<TodoStatistics> todosStatistics,
-    TodosViewSettings viewSettings,
-  ) : super(todosStatistics, viewSettings);
-}
-
-/// Состояние после добавления задачи.
-class TodoListTodoAddedState extends TodoListState {
-  const TodoListTodoAddedState(
-    List<TodoStatistics> todosStatistics,
-    TodosViewSettings viewSettings,
-  ) : super(todosStatistics, viewSettings);
-}
-
-/// Состояние после изменения задачи.
-class TodoListTodoEditedState extends TodoListState {
-  const TodoListTodoEditedState(
     List<TodoStatistics> todosStatistics,
     TodosViewSettings viewSettings,
   ) : super(todosStatistics, viewSettings);

@@ -1,46 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
+import 'package:todos/presentation/blocs_resolvers/base_blocs_resolver.dart';
 
-typedef OnBlocUpdate<ResolvingBloc> = void Function(ResolvingBloc bloc);
+typedef OnBlocUpdate<T extends Cubit> = void Function(T bloc);
 
 /// Состояние блока.
 ///
-/// Используется в [TodoBlocsResolver].
-class ResolvingBlocState<ResolvingBloc extends Cubit> {
+/// Используется в [BaseBlocsResolver].
+class ResolvingBlocState<T extends Cubit> {
   /// Блок.
-  ///
-  /// Может быть равным [null].
-  ResolvingBloc _bloc;
+  final T bloc;
+
+  /// Вызывается при обновления состояния блока.
+  final OnBlocUpdate<T> _onUpdate;
 
   /// Устарело ли состояние блока.
-  bool _isOutdated;
+  bool _isOutdated = false;
 
   /// Следует ли обновлять состояние блока сразу после получения
   /// информации о том, что оно устарело.
-  bool _isInstantResolving;
+  bool _isInstantResolving = true;
 
-  /// Вызывается при обновления состояния блока.
-  ///
-  /// Не вызывается, если [_bloc] равен [null].
-  final OnBlocUpdate<ResolvingBloc> _onUpdate;
-
-  ResolvingBlocState({
-    ResolvingBloc bloc,
-    @required OnBlocUpdate<ResolvingBloc> onUpdate,
-  })  : _bloc = bloc,
-        _onUpdate = onUpdate,
-        _isOutdated = false,
-        _isInstantResolving = true;
-
-  /// Устанавливает [_bloc] и сбрасывает [_isOutdated].
-  set bloc(ResolvingBloc bloc) {
-    _bloc = bloc;
-    _isOutdated = false;
-  }
-
-  /// Устанавливает [_isOutdated].
-  set isOutdated(bool isOutdated) => _isOutdated = isOutdated;
+  ResolvingBlocState(
+    this.bloc, {
+    @required OnBlocUpdate<T> onUpdate,
+  }) : _onUpdate = onUpdate;
 
   /// Устанавливает [_isInstantResolving].
   ///
@@ -49,7 +33,7 @@ class ResolvingBlocState<ResolvingBloc extends Cubit> {
   set isInstantResolving(bool isInstantResolving) {
     _isInstantResolving = isInstantResolving;
     if (_isInstantResolving && _isOutdated) {
-      updateBloc();
+      updateState();
     }
   }
 
@@ -57,9 +41,9 @@ class ResolvingBlocState<ResolvingBloc extends Cubit> {
   ///
   /// Возвращает [true], если блок был обновлен.
   /// Возвращает [false], если не установлен [_isInstantResolving].
-  bool updateBloc() {
-    if (_isInstantResolving && _bloc != null) {
-      _onUpdate(_bloc);
+  bool updateState() {
+    if (_isInstantResolving) {
+      _onUpdate(bloc);
     }
     _isOutdated = !_isInstantResolving;
     return _isInstantResolving;

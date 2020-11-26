@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/presentation/blocs_resolvers/todo_blocs_resolver.dart';
+import 'package:todos/presentation/blocs_resolvers/todos_blocs_resolver.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_screen.dart';
 import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
 import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
@@ -78,11 +78,11 @@ class TodoList extends StatelessWidget {
   }
 
   void _openTodoScreen(BuildContext context, Todo todo) async {
-    final resolver = context.read<TodoBlocsResolver>();
+    final resolver = context.read<TodosBlocsResolver>();
 
-    resolver.todoListBlocState.isInstantResolving = false;
+    resolver.pauseObserver(context.read<TodoListBloc>());
     await Navigator.of(context)
         .pushNamed(TodoScreen.routeName, arguments: todo);
-    resolver.todoListBlocState.isInstantResolving = true;
+    resolver.continueObserver(context.read<TodoListBloc>());
   }
 }

@@ -163,13 +163,13 @@ class TodoListScreenMenuOptions extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12.0),
-            BlocBuilder<BranchCubit, BranchState>(
-              builder: (context, state) => BranchThemeSelector(
+            BlocBuilder<BranchCubit, Branch>(
+              builder: (context, branch) => BranchThemeSelector(
                 BranchThemes.branchThemes,
-                state.branch.theme,
+                branch.theme,
                 onSelect: (selectedTheme) => context
                     .read<BranchCubit>()
-                    .editBranch(state.branch.copyWith(theme: selectedTheme)),
+                    .editBranch(branch.copyWith(theme: selectedTheme)),
               ),
             )
           ],

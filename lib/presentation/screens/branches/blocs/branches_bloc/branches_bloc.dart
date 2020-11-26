@@ -91,7 +91,7 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     _allBranches = await _todosInteractor.getBranches();
     final branchesStatistics = await _mapBranchesToView();
 
-    yield BranchAddedState(
+    yield BranchesContentState(
       _getAllTodosStatistics(branchesStatistics),
       branchesStatistics,
       state.viewSettings,
@@ -106,7 +106,7 @@ class BranchesBloc extends Bloc<BranchesEvent, BranchesState> {
     _allBranches = await _todosInteractor.getBranches();
     final branchesStatistics = await _mapBranchesToView();
 
-    yield BranchDeletedState(
+    yield BranchesContentState(
       _getAllTodosStatistics(branchesStatistics),
       branchesStatistics,
       state.viewSettings,

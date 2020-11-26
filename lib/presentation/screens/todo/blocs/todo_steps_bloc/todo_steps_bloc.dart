@@ -61,7 +61,7 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   ) async* {
     await _todosInteractor.deleteTodoStep(event.stepId);
     final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
-    yield StepDeletedState(steps);
+    yield StepsContentState(steps);
   }
 
   /// Удаляет завершенные пункты задачи.
@@ -70,7 +70,7 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   ) async* {
     await _todosInteractor.deleteCompletedStepsOfTodo(_todo.id);
     final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
-    yield StepsDeletedState(steps);
+    yield StepsContentState(steps);
   }
 
   /// Изменяет пункт задачи.
@@ -79,7 +79,7 @@ class TodoStepsBloc extends Bloc<TodoStepsEvent, TodoStepsState> {
   ) async* {
     await _todosInteractor.editTodoStep(event.step);
     final steps = await _todosInteractor.getStepsOfTodo(_todo.id);
-    yield StepEditedState(steps);
+    yield StepsContentState(steps);
   }
 
   /// Добавляет пункт задачи.
