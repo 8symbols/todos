@@ -19,6 +19,10 @@ class TodoImagesCard extends StatelessWidget {
     return BlocConsumer<TodoImagesBloc, TodoImagesState>(
       listenWhen: (previous, current) => current is! TodoImagesLoadingState,
       listener: (context, state) {
+        if (state is FailedToAddImageState) {
+          _showFailedToAddImageSnackBar(context);
+        }
+
         final isVibrationMode = context.read<DeletionModeCubit>().state;
         if (isVibrationMode && state.imagesPaths.isEmpty) {
           context.read<DeletionModeCubit>().disableDeletionMode();
@@ -130,5 +134,15 @@ class TodoImagesCard extends StatelessWidget {
     if (wasDeletionConfirmed == true) {
       context.read<TodoImagesBloc>().add(ImageDeletedEvent(path));
     }
+  }
+
+  void _showFailedToAddImageSnackBar(BuildContext context) {
+    Scaffold.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text('Ошибка при добавлении изображения.'),
+        ),
+      );
   }
 }
