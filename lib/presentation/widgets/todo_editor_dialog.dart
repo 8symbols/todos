@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:todos/domain/models/branch_theme.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/wrappers/nullable.dart';
-import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:todos/presentation/widgets/select_datetime_button.dart';
 
@@ -14,9 +12,6 @@ class TodoEditorDialog extends StatefulWidget {
   /// Задача.
   final Todo todo;
 
-  /// Тема ветки.
-  final BranchTheme branchTheme;
-
   /// Флаг, сигнализирующий о том, создается сейчас задача или редактируется.
   ///
   /// Если установлен, то дает возможность отредактировать название,
@@ -24,7 +19,7 @@ class TodoEditorDialog extends StatefulWidget {
   /// возможность отредактировать название и фотографию темы.
   final bool isNewTodo;
 
-  TodoEditorDialog(this.todo, this.branchTheme, {this.isNewTodo = false});
+  const TodoEditorDialog(this.todo, {this.isNewTodo = false});
 
   @override
   _TodoEditorDialogState createState() => _TodoEditorDialogState(todo);
@@ -40,6 +35,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(widget.isNewTodo ? 'Создать задачу' : 'Редактировать задачу'),
       content: Form(
         key: _formKey,
@@ -50,7 +46,10 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
             children: [
               _buildTitleTextField(context),
               if (widget.isNewTodo) _buildTimeButtons(context),
-              if (!widget.isNewTodo) _buildSelectPhotoButton(context),
+              if (!widget.isNewTodo) ...[
+                _buildIsFavoriteButton(context),
+                _buildSelectPhotoButton(context),
+              ],
             ],
           ),
         ),
@@ -81,10 +80,11 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
       maxLength: TodoEditorDialog.maxTitleLength,
       maxLengthEnforced: false,
       keyboardType: TextInputType.text,
-      onChanged: (value) => _todo = _todo.copyWith(title: value),
+      onChanged: (value) => _todo = _todo.copyWith(title: value.trim()),
       textInputAction: TextInputAction.done,
       maxLines: null,
       validator: (value) {
+        value = value.trim();
         if (value.isEmpty) {
           return 'Название не может быть пустым';
         }
@@ -104,7 +104,6 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
         SelectDateTimeButton(
           const Icon(Icons.notifications_active_outlined),
           'Напомнить',
-          color: BranchThemes.defaultBranchTheme.secondaryColor,
           dateTime: _todo.notificationTime,
           onSelected: (dateTime) => setState(() {
             _todo = _todo.copyWith(notificationTime: Nullable(dateTime));
@@ -113,8 +112,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
         const SizedBox(height: 4.0),
         SelectDateTimeButton(
           const Icon(Icons.event),
-          'Добавить дату выполнения',
-          color: BranchThemes.defaultBranchTheme.secondaryColor,
+          'Дата выполнения',
           dateTime: _todo.deadlineTime,
           onSelected: (dateTime) => setState(() {
             _todo = _todo.copyWith(deadlineTime: Nullable(dateTime));
@@ -124,19 +122,32 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
     );
   }
 
+  Widget _buildIsFavoriteButton(BuildContext context) {
+    return TextButton.icon(
+      icon: Icon(
+        _todo.isFavorite ? Icons.star : Icons.star_border,
+        color: Colors.orange,
+      ),
+      label: const Text('Избранное'),
+      onPressed: () => setState(() {
+        _todo = _todo.copyWith(isFavorite: !_todo.isFavorite);
+      }),
+    );
+  }
+
   Widget _buildSelectPhotoButton(BuildContext context) {
-    return _todo.themeImagePath == null
+    return _todo.mainImagePath == null
         ? TextButton.icon(
             icon: const Icon(Icons.add),
             label: const Text('Добавить главное фото'),
             onPressed: () async {
               final imagePath = await showDialog<String>(
                 context: context,
-                child: ImageSelectorDialog(widget.branchTheme),
+                child: ImageSelectorDialog(),
               );
               if (imagePath != null) {
                 setState(() {
-                  _todo = _todo.copyWith(themeImagePath: Nullable(imagePath));
+                  _todo = _todo.copyWith(mainImagePath: Nullable(imagePath));
                 });
               }
             },
@@ -145,7 +156,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
             icon: const Icon(Icons.close),
             label: const Text('Удалить главное фото'),
             onPressed: () => setState(() {
-              _todo = _todo.copyWith(themeImagePath: Nullable(null));
+              _todo = _todo.copyWith(mainImagePath: Nullable(null));
             }),
           );
   }

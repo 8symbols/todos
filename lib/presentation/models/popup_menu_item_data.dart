@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-typedef void OnOptionSelectedCallback(BuildContext context);
+typedef OnOptionSelectedCallback = void Function(BuildContext context);
 
 /// Данные для элемента выпадающего списка.
 class PopupMenuItemData {

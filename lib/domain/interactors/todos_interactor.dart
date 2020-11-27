@@ -1,4 +1,8 @@
+import 'package:todos/data/services/notifications_service.dart';
+import 'package:todos/domain/factories/branches_comparators_factory.dart';
 import 'package:todos/domain/factories/todos_comparators_factory.dart';
+import 'package:todos/domain/models/branches_sort_order.dart';
+import 'package:todos/domain/models/branches_view_settings.dart';
 import 'package:todos/domain/models/todo_list_view_settings.dart';
 import 'package:todos/domain/utils/filesystem_utils.dart';
 import 'package:todos/domain/models/branch.dart';
@@ -12,22 +16,25 @@ import 'package:todos/domain/wrappers/nullable.dart';
 /// Интерактор для взаимодействия с задачами.
 class TodosInteractor {
   /// Хранилище задач.
-  final ITodosRepository _repository;
+  final ITodosRepository repository;
 
   /// Сервис для работы с уведомлениями.
-  final INotificationsService _notificationsService;
+  final INotificationsService notificationsService;
 
-  TodosInteractor(this._repository, this._notificationsService);
+  const TodosInteractor(
+    this.repository, {
+    this.notificationsService = const NotificationsService(),
+  });
 
   /// Добавляет ветку задач [branch].
   Future<void> addBranch(Branch branch) async {
-    return _repository.addBranch(branch);
+    return repository.addBranch(branch);
   }
 
   /// Устанавливает ветке с идентификатором [branch.id] значения
   /// остальных полей [branch].
   Future<void> editBranch(Branch branch) async {
-    return _repository.editBranch(branch);
+    return repository.editBranch(branch);
   }
 
   /// Удаляет ветку с идентификатором [branchId].
@@ -38,33 +45,33 @@ class TodosInteractor {
     for (final todo in todos) {
       await deleteTodo(todo.id);
     }
-    return _repository.deleteBranch(branchId);
+    return repository.deleteBranch(branchId);
   }
 
   /// Получает ветку с идентификатором [branchId].
   Future<Branch> getBranch(String branchId) async {
-    return _repository.getBranch(branchId);
+    return repository.getBranch(branchId);
   }
 
   /// Получает все ветки.
   Future<List<Branch>> getBranches() async {
-    return _repository.getBranches();
+    return repository.getBranches();
   }
 
   /// Добавляет задачу [todo] в ветку c идентификатором [branchId].
   ///
   /// Устанавливает уведомление, если задано [todo.notificationTime].
-  /// Если задано [todo.themeImagePath], копирует картинку в локальную
-  /// директорию и устанавливает в [todo.themeImagePath] путь на копию.
+  /// Если задано [todo.mainImagePath], копирует картинку в локальную
+  /// директорию и устанавливает в [todo.mainImagePath] путь на копию.
   Future<void> addTodo(String branchId, Todo todo) async {
     if (todo.notificationTime != null) {
-      await _notificationsService.scheduleNotification(todo);
+      await notificationsService.scheduleNotification(todo);
     }
-    if (todo.themeImagePath != null) {
-      final newPath = await FileSystemUtils.copyToLocal(todo.themeImagePath);
-      todo = todo.copyWith(themeImagePath: Nullable(newPath));
+    if (todo.mainImagePath != null) {
+      final newPath = await FileSystemUtils.copyToLocal(todo.mainImagePath);
+      todo = todo.copyWith(mainImagePath: Nullable(newPath));
     }
-    return _repository.addTodo(branchId, todo);
+    return repository.addTodo(branchId, todo);
   }
 
   /// Устанавливает задаче с идентификатором [todo.id] значения
@@ -72,29 +79,29 @@ class TodosInteractor {
   ///
   /// В случае изменения [todo.notificationTime] удаляет предыдущее уведомление
   /// и устанавливает новое.
-  /// В случае изменения [todo.themeImagePath] удаляет предыдущее изображение,
+  /// В случае изменения [todo.mainImagePath] удаляет предыдущее изображение,
   /// копирует новое в локальную директорию и устанавливает в
-  /// [todo.themeImagePath] путь на копию.
+  /// [todo.mainImagePath] путь на копию.
   Future<void> editTodo(Todo todo) async {
     final oldTodo = await getTodo(todo.id);
-    await _handleNotifications(oldTodo, todo);
-    todo = await _handleThemeImages(oldTodo, todo);
-    return _repository.editTodo(todo);
+    await _handleNotificationChange(oldTodo, todo);
+    todo = await _handleMainImageChange(oldTodo, todo);
+    return repository.editTodo(todo);
   }
 
   /// Удаляет предыдущее уведомление и устанавливает новое, если необходимо.
-  Future<void> _handleNotifications(Todo oldTodo, Todo newTodo) async {
+  Future<void> _handleNotificationChange(Todo oldTodo, Todo newTodo) async {
     if (oldTodo.notificationTime == null && newTodo.notificationTime != null) {
-      await _notificationsService.scheduleNotification(newTodo);
+      await notificationsService.scheduleNotification(newTodo);
     } else if (oldTodo.notificationTime != null &&
         newTodo.notificationTime == null) {
-      await _notificationsService.cancelNotification(oldTodo);
+      await notificationsService.cancelNotification(oldTodo);
     } else if (oldTodo.notificationTime != null &&
         newTodo.notificationTime != null) {
       if (!oldTodo.notificationTime
           .isAtSameMomentAs(newTodo.notificationTime)) {
-        await _notificationsService.cancelNotification(oldTodo);
-        await _notificationsService.scheduleNotification(newTodo);
+        await notificationsService.cancelNotification(oldTodo);
+        await notificationsService.scheduleNotification(newTodo);
       }
     }
   }
@@ -102,111 +109,161 @@ class TodosInteractor {
   /// Удаляет предыдущее изображение и копирует новое, если необходимо.
   ///
   /// Возвращает [newTodo]. Если копирует новое изображение, то устанавливает
-  /// в [newTodo.themeImagePath] путь к нему.
-  Future<Todo> _handleThemeImages(Todo oldTodo, Todo newTodo) async {
-    if (oldTodo.themeImagePath != newTodo.themeImagePath) {
-      if (oldTodo.themeImagePath != null) {
-        await FileSystemUtils.deleteFile(oldTodo.themeImagePath);
+  /// в [newTodo.mainImagePath] путь к нему.
+  Future<Todo> _handleMainImageChange(Todo oldTodo, Todo newTodo) async {
+    if (oldTodo.mainImagePath != newTodo.mainImagePath) {
+      if (oldTodo.mainImagePath != null) {
+        await FileSystemUtils.deleteFile(oldTodo.mainImagePath);
       }
-      if (newTodo.themeImagePath != null) {
+      if (newTodo.mainImagePath != null) {
         final newPath =
-            await FileSystemUtils.copyToLocal(newTodo.themeImagePath);
-        newTodo = newTodo.copyWith(themeImagePath: Nullable(newPath));
+            await FileSystemUtils.copyToLocal(newTodo.mainImagePath);
+        newTodo = newTodo.copyWith(mainImagePath: Nullable(newPath));
       }
     }
     return newTodo;
   }
 
+  /// Подготавливает задачу к возможной отмене удаления.
+  ///
+  /// Переносит все связанные с задачей изображения в кеш.
+  Future<void> makeTodoRestorable(String todoId) async {
+    final todo = await getTodo(todoId);
+
+    if (todo.mainImagePath != null) {
+      final newPath = await FileSystemUtils.moveToCache(todo.mainImagePath);
+      await repository.editTodo(
+        todo.copyWith(mainImagePath: Nullable(newPath)),
+      );
+    }
+
+    final imagesPaths = await getImagesOfTodo(todoId);
+    final newImagePaths = await Future.wait(
+      imagesPaths.map((path) async => await FileSystemUtils.moveToCache(path)),
+    );
+    for (final oldImagePath in imagesPaths) {
+      await repository.deleteTodoImage(todoId, oldImagePath);
+    }
+    for (final newImagePath in newImagePaths) {
+      await repository.addTodoImage(todoId, newImagePath);
+    }
+  }
+
   /// Удаляет задачу с идентификатором [todoId].
   ///
   /// Связанные с ней пункты, уведомления и изображения также удаляются.
-  Future<void> deleteTodo(String todoId) async {
+  /// Если установлен [isRestorable], не удаляет файлы изображений. В этом
+  /// случае необходимо предварительно вызвать [makeTodoRestorable].
+  Future<void> deleteTodo(String todoId, {bool isRestorable = false}) async {
     final todo = await getTodo(todoId);
     if (todo.notificationTime != null) {
-      await _notificationsService.cancelNotification(todo);
+      await notificationsService.cancelNotification(todo);
     }
-    if (todo.themeImagePath != null) {
-      await FileSystemUtils.deleteFile(todo.themeImagePath);
+    if (todo.mainImagePath != null && !isRestorable) {
+      await FileSystemUtils.deleteFile(todo.mainImagePath);
     }
-    final imagesPaths = await getImagesPaths(todoId);
+    final imagesPaths = await getImagesOfTodo(todoId);
     for (final imagePath in imagesPaths) {
-      await deleteImagePath(todoId, imagePath);
+      await deleteTodoImage(todoId, imagePath, isRestorable: isRestorable);
     }
-    return _repository.deleteTodo(todoId);
+    return repository.deleteTodo(todoId);
   }
 
   /// Получает задачу с идентификатором [todoId].
   Future<Todo> getTodo(String todoId) async {
-    return _repository.getTodo(todoId);
+    return repository.getTodo(todoId);
   }
 
   /// Получает все задачи из ветки с идентификатором [branchId].
   ///
   /// Если [branchId] не задан, получает задачи из всех веток.
   Future<List<Todo>> getTodos({String branchId}) async {
-    return _repository.getTodos(branchId: branchId);
+    return repository.getTodos(branchId: branchId);
   }
 
   /// Добавляет пункт [step] в задачу c идентификатором [todoId].
-  Future<void> addStep(String todoId, TodoStep step) async {
-    return _repository.addStep(todoId, step);
+  Future<void> addTodoStep(String todoId, TodoStep step) async {
+    return repository.addTodoStep(todoId, step);
   }
 
   /// Устанавливает пункту с идентификатором [step.id] значения
   /// остальных полей [step].
-  Future<void> editStep(TodoStep step) async {
-    return _repository.editStep(step);
+  Future<void> editTodoStep(TodoStep step) async {
+    return repository.editTodoStep(step);
   }
 
   /// Удаляет пункт с идентификатором [stepId].
-  Future<void> deleteStep(String stepId) async {
-    return _repository.deleteStep(stepId);
+  Future<void> deleteTodoStep(String stepId) async {
+    return repository.deleteTodoStep(stepId);
   }
 
   /// Получает пункт с идентификатором [stepId].
-  Future<TodoStep> getStep(String stepId) async {
-    return _repository.getStep(stepId);
+  Future<TodoStep> getTodoStep(String stepId) async {
+    return repository.getTodoStep(stepId);
   }
 
   /// Получает все пункты задачи с идентификатором [todoId].
-  Future<List<TodoStep>> getSteps(String todoId) async {
-    return _repository.getSteps(todoId);
+  Future<List<TodoStep>> getStepsOfTodo(String todoId) async {
+    return repository.getStepsOfTodo(todoId);
   }
 
   /// Копирует картинку по пути [tmpImagePath] в локальную директорию и
   /// и добавляет путь к копии в задачу c идентификатором [todoId].
-  Future<void> addImagePath(String todoId, String tmpImagePath) async {
+  Future<void> addTodoImage(String todoId, String tmpImagePath) async {
     final imagePath = await FileSystemUtils.copyToLocal(tmpImagePath);
-    return _repository.addImagePath(todoId, imagePath);
+    return repository.addTodoImage(todoId, imagePath);
   }
 
   /// Удаляет путь к изображению [imagePath] из задачи
   /// c идентификатором [todoId], а также само изображение.
-  Future<void> deleteImagePath(String todoId, String imagePath) async {
-    await FileSystemUtils.deleteFile(imagePath);
-    return _repository.deleteImagePath(todoId, imagePath);
+  ///
+  /// Если установлен [isRestorable], не удаляет файл изображения. В этом
+  /// случае необходимо предварительно вызвать [makeTodoRestorable].
+  Future<void> deleteTodoImage(
+    String todoId,
+    String imagePath, {
+    bool isRestorable = false,
+  }) async {
+    if (!isRestorable) {
+      await FileSystemUtils.deleteFile(imagePath);
+    }
+    return repository.deleteTodoImage(todoId, imagePath);
   }
 
   /// Получает все пути к изображениям задачи с идентификатором [todoId].
-  Future<List<String>> getImagesPaths(String todoId) async {
-    return _repository.getImagesPaths(todoId);
+  Future<List<String>> getImagesOfTodo(String todoId) async {
+    return repository.getImagesOfTodo(todoId);
   }
 
-  /// Возвращает ветку, которой принадлжеит задача [todo].
-  Future<Branch> getTodoBranch(Todo todo) async {
-    return _repository.getTodoBranch(todo);
+  /// Возвращает ветку, которой принадлжеит задача с идентификатором
+  /// [todoId].
+  Future<Branch> getBranchOfTodo(String todoId) async {
+    return repository.getBranchOfTodo(todoId);
   }
 
-  /// Сортирует задачи [todos] в соответствии с порядком сортировки [sortOrder].
+  /// Возвращает задачу, которой принадлежит шаг с идентификатором
+  /// [stepId].
+  Future<Todo> getTodoOfStep(String stepId) async {
+    return repository.getTodoOfStep(stepId);
+  }
+
+  /// Сортирует задачи [todos] в соответствии с порядком сортировки
+  /// [sortOrder].
   void sortTodos(List<Todo> todos, TodosSortOrder sortOrder) {
     todos.sort(TodosComparatorsFactory.getComparator(sortOrder));
   }
 
+  /// Сортирует ветки [branches] в соответствии с порядком сортировки
+  /// [sortOrder].
+  void sortBranches(List<Branch> branches, BranchesSortOrder sortOrder) {
+    branches.sort(BranchesComparatorsFactory.getComparator(sortOrder));
+  }
+
   /// Создает новый список на основе [todos] и применяет к нему
-  /// насройки отображения [viewSettings].
-  List<Todo> applyViewSettings(
+  /// настройки отображения [viewSettings].
+  List<Todo> applyTodosViewSettings(
     List<Todo> todos,
-    TodoListViewSettings viewSettings,
+    TodosViewSettings viewSettings,
   ) {
     final oldTodos = todos;
 
@@ -226,14 +283,35 @@ class TodosInteractor {
     return todos;
   }
 
+  /// Создает новый список на основе [branches] и применяет к нему
+  /// настройки отображения [viewSettings].
+  List<Branch> applyBranchesViewSettings(
+    List<Branch> branches,
+    BranchesViewSettings viewSettings,
+  ) {
+    branches = List.from(branches);
+    sortBranches(branches, viewSettings.sortOrder);
+    return branches;
+  }
+
   /// Удаляет завершенные задачи в ветке с идентификатором [branchId].
   ///
   /// Если идентификатор не указан, удаляет завершенные задачи из всех веток.
   Future<void> deleteCompletedTodos({String branchId}) async {
-    List<Todo> todos = await getTodos(branchId: branchId);
+    final todos = await getTodos(branchId: branchId);
     for (final todo in todos) {
       if (todo.wasCompleted) {
         await deleteTodo(todo.id);
+      }
+    }
+  }
+
+  /// Удаляет пункты задачи с идентификатором [todoId].
+  Future<void> deleteCompletedStepsOfTodo(String todoId) async {
+    final steps = await getStepsOfTodo(todoId);
+    for (final step in steps) {
+      if (step.wasCompleted) {
+        await deleteTodoStep(step.id);
       }
     }
   }

@@ -19,21 +19,27 @@ dependencies:
   image_picker: ^0.6.7+14
   path_provider: ^1.6.24
   path: ^1.7.0
-  photo_view: ^0.10.2
+  photo_view: ^0.10.3
   http: ^0.12.2
   visibility_detector: ^0.1.5
   cached_network_image: ^2.3.3
   flutter_cache_manager: ^2.0.0
   bordered_text: ^1.0.1
-  marquee_widget: ^0.8.0
   shared_preferences: ^0.5.12+4
-  enum_to_string: ^1.0.13
+  enum_to_string: ^1.0.14
+  rive: ^0.6.3
+  floor: ^0.17.0
+  vibration: ^1.7.2
+  flutter_keyboard_visibility: ^4.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  floor_generator: ^0.17.0
+  build_runner: ^1.10.6
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/animations/

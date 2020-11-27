@@ -2,12 +2,9 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todos_sort_order.dart';
 
 /// Фабрика для получения компараторов по порядку сортировки [TodosSortOrder].
-class TodosComparatorsFactory {
-  static final Comparator<DateTime> _datetimeComparator = (a, b) {
-    if (a.isBefore(b)) return 1;
-    if (a.isAfter(b)) return -1;
-    return 0;
-  };
+abstract class TodosComparatorsFactory {
+  static final Comparator<DateTime> _datetimeComparator =
+      (a, b) => b.millisecondsSinceEpoch - a.millisecondsSinceEpoch;
 
   static final _comparators = <TodosSortOrder, Comparator<Todo>>{
     TodosSortOrder.creation: (a, b) {

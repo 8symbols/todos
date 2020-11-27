@@ -18,7 +18,7 @@ class BranchEditorDialog extends StatefulWidget {
   /// Если установлен, то дает возможность выбрать тему.
   final bool isNewBranch;
 
-  BranchEditorDialog(this.branch, {this.isNewBranch = false});
+  const BranchEditorDialog(this.branch, {this.isNewBranch = false});
 
   @override
   _BranchEditorDialogState createState() => _BranchEditorDialogState(branch);
@@ -34,6 +34,7 @@ class _BranchEditorDialogState extends State<BranchEditorDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(widget.isNewBranch ? 'Создать ветку' : 'Редактировать ветку'),
       content: Form(
         key: _formKey,
@@ -74,10 +75,11 @@ class _BranchEditorDialogState extends State<BranchEditorDialog> {
       maxLength: BranchEditorDialog.maxTitleLength,
       maxLengthEnforced: false,
       keyboardType: TextInputType.text,
-      onChanged: (value) => _branch = _branch.copyWith(title: value),
+      onChanged: (value) => _branch = _branch.copyWith(title: value.trim()),
       textInputAction: TextInputAction.done,
       maxLines: null,
       validator: (value) {
+        value = value.trim();
         if (value.isEmpty) {
           return 'Название не может быть пустым';
         }
@@ -90,22 +92,25 @@ class _BranchEditorDialogState extends State<BranchEditorDialog> {
   }
 
   Widget _buildThemeSelector(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Выбрать тему',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: BranchThemeSelector(
-            BranchThemes.branchThemes,
-            _branch.theme,
-            onSelect: (selectedTheme) => setState(() {
-              _branch = _branch.copyWith(theme: selectedTheme);
-            }),
+    return Padding(
+      padding: const EdgeInsets.only(top: 4.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Выбрать тему',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: BranchThemeSelector(
+              BranchThemes.branchThemes,
+              _branch.theme,
+              onSelect: (selectedTheme) => setState(() {
+                _branch = _branch.copyWith(theme: selectedTheme);
+              }),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

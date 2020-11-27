@@ -4,6 +4,8 @@ import 'package:todos/domain/services/i_notifications_service.dart';
 
 /// Сервис для работы с уведомлениями.
 class NotificationsService implements INotificationsService {
+  const NotificationsService();
+
   @override
   Future<bool> scheduleNotification(Todo todo) async {
     return NotificationsChannel.scheduleNotification(todo);

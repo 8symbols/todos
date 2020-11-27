@@ -21,7 +21,7 @@ class PopupMenu extends StatelessWidget {
               children: [
                 Icon(data.icon, color: Colors.black54),
                 const SizedBox(width: 16),
-                Text(data.title)
+                Expanded(child: Text(data.title)),
               ],
             ),
             // child: Text(choice),

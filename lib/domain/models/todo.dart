@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todos/domain/models/todo_priority.dart';
 import 'package:todos/domain/wrappers/nullable.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,14 +34,11 @@ class Todo {
   /// Время создания задачи.
   final DateTime creationTime;
 
-  /// Приоритет задачи.
-  final TodoPriority priority;
-
   /// Путь к фотографии, которая устанавливается в [AppBar] на экране задачи.
   ///
   /// Может быть равным null. В этом случае [AppBar] окрашивается в цвет ветки
   /// [Branch], которой принадлежит задача.
-  final String themeImagePath;
+  final String mainImagePath;
 
   /// Создает задачу.
   ///
@@ -54,8 +50,7 @@ class Todo {
     DateTime creationTime,
     this.isFavorite = false,
     this.wasCompleted = false,
-    this.priority = TodoPriority.medium,
-    this.themeImagePath,
+    this.mainImagePath,
     this.note,
     this.deadlineTime,
     this.notificationTime,
@@ -63,16 +58,14 @@ class Todo {
         creationTime = creationTime ?? DateTime.now(),
         assert(title != null),
         assert(isFavorite != null),
-        assert(wasCompleted != null),
-        assert(priority != null);
+        assert(wasCompleted != null);
 
   Todo copyWith({
     String id,
     bool isFavorite,
     bool wasCompleted,
     DateTime creationTime,
-    TodoPriority priority,
-    Nullable<String> themeImagePath,
+    Nullable<String> mainImagePath,
     Nullable<String> note,
     Nullable<DateTime> deadlineTime,
     Nullable<DateTime> notificationTime,
@@ -84,9 +77,8 @@ class Todo {
       isFavorite: isFavorite ?? this.isFavorite,
       wasCompleted: wasCompleted ?? this.wasCompleted,
       creationTime: creationTime ?? this.creationTime,
-      priority: priority ?? this.priority,
-      themeImagePath:
-          themeImagePath != null ? themeImagePath.value : this.themeImagePath,
+      mainImagePath:
+          mainImagePath != null ? mainImagePath.value : this.mainImagePath,
       note: note != null ? note.value : this.note,
       deadlineTime:
           deadlineTime != null ? deadlineTime.value : this.deadlineTime,

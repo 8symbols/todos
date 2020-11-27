@@ -23,4 +23,21 @@ abstract class FileSystemUtils {
   static Future<void> deleteFile(String path) async {
     return await File(path).delete();
   }
+
+  /// Переносит файл по пути [path] в кеш.
+  ///
+  /// Возвращает путь к файлу в кеше.
+  static Future<String> moveToCache(String path) async {
+    final cacheDirectory = await getTemporaryDirectory();
+    final filename = p.basename(path);
+    final oldFile = File(path);
+    final newPath = '${cacheDirectory.path}/$filename';
+    try {
+      await oldFile.rename(newPath);
+    } on FileSystemException catch (_) {
+      await oldFile.copy(newPath);
+      await oldFile.delete();
+    }
+    return newPath;
+  }
 }

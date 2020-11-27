@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:todos/domain/models/branch_theme.dart';
-import 'package:todos/presentation/flickr/widgets/flickr_screen.dart';
-import 'package:todos/presentation/todo/models/todo_screen_arguments.dart';
-import 'package:todos/presentation/todo/widgets/todo_screen.dart';
-import 'package:todos/presentation/todos_list/widgets/todo_list_screen.dart';
+import 'package:todos/domain/models/branch.dart';
+import 'package:todos/domain/models/todo.dart';
+import 'package:todos/presentation/screens/branches/widgets/branches_screen.dart';
+import 'package:todos/presentation/screens/flickr/widgets/flickr_screen.dart';
+import 'package:todos/presentation/screens/todo/widgets/todo_screen.dart';
+import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
 
-const initialRoute = TodoListScreen.routeName;
+const initialRoute = BranchesScreen.routeName;
 
 final routes = <String, WidgetBuilder>{
-  TodoListScreen.routeName: (context) => TodoListScreen(),
+  BranchesScreen.routeName: (context) => BranchesScreen(),
+  FlickrScreen.routeName: (context) => FlickrScreen(),
 };
 
 final RouteFactory onGenerateRoute = (settings) {
   switch (settings.name) {
-    case TodoScreen.routeName:
-      final TodoScreenArguments arguments = settings.arguments;
+    case TodoListScreen.routeName:
+      final Branch branch = settings.arguments;
       return MaterialPageRoute(
-        builder: (context) => TodoScreen(arguments.branchTheme, arguments.todo),
+        settings: settings,
+        builder: (context) => TodoListScreen(branch: branch),
       );
-    case FlickrScreen.routeName:
-      final BranchTheme branchTheme = settings.arguments;
+    case TodoScreen.routeName:
+      final Todo todo = settings.arguments;
       return MaterialPageRoute(
-        builder: (context) => FlickrScreen(branchTheme),
+        settings: settings,
+        builder: (context) => TodoScreen(todo),
       );
     default:
       return null;

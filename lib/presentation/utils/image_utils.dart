@@ -7,12 +7,14 @@ abstract class ImageUtils {
   static void openImageFullScreen(
     BuildContext context,
     ImageProvider imageProvider,
+    String heroTag,
   ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Container(
           child: PhotoView(
             imageProvider: imageProvider,
+            heroAttributes: PhotoViewHeroAttributes(tag: heroTag),
           ),
         ),
       ),
