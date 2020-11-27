@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todos/presentation/models/resolving_bloc_state.dart';
+import 'package:todos/presentation/models/observer_bloc_state.dart';
 import 'package:meta/meta.dart';
 
 /// Синхронизирует изменения между блоками.
@@ -10,7 +10,7 @@ import 'package:meta/meta.dart';
 /// функции обновления состояний прослушивающих блоков.
 abstract class BaseBlocsResolver {
   /// Прослушивающие блоки.
-  final List<ResolvingBlocState> _observers = [];
+  final List<ObserverBlocState> _observers = [];
 
   /// Прослушиваемые блоки.
   ///
@@ -50,7 +50,7 @@ abstract class BaseBlocsResolver {
     @required OnBlocUpdate<T> onUpdate,
   }) {
     if (!containsObserver(bloc)) {
-      _observers.add(ResolvingBlocState(bloc, onUpdate: onUpdate));
+      _observers.add(ObserverBlocState(bloc, onUpdate: onUpdate));
     }
   }
 
@@ -58,7 +58,8 @@ abstract class BaseBlocsResolver {
   ///
   /// Если он не был зарегистрирован, ничего не делает.
   void unregisterObserver<T extends Cubit>(T bloc) {
-    _observers.removeWhere((blocState) => identical(blocState.bloc, bloc));
+    _observers
+        .removeWhere((observerState) => identical(observerState.bloc, bloc));
   }
 
   /// Регистрирует в прослушиваемых блоках блок [bloc].
@@ -98,12 +99,12 @@ abstract class BaseBlocsResolver {
   ///
   /// Возвращает [true], если зарегистрирован.
   bool containsObserver<T extends Cubit>(T bloc) =>
-      _observers.any((blocState) => identical(blocState.bloc, bloc));
+      _observers.any((observerState) => identical(observerState.bloc, bloc));
 
   /// Приостанавливает обновление состояния блока при изменении состояний
   /// других блоков.
   void pauseObserver<T extends Cubit>(T bloc) {
-    _changeBlocInstantResolving(bloc, false);
+    _changeBlocInstantUpdate(bloc, false);
   }
 
   /// Возобновляет обновление состояния блока при изменении состояний
@@ -112,27 +113,27 @@ abstract class BaseBlocsResolver {
   /// Если между вызовами [pauseObserver] и [continueObserver]
   /// состояние прослушиваемых блоков изменялось, обновит состояние.
   void continueObserver<T extends Cubit>(T bloc) {
-    _changeBlocInstantResolving(bloc, true);
+    _changeBlocInstantUpdate(bloc, true);
   }
 
   /// Устанавливает, нужно ли обновлять блок [bloc] при изменении других
   /// зарегистрированных блоков.
-  void _changeBlocInstantResolving<T extends Cubit>(
+  void _changeBlocInstantUpdate<T extends Cubit>(
     T bloc,
-    bool isInstantResolving,
+    bool isInstantUpdate,
   ) {
-    _observers.forEach((blocState) {
-      if (identical(blocState.bloc, bloc)) {
-        blocState.isInstantResolving = isInstantResolving;
+    _observers.forEach((observerState) {
+      if (identical(observerState.bloc, bloc)) {
+        observerState.isInstantUpdate = isInstantUpdate;
       }
     });
   }
 
   /// Обновляет прослушивающие блоки.
   void _updateObservers<T extends Cubit>(T senderObservable) {
-    _observers.forEach((blocState) {
-      if (!identical(senderObservable, blocState.bloc)) {
-        blocState.updateState();
+    _observers.forEach((observerState) {
+      if (!identical(senderObservable, observerState.bloc)) {
+        observerState.updateState();
       }
     });
   }

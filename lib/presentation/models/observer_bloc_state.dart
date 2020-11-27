@@ -4,10 +4,10 @@ import 'package:todos/presentation/blocs_resolvers/base_blocs_resolver.dart';
 
 typedef OnBlocUpdate<T extends Cubit> = void Function(T bloc);
 
-/// Состояние блока.
+/// Состояние прослушивающего блока.
 ///
 /// Используется в [BaseBlocsResolver].
-class ResolvingBlocState<T extends Cubit> {
+class ObserverBlocState<T extends Cubit> {
   /// Блок.
   final T bloc;
 
@@ -19,20 +19,20 @@ class ResolvingBlocState<T extends Cubit> {
 
   /// Следует ли обновлять состояние блока сразу после получения
   /// информации о том, что оно устарело.
-  bool _isInstantResolving = true;
+  bool _isInstantUpdate = true;
 
-  ResolvingBlocState(
+  ObserverBlocState(
     this.bloc, {
     @required OnBlocUpdate<T> onUpdate,
   }) : _onUpdate = onUpdate;
 
-  /// Устанавливает [_isInstantResolving].
+  /// Устанавливает [_isInstantUpdate].
   ///
   /// Если устанавливается [true], состояние обновляется в случае
   /// устаревания.
-  set isInstantResolving(bool isInstantResolving) {
-    _isInstantResolving = isInstantResolving;
-    if (_isInstantResolving && _isOutdated) {
+  set isInstantUpdate(bool isInstantUpdate) {
+    _isInstantUpdate = isInstantUpdate;
+    if (_isInstantUpdate && _isOutdated) {
       updateState();
     }
   }
@@ -40,12 +40,12 @@ class ResolvingBlocState<T extends Cubit> {
   /// Обновляет состояние блока.
   ///
   /// Возвращает [true], если блок был обновлен.
-  /// Возвращает [false], если не установлен [_isInstantResolving].
+  /// Возвращает [false], если не установлен [_isInstantUpdate].
   bool updateState() {
-    if (_isInstantResolving) {
+    if (_isInstantUpdate) {
       _onUpdate(bloc);
     }
-    _isOutdated = !_isInstantResolving;
-    return _isInstantResolving;
+    _isOutdated = !_isInstantUpdate;
+    return _isInstantUpdate;
   }
 }
