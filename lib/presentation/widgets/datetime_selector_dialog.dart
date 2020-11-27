@@ -56,12 +56,14 @@ class DateTimeSelectorDialog extends StatelessWidget {
   }
 
   Future<DateTime> _pickCupertinoDateTime(BuildContext context) async {
+    const datePickerHeight = 216.0;
+
     DateTime dateTime;
 
     await showCupertinoModalPopup(
       context: context,
       builder: (context) => Container(
-        height: 216.0,
+        height: datePickerHeight,
         color: CupertinoColors.white,
         child: SafeArea(
           top: false,
