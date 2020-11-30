@@ -45,7 +45,11 @@ class _FlickrImagesGridState extends State<FlickrImagesGrid> {
           _loadingCompleter.complete();
           _loadingCompleter = Completer<void>();
         }
-        if (state.page == 1) {
+
+        final wasFailToLoadNextPage =
+            state is ImagesFailedToLoadState && state.urls.isNotEmpty;
+
+        if (state.page == 1 && !wasFailToLoadNextPage) {
           _scrollController.animateTo(
             0.0,
             duration: const Duration(milliseconds: 200),
