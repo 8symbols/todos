@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todos/data/repositories/flickr_repository.dart';
+import 'package:todos/domain/repositories/i_flickr_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/screens/flickr/blocs/flickr_images_bloc/flickr_images_bloc.dart';
 import 'package:todos/presentation/screens/flickr/blocs/searchbar_cubit/search_bar_cubit.dart';
@@ -27,8 +27,9 @@ class _FlickrScreenState extends State<FlickrScreen> {
   void initState() {
     super.initState();
     final settingsStorage = context.read<ISettingsStorage>();
+    final flickrRepository = context.read<IFlickrRepository>();
     _searchBarCubit = SearchBarCubit(settingsStorage);
-    _imagesBloc = FlickrImagesBloc(FlickrRepository(), 24)
+    _imagesBloc = FlickrImagesBloc(flickrRepository, 24)
       ..add(RecentImagesLoadingRequestedEvent());
   }
 

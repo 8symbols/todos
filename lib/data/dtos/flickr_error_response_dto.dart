@@ -20,4 +20,10 @@ class FlickrErrorResponseDto extends FlickrResponseDto {
         code: int.parse(json['code']),
         message: json['message'],
       );
+
+  Map<String, dynamic> toJson() => super.toJson()
+    ..addAll({
+      'code': code.toString(),
+      'message': message,
+    });
 }

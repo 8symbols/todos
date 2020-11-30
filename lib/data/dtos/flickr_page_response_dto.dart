@@ -16,4 +16,9 @@ class FlickrPageResponseDto extends FlickrResponseDto {
         stat: json['stat'],
         photos: FlickrPageDto.fromJson(json['photos']),
       );
+
+  Map<String, dynamic> toJson() => super.toJson()
+    ..addAll({
+      'photos': photos.toJson(),
+    });
 }
