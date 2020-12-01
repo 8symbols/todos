@@ -8,7 +8,7 @@ import 'package:todos/data/repositories/flickr_repository.dart';
 class MockFlickrClient extends Mock implements FlickrClient {}
 
 void main() {
-  group('Репозиторий изображений Flickr', () {
+  group('FlickrRepository', () {
     const flickrPhoto = FlickrPhotoDto(
       title: '',
       id: '',

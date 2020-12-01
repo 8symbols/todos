@@ -14,7 +14,7 @@ import 'package:todos/data/network/flickr_client.dart';
 class MockHttpClient extends Mock implements http.Client {}
 
 void main() {
-  group('Flickr клиент', () {
+  group('FlickrClient', () {
     group('получает', () {
       const flickrPhoto = FlickrPhotoDto(
         title: '',

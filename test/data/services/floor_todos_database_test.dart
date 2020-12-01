@@ -12,7 +12,7 @@ import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
 
 void main() {
-  group('Хранилище задач Floor', () {
+  group('FloorTodosDatabase', () {
     FloorTodosDatabase database;
 
     setUp(() async {

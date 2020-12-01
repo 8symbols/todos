@@ -7,7 +7,7 @@ import 'package:todos/domain/models/todo_step.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
 
 void main() {
-  group('Репозиторий задач', () {
+  group('TodosRepository', () {
     FloorTodosDatabase database;
     TodosRepository repository;
 
