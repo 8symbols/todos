@@ -21,27 +21,23 @@ void main() {
       todosInteractor = MockTodosInteractor();
       settingsInteractor = MockSettingsInteractor();
 
+      when(todosInteractor.getTodos(branchId: anyNamed('branchId')))
+          .thenAnswer((_) async => []);
       when(todosInteractor.getBranches()).thenAnswer((_) async => []);
       when(todosInteractor.applyBranchesViewSettings(any, any)).thenReturn([]);
+      when(settingsInteractor.getBranchesViewSettings())
+          .thenAnswer((_) async => BranchesViewSettings());
     });
 
     blocTest<BranchesBloc, BranchesState>(
       'не изменяет состояние, если не приходят события',
-      build: () {
-        when(settingsInteractor.getBranchesViewSettings())
-            .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(todosInteractor, settingsInteractor);
-      },
+      build: () => BranchesBloc(todosInteractor, settingsInteractor),
       expect: [],
     );
 
     blocTest<BranchesBloc, BranchesState>(
       'инициализирует список веток',
-      build: () {
-        when(settingsInteractor.getBranchesViewSettings())
-            .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(todosInteractor, settingsInteractor);
-      },
+      build: () => BranchesBloc(todosInteractor, settingsInteractor),
       act: (bloc) => bloc.add(InitializationRequestedEvent()),
       expect: [isA<BranchesContentState>()],
       verify: (_) => verify(settingsInteractor.getBranchesViewSettings()),
@@ -49,11 +45,7 @@ void main() {
 
     blocTest<BranchesBloc, BranchesState>(
       'обновляет список веток',
-      build: () {
-        when(settingsInteractor.getBranchesViewSettings())
-            .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(todosInteractor, settingsInteractor);
-      },
+      build: () => BranchesBloc(todosInteractor, settingsInteractor),
       act: (bloc) => bloc
         ..add(InitializationRequestedEvent())
         ..add(BranchesOutdatedEvent()),
@@ -66,8 +58,7 @@ void main() {
       build: () {
         when(settingsInteractor.saveBranchesViewSettings(any))
             .thenAnswer((_) async {});
-        when(settingsInteractor.getBranchesViewSettings())
-            .thenAnswer((_) async => BranchesViewSettings());
+
         return BranchesBloc(todosInteractor, settingsInteractor);
       },
       act: (bloc) => bloc
@@ -80,34 +71,24 @@ void main() {
 
     blocTest<BranchesBloc, BranchesState>(
       'добавляет ветку',
-      build: () {
-        when(settingsInteractor.getBranchesViewSettings())
-            .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(todosInteractor, settingsInteractor);
-      },
+      build: () => BranchesBloc(todosInteractor, settingsInteractor),
       act: (bloc) => bloc
         ..add(InitializationRequestedEvent())
         ..add(BranchAddedEvent(Branch('', BranchThemes.defaultBranchTheme))),
       skip: 1,
       expect: [isA<BranchesContentState>()],
+      verify: (_) => verify(todosInteractor.addBranch(any)),
     );
 
     blocTest<BranchesBloc, BranchesState>(
       'удаляет ветку',
-      build: () {
-        when(settingsInteractor.getBranchesViewSettings())
-            .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(todosInteractor, settingsInteractor);
-      },
-      act: (bloc) {
-        final branch = Branch('', BranchThemes.defaultBranchTheme);
-        bloc
-          ..add(InitializationRequestedEvent())
-          ..add(BranchAddedEvent(branch))
-          ..add(BranchDeletedEvent(branch));
-      },
-      skip: 2,
+      build: () => BranchesBloc(todosInteractor, settingsInteractor),
+      act: (bloc) => bloc
+        ..add(InitializationRequestedEvent())
+        ..add(BranchDeletedEvent(Branch('', BranchThemes.defaultBranchTheme))),
+      skip: 1,
       expect: [isA<BranchesContentState>()],
+      verify: (_) => verify(todosInteractor.deleteBranch(any)),
     );
   });
 }
