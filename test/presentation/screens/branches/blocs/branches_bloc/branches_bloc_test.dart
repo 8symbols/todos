@@ -1,48 +1,36 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:todos/data/repositories/todos_repository.dart';
-import 'package:todos/data/services/floor_todos_database.dart';
+import 'package:todos/domain/interactors/settings_interactor.dart';
+import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/branches_view_settings.dart';
-import 'package:todos/domain/services/i_notifications_service.dart';
-import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/screens/branches/blocs/branches_bloc/branches_bloc.dart';
 
-class MockNotificationService extends Mock implements INotificationsService {}
+class MockTodosInteractor extends Mock implements TodosInteractor {}
 
-class MockSettingsStorage extends Mock implements ISettingsStorage {}
+class MockSettingsInteractor extends Mock implements SettingsInteractor {}
 
 void main() {
   group('BranchesBloc', () {
-    FloorTodosDatabase database;
-    TodosRepository repository;
-    ISettingsStorage settingsStorage;
-    INotificationsService notificationsService;
+    TodosInteractor todosInteractor;
+    SettingsInteractor settingsInteractor;
 
     setUp(() async {
-      database =
-          await $FloorFloorTodosDatabase.inMemoryDatabaseBuilder().build();
-      repository = TodosRepository(database);
-      settingsStorage = MockSettingsStorage();
-      notificationsService = MockNotificationService();
-    });
+      todosInteractor = MockTodosInteractor();
+      settingsInteractor = MockSettingsInteractor();
 
-    tearDown(() async {
-      await database.close();
+      when(todosInteractor.getBranches()).thenAnswer((_) async => []);
+      when(todosInteractor.applyBranchesViewSettings(any, any)).thenReturn([]);
     });
 
     blocTest<BranchesBloc, BranchesState>(
       'не изменяет состояние, если не приходят события',
       build: () {
-        when(settingsStorage.getBranchesViewSettings())
+        when(settingsInteractor.getBranchesViewSettings())
             .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(
-          repository,
-          settingsStorage,
-          notificationsService: notificationsService,
-        );
+        return BranchesBloc(todosInteractor, settingsInteractor);
       },
       expect: [],
     );
@@ -50,29 +38,21 @@ void main() {
     blocTest<BranchesBloc, BranchesState>(
       'инициализирует список веток',
       build: () {
-        when(settingsStorage.getBranchesViewSettings())
+        when(settingsInteractor.getBranchesViewSettings())
             .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(
-          repository,
-          settingsStorage,
-          notificationsService: notificationsService,
-        );
+        return BranchesBloc(todosInteractor, settingsInteractor);
       },
       act: (bloc) => bloc.add(InitializationRequestedEvent()),
       expect: [isA<BranchesContentState>()],
-      verify: (_) => verify(settingsStorage.getBranchesViewSettings()),
+      verify: (_) => verify(settingsInteractor.getBranchesViewSettings()),
     );
 
     blocTest<BranchesBloc, BranchesState>(
       'обновляет список веток',
       build: () {
-        when(settingsStorage.getBranchesViewSettings())
+        when(settingsInteractor.getBranchesViewSettings())
             .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(
-          repository,
-          settingsStorage,
-          notificationsService: notificationsService,
-        );
+        return BranchesBloc(todosInteractor, settingsInteractor);
       },
       act: (bloc) => bloc
         ..add(InitializationRequestedEvent())
@@ -84,34 +64,26 @@ void main() {
     blocTest<BranchesBloc, BranchesState>(
       'обновляет настройки отображения',
       build: () {
-        when(settingsStorage.saveBranchesViewSettings(any))
+        when(settingsInteractor.saveBranchesViewSettings(any))
             .thenAnswer((_) async {});
-        when(settingsStorage.getBranchesViewSettings())
+        when(settingsInteractor.getBranchesViewSettings())
             .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(
-          repository,
-          settingsStorage,
-          notificationsService: notificationsService,
-        );
+        return BranchesBloc(todosInteractor, settingsInteractor);
       },
       act: (bloc) => bloc
         ..add(InitializationRequestedEvent())
         ..add(ViewSettingsChangedEvent(BranchesViewSettings())),
       skip: 1,
       expect: [isA<BranchesContentState>()],
-      verify: (_) => verify(settingsStorage.saveBranchesViewSettings(any)),
+      verify: (_) => verify(settingsInteractor.saveBranchesViewSettings(any)),
     );
 
     blocTest<BranchesBloc, BranchesState>(
       'добавляет ветку',
       build: () {
-        when(settingsStorage.getBranchesViewSettings())
+        when(settingsInteractor.getBranchesViewSettings())
             .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(
-          repository,
-          settingsStorage,
-          notificationsService: notificationsService,
-        );
+        return BranchesBloc(todosInteractor, settingsInteractor);
       },
       act: (bloc) => bloc
         ..add(InitializationRequestedEvent())
@@ -123,13 +95,9 @@ void main() {
     blocTest<BranchesBloc, BranchesState>(
       'удаляет ветку',
       build: () {
-        when(settingsStorage.getBranchesViewSettings())
+        when(settingsInteractor.getBranchesViewSettings())
             .thenAnswer((_) async => BranchesViewSettings());
-        return BranchesBloc(
-          repository,
-          settingsStorage,
-          notificationsService: notificationsService,
-        );
+        return BranchesBloc(todosInteractor, settingsInteractor);
       },
       act: (bloc) {
         final branch = Branch('', BranchThemes.defaultBranchTheme);

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:todos/domain/interactors/settings_interactor.dart';
+import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
@@ -37,8 +39,10 @@ class _BranchesScreenState extends State<BranchesScreen> {
     final todosRepository = context.read<ITodosRepository>();
     final settingsStorage = context.read<ISettingsStorage>();
 
-    _branchesBloc = BranchesBloc(todosRepository, settingsStorage)
-      ..add(const InitializationRequestedEvent());
+    _branchesBloc = BranchesBloc(
+      TodosInteractor(todosRepository),
+      SettingsInteractor(settingsStorage),
+    )..add(const InitializationRequestedEvent());
     _deletionModeCubit = DeletionModeCubit();
 
     _todosBlocsResolver = context.read<TodosBlocsResolver>();

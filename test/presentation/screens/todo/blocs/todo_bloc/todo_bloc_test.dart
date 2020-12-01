@@ -1,36 +1,24 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/domain/repositories/i_todos_repository.dart';
-import 'package:todos/domain/services/i_notifications_service.dart';
-import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/screens/todo/blocs/todo_bloc/todo_bloc.dart';
 
-class MockNotificationService extends Mock implements INotificationsService {}
-
-class MockSettingsStorage extends Mock implements ISettingsStorage {}
-
-class MockTodosRepository extends Mock implements ITodosRepository {}
+class MockTodosInteractor extends Mock implements TodosInteractor {}
 
 void main() {
   group('TodoBloc', () {
-    ITodosRepository repository;
-    INotificationsService notificationsService;
+    TodosInteractor todosInteractor;
 
     setUp(() async {
-      repository = MockTodosRepository();
-      notificationsService = MockNotificationService();
+      todosInteractor = MockTodosInteractor();
     });
 
     blocTest<TodoBloc, TodoState>(
       'не изменяет состояние, если не приходят события',
       build: () {
-        return TodoBloc(
-          repository,
-          Todo(''),
-          notificationsService: notificationsService,
-        );
+        return TodoBloc(todosInteractor, Todo(''));
       },
       expect: [],
     );
@@ -38,36 +26,28 @@ void main() {
     blocTest<TodoBloc, TodoState>(
       'изменяет задачу',
       build: () {
-        when(repository.getTodo(any)).thenAnswer((_) async => Todo(''));
-        when(repository.editTodo(any)).thenAnswer((_) async {});
+        when(todosInteractor.getTodo(any)).thenAnswer((_) async => Todo(''));
+        when(todosInteractor.editTodo(any)).thenAnswer((_) async {});
 
-        return TodoBloc(
-          repository,
-          Todo(''),
-          notificationsService: notificationsService,
-        );
+        return TodoBloc(todosInteractor, Todo(''));
       },
       act: (bloc) => bloc.add(TodoEditedEvent(Todo(''))),
       expect: [isA<TodoContentState>()],
-      verify: (_) => verify(repository.editTodo(any)),
+      verify: (_) => verify(todosInteractor.editTodo(any)),
     );
 
     blocTest<TodoBloc, TodoState>(
       'удаляет задачу',
       build: () {
-        when(repository.getTodo(any)).thenAnswer((_) async => Todo(''));
-        when(repository.getImagesOfTodo(any)).thenAnswer((_) async => []);
-        when(repository.deleteTodo(any)).thenAnswer((_) async {});
+        when(todosInteractor.getTodo(any)).thenAnswer((_) async => Todo(''));
+        when(todosInteractor.getImagesOfTodo(any)).thenAnswer((_) async => []);
+        when(todosInteractor.deleteTodo(any)).thenAnswer((_) async {});
 
-        return TodoBloc(
-          repository,
-          Todo(''),
-          notificationsService: notificationsService,
-        );
+        return TodoBloc(todosInteractor, Todo(''));
       },
       act: (bloc) => bloc.add(TodoDeletedEvent()),
       expect: [isA<TodoDeletedState>()],
-      verify: (_) => verify(repository.deleteTodo(any)),
+      verify: (_) => verify(todosInteractor.deleteTodo(any)),
     );
   });
 }

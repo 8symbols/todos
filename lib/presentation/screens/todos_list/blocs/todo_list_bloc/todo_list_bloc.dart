@@ -2,14 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/interactors/settings_interactor.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_list_view_settings.dart';
-import 'package:todos/domain/repositories/i_todos_repository.dart';
-import 'package:todos/domain/services/i_notifications_service.dart';
-import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/models/todo_data.dart';
 import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
 
@@ -32,16 +28,10 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   List<Todo> _allTodos;
 
   TodoListBloc(
-    ITodosRepository todosRepository,
-    ISettingsStorage settingsStorage, {
+    this._todosInteractor,
+    this._settingsInteractor, {
     this.branchId,
-    INotificationsService notificationsService = const NotificationsService(),
-  })  : _todosInteractor = TodosInteractor(
-          todosRepository,
-          notificationsService: notificationsService,
-        ),
-        _settingsInteractor = SettingsInteractor(settingsStorage),
-        super(TodoListLoadingState());
+  }) : super(TodoListLoadingState());
 
   @override
   Stream<TodoListState> mapEventToState(

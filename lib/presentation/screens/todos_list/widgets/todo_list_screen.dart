@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/domain/interactors/settings_interactor.dart';
+import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -44,12 +46,15 @@ class _TodoListScreenState extends State<TodoListScreen> {
     final settingsStorage = context.read<ISettingsStorage>();
 
     _todoListBloc = TodoListBloc(
-      todosRepository,
-      settingsStorage,
+      TodosInteractor(todosRepository),
+      SettingsInteractor(settingsStorage),
       branchId: widget.branch?.id,
     )..add(InitializationRequestedEvent());
 
-    _branchCubit = BranchCubit(todosRepository, branch: widget.branch);
+    _branchCubit = BranchCubit(
+      TodosInteractor(todosRepository),
+      branch: widget.branch,
+    );
     if (widget.branch != null) {
       _branchCubit
           .editBranch(widget.branch.copyWith(lastUsageTime: DateTime.now()));

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/presentation/blocs/deletion_cubit/deletion_cubit.dart';
@@ -46,11 +47,15 @@ class _TodoScreenState extends State<TodoScreen> {
   void initState() {
     super.initState();
     final todosRepository = context.read<ITodosRepository>();
-    _stepsBloc = TodoStepsBloc(todosRepository, widget._todo)
-      ..add(StepsLoadingRequestedEvent());
-    _imagesBloc = TodoImagesBloc(todosRepository, widget._todo)
-      ..add(ImagesLoadingRequestedEvent());
-    _todoBloc = TodoBloc(todosRepository, widget._todo);
+    _stepsBloc = TodoStepsBloc(
+      TodosInteractor(todosRepository),
+      widget._todo,
+    )..add(StepsLoadingRequestedEvent());
+    _imagesBloc = TodoImagesBloc(
+      TodosInteractor(todosRepository),
+      widget._todo,
+    )..add(ImagesLoadingRequestedEvent());
+    _todoBloc = TodoBloc(TodosInteractor(todosRepository), widget._todo);
     _deletionModeCubit = DeletionModeCubit();
 
     final keyboardController = KeyboardVisibilityController();
