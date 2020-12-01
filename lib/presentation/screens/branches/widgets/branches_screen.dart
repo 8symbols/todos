@@ -13,7 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todos/presentation/screens/branches/widgets/branches_grid.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/screens/branches/widgets/branches_screen_menu_options.dart';
-import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
+import 'package:todos/presentation/screens/todo_list/widgets/todo_list_screen.dart';
 import 'package:todos/presentation/utils/branch_theme_utils.dart';
 import 'package:todos/presentation/widgets/boolean_dialog.dart';
 import 'package:todos/presentation/widgets/branch_editor_dialog.dart';

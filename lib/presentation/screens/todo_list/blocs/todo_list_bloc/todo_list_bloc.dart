@@ -7,7 +7,7 @@ import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/models/todo_list_view_settings.dart';
 import 'package:todos/presentation/models/todo_data.dart';
-import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
+import 'package:todos/presentation/screens/todo_list/models/todo_statistics.dart';
 
 part 'todo_list_event.dart';
 part 'todo_list_state.dart';

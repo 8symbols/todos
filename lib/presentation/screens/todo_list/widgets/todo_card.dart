@@ -2,7 +2,7 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/presentation/screens/todos_list/models/todo_statistics.dart';
+import 'package:todos/presentation/screens/todo_list/models/todo_statistics.dart';
 import 'package:todos/presentation/widgets/favorite_button.dart';
 
 typedef TodoEditedCallback = void Function(Todo editedTodo);
