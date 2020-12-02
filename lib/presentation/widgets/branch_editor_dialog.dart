@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
+import 'package:todos/presentation/constants/keys.dart';
 import 'package:todos/presentation/widgets/branch_theme_selector.dart';
 
 /// Диалог, который позволяет создать или отредактировать ветку.
@@ -51,10 +52,12 @@ class _BranchEditorDialogState extends State<BranchEditorDialog> {
       ),
       actions: [
         TextButton(
+          key: const ValueKey(Keys.rejectButton),
           child: const Text('Отмена'),
           onPressed: () => Navigator.of(context).pop(),
         ),
         TextButton(
+          key: const ValueKey(Keys.acceptButton),
           child: const Text('Ок'),
           onPressed: () {
             if (_formKey.currentState.validate()) {
@@ -72,6 +75,7 @@ class _BranchEditorDialogState extends State<BranchEditorDialog> {
         hintText: 'Введите название ветки',
       ),
       initialValue: _branch.title,
+      autofocus: widget.isNewBranch,
       maxLength: BranchEditorDialog.maxTitleLength,
       maxLengthEnforced: false,
       keyboardType: TextInputType.text,

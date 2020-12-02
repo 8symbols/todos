@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/wrappers/nullable.dart';
+import 'package:todos/presentation/constants/keys.dart';
 import 'package:todos/presentation/widgets/image_selector_dialog.dart';
 import 'package:todos/presentation/widgets/select_datetime_button.dart';
 
@@ -56,10 +57,12 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
       ),
       actions: [
         TextButton(
+          key: const ValueKey(Keys.rejectButton),
           child: const Text('Отмена'),
           onPressed: () => Navigator.of(context).pop(),
         ),
         TextButton(
+          key: const ValueKey(Keys.acceptButton),
           child: const Text('Ок'),
           onPressed: () {
             if (_formKey.currentState.validate()) {
@@ -77,6 +80,7 @@ class _TodoEditorDialogState extends State<TodoEditorDialog> {
         hintText: 'Введите название задачи',
       ),
       initialValue: _todo.title,
+      autofocus: widget.isNewTodo,
       maxLength: TodoEditorDialog.maxTitleLength,
       maxLengthEnforced: false,
       keyboardType: TextInputType.text,
