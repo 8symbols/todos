@@ -10,7 +10,7 @@ typedef TodoEditedCallback = void Function(Todo editedTodo);
 /// Виджет для отображения задачи в списке задач.
 class TodoCard extends StatelessWidget {
   /// Задача.
-  final TodoStatistics todoData;
+  final TodoStatistics statistics;
 
   /// Callback, вызывающийся при удалении задачи.
   final VoidCallback onDelete;
@@ -21,10 +21,11 @@ class TodoCard extends StatelessWidget {
   /// Callback, вызывающийся при изменении задачи.
   final TodoEditedCallback onEdit;
 
-  static final _deadlineDateFormat = DateFormat('dd.MM.yyyy HH:mm');
+  /// Формат отображения времени дедлайна.
+  static final deadlineDateFormat = DateFormat('dd.MM.yyyy HH:mm');
 
   TodoCard(
-    this.todoData, {
+    this.statistics, {
     @required this.onDelete,
     @required this.onEdit,
     @required this.onTap,
@@ -54,7 +55,7 @@ class TodoCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Dismissible(
-        key: Key(todoData.todo.id),
+        key: Key(statistics.todo.id),
         direction: DismissDirection.endToStart,
         background: dismissibleBackground,
         confirmDismiss: (direction) async => ModalRoute.of(context).isCurrent,
@@ -68,15 +69,15 @@ class TodoCard extends StatelessWidget {
               child: Row(
                 children: [
                   CircularCheckBox(
-                    value: todoData.todo.wasCompleted,
-                    onChanged: (newValue) =>
-                        onEdit(todoData.todo.copyWith(wasCompleted: newValue)),
+                    value: statistics.todo.wasCompleted,
+                    onChanged: (newValue) => onEdit(
+                        statistics.todo.copyWith(wasCompleted: newValue)),
                   ),
                   Expanded(child: _buildTodoData()),
                   FavoriteButton(
-                    todoData.todo.isFavorite,
-                    onToggle: (isFavorite) =>
-                        onEdit(todoData.todo.copyWith(isFavorite: isFavorite)),
+                    statistics.todo.isFavorite,
+                    onToggle: (isFavorite) => onEdit(
+                        statistics.todo.copyWith(isFavorite: isFavorite)),
                   ),
                 ],
               ),
@@ -91,24 +92,24 @@ class TodoCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(todoData.todo.title),
-        if (todoData.stepsCount != 0)
+        Text(statistics.todo.title),
+        if (statistics.stepsCount != 0)
           Padding(
             padding: const EdgeInsets.only(top: 2.0),
             child: Text(
-              '${todoData.completedStepsCount} из ${todoData.stepsCount}',
+              '${statistics.completedStepsCount} из ${statistics.stepsCount}',
               style: const TextStyle(color: Colors.grey, fontSize: 13.5),
             ),
           ),
-        if (todoData.todo.deadlineTime != null)
+        if (statistics.todo.deadlineTime != null)
           Padding(
             padding: const EdgeInsets.only(top: 2.0),
             child: Text(
-              'До ${_deadlineDateFormat.format(todoData.todo.deadlineTime)}',
+              'До ${deadlineDateFormat.format(statistics.todo.deadlineTime)}',
               style: TextStyle(
                 fontSize: 13.5,
                 fontStyle: FontStyle.italic,
-                color: todoData.todo.deadlineTime.isAfter(DateTime.now())
+                color: statistics.todo.deadlineTime.isAfter(DateTime.now())
                     ? Colors.green
                     : Colors.red,
               ),
