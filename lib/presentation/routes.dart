@@ -4,7 +4,7 @@ import 'package:todos/domain/models/todo.dart';
 import 'package:todos/presentation/screens/branches/widgets/branches_screen.dart';
 import 'package:todos/presentation/screens/flickr/widgets/flickr_screen.dart';
 import 'package:todos/presentation/screens/todo/widgets/todo_screen.dart';
-import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen.dart';
+import 'package:todos/presentation/screens/todo_list/widgets/todo_list_screen.dart';
 
 const initialRoute = BranchesScreen.routeName;
 

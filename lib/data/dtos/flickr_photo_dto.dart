@@ -3,7 +3,7 @@ class FlickrPhotoDto {
   /// Идентификатор.
   final String id;
 
-  /// Владалец.
+  /// Владелец.
   final String owner;
 
   final String secret;
@@ -48,4 +48,16 @@ class FlickrPhotoDto {
         isFriend: int.parse(json['isfriend']) != 0,
         isFamily: int.parse(json['isfamily']) != 0,
       );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'owner': owner,
+        'secret': secret,
+        'server': server,
+        'farm': farm.toString(),
+        'title': title,
+        'ispublic': isPublic ? '1' : '0',
+        'isfriend': isFriend ? '1' : '0',
+        'isfamily': isFamily ? '1' : '0',
+      };
 }

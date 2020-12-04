@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/domain/interactors/settings_interactor.dart';
+import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/branch.dart';
 import 'package:todos/domain/models/todo.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
@@ -7,17 +9,17 @@ import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
 import 'package:todos/presentation/blocs_resolvers/todos_blocs_resolver.dart';
 import 'package:todos/presentation/models/todo_data.dart';
-import 'package:todos/presentation/screens/todos_list/blocs/branch_cubit/branch_cubit.dart';
-import 'package:todos/presentation/screens/todos_list/blocs/todo_list_bloc/todo_list_bloc.dart';
-import 'package:todos/presentation/screens/todos_list/widgets/todo_list.dart';
-import 'package:todos/presentation/screens/todos_list/widgets/todo_list_screen_menu_options.dart';
+import 'package:todos/presentation/screens/todo_list/blocs/branch_cubit/branch_cubit.dart';
+import 'package:todos/presentation/screens/todo_list/blocs/todo_list_bloc/todo_list_bloc.dart';
+import 'package:todos/presentation/screens/todo_list/widgets/todo_list.dart';
+import 'package:todos/presentation/screens/todo_list/widgets/todo_list_screen_menu_options.dart';
 import 'package:todos/presentation/utils/branch_theme_utils.dart';
 import 'package:todos/presentation/widgets/marquee.dart';
 import 'package:todos/presentation/widgets/todo_editor_dialog.dart';
 
 /// Экран списка задач.
 class TodoListScreen extends StatefulWidget {
-  static const routeName = '/todos_list';
+  static const routeName = '/todo_list';
 
   /// Ветка задач.
   ///
@@ -44,12 +46,15 @@ class _TodoListScreenState extends State<TodoListScreen> {
     final settingsStorage = context.read<ISettingsStorage>();
 
     _todoListBloc = TodoListBloc(
-      todosRepository,
-      settingsStorage,
+      TodosInteractor(todosRepository),
+      SettingsInteractor(settingsStorage),
       branchId: widget.branch?.id,
     )..add(InitializationRequestedEvent());
 
-    _branchCubit = BranchCubit(todosRepository, branch: widget.branch);
+    _branchCubit = BranchCubit(
+      TodosInteractor(todosRepository),
+      branch: widget.branch,
+    );
     if (widget.branch != null) {
       _branchCubit
           .editBranch(widget.branch.copyWith(lastUsageTime: DateTime.now()));

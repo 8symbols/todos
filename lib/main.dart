@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todos/data/network/flickr_client.dart';
+import 'package:todos/data/repositories/flickr_repository.dart';
 import 'package:todos/data/repositories/todos_repository.dart';
 import 'package:todos/data/services/floor_todos_database.dart';
 import 'package:todos/data/services/settings_storage.dart';
+import 'package:todos/domain/repositories/i_flickr_repository.dart';
 import 'package:todos/domain/repositories/i_todos_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/blocs/theme_cubit/theme_cubit.dart';
@@ -11,6 +14,7 @@ import 'package:todos/presentation/blocs_resolvers/todos_blocs_resolver.dart';
 import 'package:todos/presentation/constants/branch_themes.dart';
 import 'package:todos/presentation/routes.dart';
 import 'package:todos/presentation/utils/branch_theme_utils.dart';
+import 'package:http/http.dart' as http;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +40,11 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  http.Client _httpClient;
+
   ITodosRepository _todosRepository;
+
+  IFlickrRepository _flickrRepository;
 
   ISettingsStorage _settingsStorage;
 
@@ -47,7 +55,9 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
+    _httpClient = http.Client();
     _todosRepository = TodosRepository(widget._floorTodosDatabase);
+    _flickrRepository = FlickrRepository(FlickrClient(_httpClient));
     _settingsStorage = SettingsStorage();
     _themeCubit = ThemeCubit(
       BranchThemeUtils.createThemeData(BranchThemes.defaultBranchTheme),
@@ -57,6 +67,7 @@ class _AppState extends State<App> {
 
   @override
   void dispose() {
+    _httpClient.close();
     _themeCubit.close();
     super.dispose();
   }
@@ -66,6 +77,7 @@ class _AppState extends State<App> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<ITodosRepository>.value(value: _todosRepository),
+        RepositoryProvider<IFlickrRepository>.value(value: _flickrRepository),
         RepositoryProvider<ISettingsStorage>.value(value: _settingsStorage),
         RepositoryProvider<TodosBlocsResolver>.value(value: _todoBlocsResolver),
       ],

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todos/data/repositories/flickr_repository.dart';
+import 'package:todos/domain/interactors/flickr_interactor.dart';
+import 'package:todos/domain/interactors/settings_interactor.dart';
+import 'package:todos/domain/repositories/i_flickr_repository.dart';
 import 'package:todos/domain/services/i_settings_storage.dart';
 import 'package:todos/presentation/screens/flickr/blocs/flickr_images_bloc/flickr_images_bloc.dart';
-import 'package:todos/presentation/screens/flickr/blocs/searchbar_cubit/search_bar_cubit.dart';
+import 'package:todos/presentation/screens/flickr/blocs/searchbar_cubit/searchbar_cubit.dart';
 import 'package:todos/presentation/screens/flickr/blocs/searchbar_cubit/searchbar_state.dart';
 import 'package:todos/presentation/screens/flickr/widgets/flickr_images_grid.dart';
 import 'package:todos/presentation/screens/flickr/widgets/search_appbar.dart';
@@ -27,8 +29,9 @@ class _FlickrScreenState extends State<FlickrScreen> {
   void initState() {
     super.initState();
     final settingsStorage = context.read<ISettingsStorage>();
-    _searchBarCubit = SearchBarCubit(settingsStorage);
-    _imagesBloc = FlickrImagesBloc(FlickrRepository(), 24)
+    final flickrRepository = context.read<IFlickrRepository>();
+    _searchBarCubit = SearchBarCubit(SettingsInteractor(settingsStorage));
+    _imagesBloc = FlickrImagesBloc(FlickrInteractor(flickrRepository), 24)
       ..add(RecentImagesLoadingRequestedEvent());
   }
 

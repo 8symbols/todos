@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:todos/domain/interactors/flickr_interactor.dart';
-import 'package:todos/domain/repositories/i_flickr_repository.dart';
 
 part 'flickr_images_event.dart';
 part 'flickr_images_state.dart';
@@ -20,9 +19,8 @@ class FlickrImagesBloc extends Bloc<ImagesEvent, ImagesState> {
   /// Равен null в случае, если сейчас просматриваются недавние изображения.
   String _currentQuery;
 
-  FlickrImagesBloc(IFlickrRepository flickrRepository, this._pageSize)
-      : _flickrInteractor = FlickrInteractor(flickrRepository),
-        super(const ImagesInitialState());
+  FlickrImagesBloc(this._flickrInteractor, this._pageSize)
+      : super(const ImagesInitialState());
 
   @override
   Stream<ImagesState> mapEventToState(

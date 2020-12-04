@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:todos/data/services/notifications_service.dart';
 import 'package:todos/domain/interactors/todos_interactor.dart';
 import 'package:todos/domain/models/todo.dart';
-import 'package:todos/domain/repositories/i_todos_repository.dart';
-import 'package:todos/domain/services/i_notifications_service.dart';
 
 part 'todo_images_event.dart';
 part 'todo_images_state.dart';
@@ -19,15 +16,8 @@ class TodoImagesBloc extends Bloc<TodoImagesEvent, TodoImagesState> {
   /// Интерактор для взаимодействия с пунктами.
   final TodosInteractor _todosInteractor;
 
-  TodoImagesBloc(
-    ITodosRepository todosRepository,
-    this._todo, {
-    INotificationsService notificationsService = const NotificationsService(),
-  })  : _todosInteractor = TodosInteractor(
-          todosRepository,
-          notificationsService: notificationsService,
-        ),
-        super(TodoImagesLoadingState());
+  TodoImagesBloc(this._todosInteractor, this._todo)
+      : super(TodoImagesLoadingState());
 
   @override
   Stream<TodoImagesState> mapEventToState(

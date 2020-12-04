@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todos/presentation/constants/keys.dart';
 
 /// Диалог, в котором пользователь может согласиться или отказаться.
 ///
@@ -34,10 +35,12 @@ class BooleanDialog extends StatelessWidget {
       content: Text(content),
       actions: [
         TextButton(
+          key: const ValueKey(Keys.rejectButton),
           child: Text(rejectButtonText),
           onPressed: () => Navigator.of(context).pop(false),
         ),
         TextButton(
+          key: const ValueKey(Keys.acceptButton),
           child: Text(acceptButtonText),
           onPressed: () => Navigator.of(context).pop(true),
         )

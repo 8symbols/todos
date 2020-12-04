@@ -34,4 +34,12 @@ class FlickrPageDto {
             .map<FlickrPhotoDto>((e) => FlickrPhotoDto.fromJson(e))
             .toList(),
       );
+
+  Map<String, dynamic> toJson() => {
+        'page': page.toString(),
+        'pages': pages.toString(),
+        'perpage': perPage.toString(),
+        'total': total.toString(),
+        'photo': photos.map((photo) => photo.toJson()).toList(),
+      };
 }

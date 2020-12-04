@@ -23,7 +23,10 @@ class FlickrClient {
     'nojsoncallback': '1',
   };
 
-  const FlickrClient();
+  /// Клиент для работы с http.
+  final http.Client _httpClient;
+
+  const FlickrClient(this._httpClient);
 
   /// Загружает страницу [page] недавних изображений размера [pageSize].
   ///
@@ -63,7 +66,7 @@ class FlickrClient {
       Map.from(_baseParameters)..addAll(parameters),
     );
 
-    final response = await http.get(uri);
+    final response = await _httpClient.get(uri);
 
     if (response.statusCode != HttpStatus.ok) {
       throw Exception('Не удалось совершить запрос.');

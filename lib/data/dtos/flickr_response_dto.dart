@@ -7,4 +7,8 @@ class FlickrResponseDto {
 
   factory FlickrResponseDto.fromJson(Map<String, dynamic> json) =>
       FlickrResponseDto(stat: json['stat']);
+
+  Map<String, dynamic> toJson() => {
+        'stat': stat,
+      };
 }

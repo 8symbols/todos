@@ -10,7 +10,7 @@ class FlickrRepository extends IFlickrRepository {
   /// Клиент для работы с API Flickr.
   final FlickrClient client;
 
-  FlickrRepository({this.client = const FlickrClient()});
+  FlickrRepository(this.client);
 
   @override
   Future<FlickrPage> getRecentPhotos(int page, int pageSize) async {
