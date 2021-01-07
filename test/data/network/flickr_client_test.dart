@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:http/http.dart' as http;
+import 'package:todos/data/constants/flickr_response_status.dart';
 import 'package:todos/data/dtos/flickr_error_response_dto.dart';
 import 'package:todos/data/dtos/flickr_page_dto.dart';
 import 'package:todos/data/dtos/flickr_page_response_dto.dart';
 import 'package:todos/data/dtos/flickr_photo_dto.dart';
-import 'package:todos/data/models/flickr_response_status.dart';
 import 'package:todos/data/network/flickr_client.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
